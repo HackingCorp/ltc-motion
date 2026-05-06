@@ -4,7 +4,7 @@ import { COMPOSITION_VARIABLE_TYPES } from "../../core.types";
 
 // Agent guidance thresholds: warning-only nudges for files/tracks that become hard
 // to inspect and revise reliably in a single composition.
-const MAX_COMPOSITION_LINES = 300;
+const MAX_COMPOSITION_LINES = 500;
 const MAX_TIMED_ELEMENTS_PER_TRACK = 3;
 const TRACK_DENSITY_EXEMPT_TAGS = new Set(["audio", "script", "style", "video"]);
 

@@ -3,8 +3,8 @@ import { lintHyperframeHtml } from "../hyperframeLinter.js";
 
 describe("composition rules", () => {
   describe("subcomposition guidance", () => {
-    it("warns when any HTML composition file is over 300 lines", () => {
-      const html = Array.from({ length: 301 }, (_, i) =>
+    it("warns when any HTML composition file is over 500 lines", () => {
+      const html = Array.from({ length: 501 }, (_, i) =>
         i === 0 ? "<html><body>" : `<!-- filler ${i} -->`,
       ).join("\n");
 
@@ -14,8 +14,8 @@ describe("composition rules", () => {
       expect(finding?.severity).toBe("warning");
     });
 
-    it("does not warn when an HTML composition file is exactly 300 lines", () => {
-      const html = Array.from({ length: 300 }, (_, i) =>
+    it("does not warn when an HTML composition file is exactly 500 lines", () => {
+      const html = Array.from({ length: 500 }, (_, i) =>
         i === 0 ? "<html><body>" : `<!-- filler ${i} -->`,
       ).join("\n");
 
@@ -26,7 +26,7 @@ describe("composition rules", () => {
 
     it("does not count a final trailing newline as an extra physical line", () => {
       const html =
-        Array.from({ length: 300 }, (_, i) =>
+        Array.from({ length: 500 }, (_, i) =>
           i === 0 ? "<html><body>" : `<!-- filler ${i} -->`,
         ).join("\n") + "\n";
 
@@ -36,7 +36,7 @@ describe("composition rules", () => {
     });
 
     it("does not warn for large registry source block files", () => {
-      const html = Array.from({ length: 301 }, (_, i) =>
+      const html = Array.from({ length: 501 }, (_, i) =>
         i === 0 ? "<html><body>" : `<!-- filler ${i} -->`,
       ).join("\n");
 
@@ -48,7 +48,7 @@ describe("composition rules", () => {
     });
 
     it("warns for large installed block composition files", () => {
-      const html = Array.from({ length: 301 }, (_, i) =>
+      const html = Array.from({ length: 501 }, (_, i) =>
         i === 0 ? "<html><body>" : `<!-- filler ${i} -->`,
       ).join("\n");
 
@@ -63,7 +63,7 @@ describe("composition rules", () => {
     it("does not warn for large registry-installed block composition files", () => {
       const html =
         "<!-- hyperframes-registry-item: data-chart -->\n" +
-        Array.from({ length: 300 }, (_, i) =>
+        Array.from({ length: 500 }, (_, i) =>
           i === 0 ? "<html><body>" : `<!-- filler ${i} -->`,
         ).join("\n");
 
@@ -75,7 +75,7 @@ describe("composition rules", () => {
     });
 
     it("uses nested split copy for large sub-composition files", () => {
-      const html = Array.from({ length: 301 }, (_, i) =>
+      const html = Array.from({ length: 501 }, (_, i) =>
         i === 0 ? "<html><body>" : `<!-- filler ${i} -->`,
       ).join("\n");
 
