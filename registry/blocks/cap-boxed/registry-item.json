@@ -1,0 +1,19 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "cap-boxed",
+  "type": "hyperframes:block",
+  "title": "Boxed Subtitle",
+  "description": "Netflix/YouTube boxed subtitle — semi-transparent dark box, gold word highlight, lower-third",
+  "stability": "stable",
+  "dimensions": { "width": 1920, "height": 1080 },
+  "duration": 9,
+  "tags": ["captions", "professional", "netflix", "boxed"],
+  "preview": "https://heygen-public.s3.us-east-2.amazonaws.com/hyperframes/caption-blocks/cap-boxed.mp4",
+  "files": [
+    {
+      "path": "cap-boxed.html",
+      "target": "compositions/cap-boxed.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

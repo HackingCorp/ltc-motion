@@ -1,0 +1,19 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "cap-karaoke-sweep",
+  "type": "hyperframes:block",
+  "title": "Karaoke Sweep",
+  "description": "CapCut-style full phrase with progressive white glow on active word, dimmed unspoken words",
+  "stability": "stable",
+  "dimensions": { "width": 1920, "height": 1080 },
+  "duration": 9,
+  "tags": ["captions", "karaoke", "capcut", "general"],
+  "preview": "https://heygen-public.s3.us-east-2.amazonaws.com/hyperframes/caption-blocks/cap-karaoke-sweep.mp4",
+  "files": [
+    {
+      "path": "cap-karaoke-sweep.html",
+      "target": "compositions/cap-karaoke-sweep.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

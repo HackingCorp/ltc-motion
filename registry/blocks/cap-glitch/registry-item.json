@@ -1,0 +1,19 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "cap-glitch",
+  "type": "hyperframes:block",
+  "title": "Glitch",
+  "description": "Digital glitch entrance — RGB chromatic aberration flash, matrix green active word",
+  "stability": "stable",
+  "dimensions": { "width": 1920, "height": 1080 },
+  "duration": 9,
+  "tags": ["captions", "tech", "cyberpunk", "glitch"],
+  "preview": "https://heygen-public.s3.us-east-2.amazonaws.com/hyperframes/caption-blocks/cap-glitch.mp4",
+  "files": [
+    {
+      "path": "cap-glitch.html",
+      "target": "compositions/cap-glitch.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

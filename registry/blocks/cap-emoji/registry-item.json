@@ -1,0 +1,19 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "cap-emoji",
+  "type": "hyperframes:block",
+  "title": "Emoji Pop",
+  "description": "Hormozi pop with emoji reactions — contextual emoji bounces in next to keyword on activation",
+  "stability": "stable",
+  "dimensions": { "width": 1920, "height": 1080 },
+  "duration": 9,
+  "tags": ["captions", "emoji", "social", "fun"],
+  "preview": "https://heygen-public.s3.us-east-2.amazonaws.com/hyperframes/caption-blocks/cap-emoji.mp4",
+  "files": [
+    {
+      "path": "cap-emoji.html",
+      "target": "compositions/cap-emoji.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

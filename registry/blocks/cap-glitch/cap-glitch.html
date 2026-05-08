@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; overflow: hidden; }
+#root-cap-glitch {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+.gl-container {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gl-cg {
+  position: absolute;
+  top: 480px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+}
+.gl-cw {
+  font-family: 'Chakra Petch', sans-serif;
+  font-weight: 700;
+  font-size: 120px;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  line-height: 1;
+  display: inline-block;
+  -webkit-text-stroke: 2px rgba(0,0,0,0.6);
+  paint-order: stroke fill;
+  text-shadow: 0 3px 8px rgba(0,0,0,0.5);
+}
+</style>
+</head>
+<body>
+<div id="root-cap-glitch" data-composition-id="cap-glitch" data-start="0" data-duration="9" data-width="1920" data-height="1080">
+  <div class="gl-container" id="gl-container"></div>
+  <div id="drv-cap-glitch" class="clip" data-start="0" data-duration="9" data-track-index="0"
+       style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></div>
+</div>
+<script>(function() {
+  window.__timelines = window.__timelines || {};
+
+  var WORDS = [
+    { text: "Welcome", start: 0.3, end: 0.65 },
+    { text: "to", start: 0.65, end: 0.8 },
+    { text: "the", start: 0.8, end: 0.95 },
+    { text: "future", start: 0.95, end: 1.4 },
+    { text: "of", start: 1.6, end: 1.75 },
+    { text: "video", start: 1.75, end: 2.15 },
+    { text: "creation", start: 2.15, end: 2.7 },
+    { text: "where", start: 3.0, end: 3.25 },
+    { text: "every", start: 3.25, end: 3.55 },
+    { text: "frame", start: 3.55, end: 3.9 },
+    { text: "tells", start: 4.1, end: 4.4 },
+    { text: "a", start: 4.4, end: 4.5 },
+    { text: "powerful", start: 4.5, end: 5.0 },
+    { text: "story", start: 5.0, end: 5.5 },
+    { text: "built", start: 5.8, end: 6.1 },
+    { text: "with", start: 6.1, end: 6.3 },
+    { text: "precision", start: 6.3, end: 6.9 },
+    { text: "designed", start: 7.1, end: 7.5 },
+    { text: "for", start: 7.5, end: 7.65 },
+    { text: "maximum", start: 7.65, end: 8.1 },
+    { text: "impact", start: 8.1, end: 8.6 }
+  ];
+
+  var GROUPS = [
+    { start: 0.3, end: 1.5, wordStart: 0, wordEnd: 3, text: "Welcome to the future" },
+    { start: 1.6, end: 2.8, wordStart: 4, wordEnd: 6, text: "of video creation" },
+    { start: 3.0, end: 4.0, wordStart: 7, wordEnd: 9, text: "where every frame" },
+    { start: 4.1, end: 5.6, wordStart: 10, wordEnd: 13, text: "tells a powerful story" },
+    { start: 5.8, end: 7.0, wordStart: 14, wordEnd: 16, text: "built with precision" },
+    { start: 7.1, end: 8.7, wordStart: 17, wordEnd: 20, text: "designed for maximum impact" }
+  ];
+
+  var container = document.getElementById("gl-container");
+
+  GROUPS.forEach(function(g, gi) {
+    var groupEl = document.createElement("div");
+    groupEl.id = "gl-cg-" + gi;
+    groupEl.className = "gl-cg";
+
+    for (var wi = g.wordStart; wi <= g.wordEnd; wi++) {
+      var wordEl = document.createElement("span");
+      wordEl.id = "gl-cw-" + wi;
+      wordEl.className = "gl-cw";
+      wordEl.textContent = WORDS[wi].text;
+      groupEl.appendChild(wordEl);
+    }
+
+
+    // Pretext overflow prevention
+    if (window.__hyperframes && window.__hyperframes.fitTextFontSize) {
+      var _fit = window.__hyperframes.fitTextFontSize(g.text.toUpperCase(), {
+        fontFamily: "Chakra Petch",
+        fontWeight: 700,
+        maxWidth: 1550,
+        baseFontSize: 120,
+        minFontSize: 48
+      });
+      if (_fit.fontSize < 120) {
+        for (var _fi = 0; _fi < groupEl.children.length; _fi++) {
+          groupEl.children[_fi].style.fontSize = _fit.fontSize + "px";
+        }
+      }
+    }
+    container.appendChild(groupEl);
+  });
+
+  var tl = gsap.timeline({ paused: true });
+
+  GROUPS.forEach(function(g, gi) {
+    var groupEl = document.getElementById("gl-cg-" + gi);
+
+    // GLITCH entrance — 3 rapid RGB flashes
+    tl.set(groupEl, { opacity: 1, visibility: "visible", x: -6, color: "#FF0000" }, g.start);
+    tl.set(groupEl, { x: 4, color: "#00FF00" }, g.start + 0.03);
+    tl.set(groupEl, { x: 0, color: "#FFFFFF" }, g.start + 0.06);
+
+    // Karaoke: chromatic aberration on active word
+    for (var wi = g.wordStart; wi <= g.wordEnd; wi++) {
+      var wordEl = document.getElementById("gl-cw-" + wi);
+      // Activate — matrix green with chromatic split
+      tl.to(wordEl, {
+        color: "#00FF88",
+        textShadow: "3px 0 #FF0000, -3px 0 #0000FF, 0 0 15px #00FF8880, 0 3px 8px rgba(0,0,0,0.5)",
+        duration: 0.06,
+        ease: "power2.out"
+      }, WORDS[wi].start);
+      // Deactivate — dim white, no chromatic split
+      tl.to(wordEl, {
+        color: "rgba(255,255,255,0.75)",
+        textShadow: "0 3px 8px rgba(0,0,0,0.5)",
+        duration: 0.08,
+        ease: "power1.in"
+      }, WORDS[wi].end);
+    }
+
+    // EXIT — reverse glitch
+    tl.set(groupEl, { x: 5, color: "#FF0000" }, g.end - 0.06);
+    tl.set(groupEl, { x: -3, opacity: 0.5 }, g.end - 0.03);
+    // HARD KILL
+    tl.set(groupEl, { opacity: 0, visibility: "hidden", x: 0 }, g.end);
+  });
+
+  window.__timelines["cap-glitch"] = tl;
+})();</script>
+</body>
+</html>

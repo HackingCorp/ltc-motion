@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #F0EDE8; overflow: hidden; }
+#root-cap-marker {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: #F0EDE8;
+}
+.mk-container {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mk-cg {
+  position: absolute;
+  top: 500px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+}
+.mk-cw {
+  font-family: 'Figtree', sans-serif;
+  font-weight: 800;
+  font-size: 108px;
+  color: #1a1a1a;
+  line-height: 1;
+  display: inline-block;
+}
+.mk-word-wrap {
+  position: relative;
+  display: inline-block;
+}
+.mk-bar {
+  position: absolute;
+  left: -6px;
+  right: -6px;
+  top: 0;
+  bottom: 0;
+  background: #FFE066;
+  transform: scaleX(0);
+  transform-origin: left;
+  border-radius: 4px;
+  z-index: 0;
+}
+.mk-text {
+  position: relative;
+  z-index: 1;
+}
+</style>
+</head>
+<body>
+<div id="root-cap-marker" data-composition-id="cap-marker" data-start="0" data-duration="9" data-width="1920" data-height="1080">
+  <div class="mk-container" id="mk-container"></div>
+  <div id="drv-cap-marker" class="clip" data-start="0" data-duration="9" data-track-index="0"
+       style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></div>
+</div>
+<script>(function() {
+  window.__timelines = window.__timelines || {};
+
+  var WORDS = [
+    { text: "Welcome", start: 0.3, end: 0.65 },
+    { text: "to", start: 0.65, end: 0.8 },
+    { text: "the", start: 0.8, end: 0.95 },
+    { text: "future", start: 0.95, end: 1.4 },
+    { text: "of", start: 1.6, end: 1.75 },
+    { text: "video", start: 1.75, end: 2.15 },
+    { text: "creation", start: 2.15, end: 2.7 },
+    { text: "where", start: 3.0, end: 3.25 },
+    { text: "every", start: 3.25, end: 3.55 },
+    { text: "frame", start: 3.55, end: 3.9 },
+    { text: "tells", start: 4.1, end: 4.4 },
+    { text: "a", start: 4.4, end: 4.5 },
+    { text: "powerful", start: 4.5, end: 5.0 },
+    { text: "story", start: 5.0, end: 5.5 },
+    { text: "built", start: 5.8, end: 6.1 },
+    { text: "with", start: 6.1, end: 6.3 },
+    { text: "precision", start: 6.3, end: 6.9 },
+    { text: "designed", start: 7.1, end: 7.5 },
+    { text: "for", start: 7.5, end: 7.65 },
+    { text: "maximum", start: 7.65, end: 8.1 },
+    { text: "impact", start: 8.1, end: 8.6 }
+  ];
+
+  var GROUPS = [
+    { start: 0.3, end: 1.5, wordStart: 0, wordEnd: 3, text: "Welcome to the future" },
+    { start: 1.6, end: 2.8, wordStart: 4, wordEnd: 6, text: "of video creation" },
+    { start: 3.0, end: 4.0, wordStart: 7, wordEnd: 9, text: "where every frame" },
+    { start: 4.1, end: 5.6, wordStart: 10, wordEnd: 13, text: "tells a powerful story" },
+    { start: 5.8, end: 7.0, wordStart: 14, wordEnd: 16, text: "built with precision" },
+    { start: 7.1, end: 8.7, wordStart: 17, wordEnd: 20, text: "designed for maximum impact" }
+  ];
+
+  var container = document.getElementById("mk-container");
+
+  GROUPS.forEach(function(g, gi) {
+    var groupEl = document.createElement("div");
+    groupEl.id = "mk-cg-" + gi;
+    groupEl.className = "mk-cg";
+
+    for (var wi = g.wordStart; wi <= g.wordEnd; wi++) {
+      var wrapEl = document.createElement("span");
+      wrapEl.className = "mk-word-wrap mk-cw";
+      wrapEl.id = "mk-cw-" + wi;
+
+      var barEl = document.createElement("span");
+      barEl.className = "mk-bar";
+      barEl.id = "mk-bar-" + wi;
+
+      var textEl = document.createElement("span");
+      textEl.className = "mk-text";
+      textEl.textContent = WORDS[wi].text;
+
+      wrapEl.appendChild(barEl);
+      wrapEl.appendChild(textEl);
+      groupEl.appendChild(wrapEl);
+    }
+
+
+    // Pretext overflow prevention
+    if (window.__hyperframes && window.__hyperframes.fitTextFontSize) {
+      var _fit = window.__hyperframes.fitTextFontSize(g.text, {
+        fontFamily: "Figtree",
+        fontWeight: 800,
+        maxWidth: 1550,
+        baseFontSize: 108,
+        minFontSize: 48
+      });
+      if (_fit.fontSize < 108) {
+        for (var _fi = 0; _fi < groupEl.children.length; _fi++) {
+          groupEl.children[_fi].style.fontSize = _fit.fontSize + "px";
+        }
+      }
+    }
+    container.appendChild(groupEl);
+  });
+
+  var tl = gsap.timeline({ paused: true });
+
+  GROUPS.forEach(function(g, gi) {
+    var groupEl = document.getElementById("mk-cg-" + gi);
+
+    // SHOW group — slide up with fade
+    tl.set(groupEl, { visibility: "visible" }, g.start);
+    tl.to(groupEl, { opacity: 1, y: 15, duration: 0.2, ease: "power2.out" }, g.start);
+
+    // Marker sweep: animate highlight bar on each word
+    for (var wi = g.wordStart; wi <= g.wordEnd; wi++) {
+      var barEl = document.getElementById("mk-bar-" + wi);
+      tl.to(barEl, {
+        scaleX: 1,
+        duration: 0.12,
+        ease: "power2.out"
+      }, WORDS[wi].start);
+    }
+
+    // EXIT — fade out
+    tl.to(groupEl, { opacity: 0, duration: 0.15 }, g.end - 0.15);
+    // HARD KILL
+    tl.set(groupEl, { opacity: 0, visibility: "hidden" }, g.end);
+  });
+
+  window.__timelines["cap-marker"] = tl;
+})();</script>
+</body>
+</html>

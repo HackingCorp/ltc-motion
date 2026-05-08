@@ -1,0 +1,19 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "cap-marker",
+  "type": "hyperframes:block",
+  "title": "Marker Highlight",
+  "description": "Yellow marker highlight sweep on light background — educational/emphasis style",
+  "stability": "stable",
+  "dimensions": { "width": 1920, "height": 1080 },
+  "duration": 9,
+  "tags": ["captions", "educational", "marker", "highlight"],
+  "preview": "https://heygen-public.s3.us-east-2.amazonaws.com/hyperframes/caption-blocks/cap-marker.mp4",
+  "files": [
+    {
+      "path": "cap-marker.html",
+      "target": "compositions/cap-marker.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

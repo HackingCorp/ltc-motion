@@ -1,0 +1,19 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "cap-hormozi",
+  "type": "hyperframes:block",
+  "title": "Hormozi Bold Pop",
+  "description": "Hormozi-style word pop — Montserrat 900, ALL CAPS, gold karaoke highlight with scale bounce entrance",
+  "stability": "stable",
+  "dimensions": { "width": 1920, "height": 1080 },
+  "duration": 9,
+  "tags": ["captions", "viral", "short-form", "hormozi"],
+  "preview": "https://heygen-public.s3.us-east-2.amazonaws.com/hyperframes/caption-blocks/cap-hormozi.mp4",
+  "files": [
+    {
+      "path": "cap-hormozi.html",
+      "target": "compositions/cap-hormozi.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

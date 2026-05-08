@@ -1,0 +1,19 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "cap-bounce",
+  "type": "hyperframes:block",
+  "title": "Bounce Word",
+  "description": "Elastic bounce per word — Figtree 800, words enter with spring physics, cyan highlight",
+  "stability": "stable",
+  "dimensions": { "width": 1920, "height": 1080 },
+  "duration": 9,
+  "tags": ["captions", "playful", "energetic", "bounce"],
+  "preview": "https://heygen-public.s3.us-east-2.amazonaws.com/hyperframes/caption-blocks/cap-bounce.mp4",
+  "files": [
+    {
+      "path": "cap-bounce.html",
+      "target": "compositions/cap-bounce.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

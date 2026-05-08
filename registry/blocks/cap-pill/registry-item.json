@@ -1,0 +1,19 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "cap-pill",
+  "type": "hyperframes:block",
+  "title": "Pill Background",
+  "description": "Instagram Reels pill style — each word in a rounded gradient pill, active pill turns red",
+  "stability": "stable",
+  "dimensions": { "width": 1920, "height": 1080 },
+  "duration": 9,
+  "tags": ["captions", "social", "instagram", "pill"],
+  "preview": "https://heygen-public.s3.us-east-2.amazonaws.com/hyperframes/caption-blocks/cap-pill.mp4",
+  "files": [
+    {
+      "path": "cap-pill.html",
+      "target": "compositions/cap-pill.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

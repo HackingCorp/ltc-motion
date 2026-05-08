@@ -1,0 +1,19 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "cap-neon",
+  "type": "hyperframes:block",
+  "title": "Neon Glow",
+  "description": "Neon glow on active word — layered pink text-shadow with chromatic edge, slide entrance",
+  "stability": "stable",
+  "dimensions": { "width": 1920, "height": 1080 },
+  "duration": 9,
+  "tags": ["captions", "neon", "premium", "night"],
+  "preview": "https://heygen-public.s3.us-east-2.amazonaws.com/hyperframes/caption-blocks/cap-neon.mp4",
+  "files": [
+    {
+      "path": "cap-neon.html",
+      "target": "compositions/cap-neon.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

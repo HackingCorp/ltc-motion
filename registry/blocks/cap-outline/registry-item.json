@@ -1,0 +1,19 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "cap-outline",
+  "type": "hyperframes:block",
+  "title": "Outline Fill",
+  "description": "Stroke-to-fill reveal — Bebas Neue ALL CAPS outline fills to solid white when spoken",
+  "stability": "stable",
+  "dimensions": { "width": 1920, "height": 1080 },
+  "duration": 9,
+  "tags": ["captions", "premium", "brand", "outline"],
+  "preview": "https://heygen-public.s3.us-east-2.amazonaws.com/hyperframes/caption-blocks/cap-outline.mp4",
+  "files": [
+    {
+      "path": "cap-outline.html",
+      "target": "compositions/cap-outline.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}
