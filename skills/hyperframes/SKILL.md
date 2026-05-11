@@ -116,6 +116,43 @@ Each beat shows ONE thing. Not a heading AND a paragraph AND an icon AND a decor
 - **Atmosphere beats** (4-8s): establishing moods, emotional moments — let the viewer feel it
 - **Never** hold a static frame >3s without ambient motion — stillness reads as frozen
 
+## Visual Richness — SVG Over CSS Shapes
+
+CSS rectangles and circles look amateur in rendered video. Use inline SVG for any visual that isn't text. Read [references/techniques.md](references/techniques.md) for full code patterns — every composition should use at least 2-3 techniques.
+
+### SVG patterns to reach for
+
+| Visual need        | SVG approach                                  | GSAP animation                                         |
+| ------------------ | --------------------------------------------- | ------------------------------------------------------ |
+| **Diagrams/flows** | `<path>` with stroke-dasharray                | `strokeDashoffset: 0` draw-on reveal                   |
+| **Node graphs**    | `<circle>` nodes + `<line>` edges             | Staggered scale-in for nodes, stroke draw for edges    |
+| **Data viz**       | `<rect>` bars, `<circle>` donuts              | Height/width tween for bars, strokeDashoffset for arcs |
+| **Icons/marks**    | Multi-path SVG icons                          | Per-path staggered draw-on                             |
+| **Decoratives**    | Bezier curves, constellation dots             | MotionPathPlugin for particles along curves            |
+| **Waveforms**      | `<polyline>` or `<path>` with computed points | Frame-by-frame point updates via proxy                 |
+
+### The 3-layer rule
+
+Every scene needs visual depth — not just content floating on a solid color:
+
+1. **Background**: radial gradient glows, SVG grid/dot patterns with slow drift, large ghost text at 3-5% opacity
+2. **Content**: the focal element (text, diagram, stat)
+3. **Accent**: animated SVG decoratives — connector lines drawing on, floating particles, pulsing rings, circuit traces
+
+A scene with only layer 2 (content on solid bg) looks like a slide. Layers 1 and 3 make it feel like a produced video.
+
+### SVG stroke draw-on (most useful pattern)
+
+```javascript
+// Measure path, set initial state, animate reveal
+var path = document.querySelector("#my-path");
+var len = path.getTotalLength();
+gsap.set(path, { strokeDasharray: len, strokeDashoffset: len });
+tl.to(path, { strokeDashoffset: 0, duration: 0.8, ease: "power2.out" }, 0.3);
+```
+
+Use this for: connector lines, flow arrows, underline reveals, diagram edges, brand marks, circuit traces.
+
 ## Layout Before Animation
 
 Position every element where it should be at its **most visible moment** — the frame where it's fully entered, correctly placed, and not yet exiting. Write this as static HTML+CSS first. No GSAP yet.
