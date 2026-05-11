@@ -995,6 +995,36 @@ export function StudioApp() {
     [activeCompPath, showToast, timelineElements],
   );
 
+  const handleDeleteKeyRef = useRef(handleTimelineElementDelete);
+  handleDeleteKeyRef.current = handleTimelineElementDelete;
+
+  // eslint-disable-next-line no-restricted-syntax
+  useEffect(() => {
+    function handleDeleteKey(event: KeyboardEvent) {
+      if (event.key !== "Delete" && event.key !== "Backspace") return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+      const tag = (event.target as HTMLElement)?.tagName?.toLowerCase();
+      if (tag === "input" || tag === "textarea" || (event.target as HTMLElement)?.isContentEditable) {
+        return;
+      }
+
+      const { selectedElementId, elements } = usePlayerStore.getState();
+      if (!selectedElementId) return;
+
+      const element = elements.find(
+        (el) => (el.key ?? el.id) === selectedElementId,
+      );
+      if (!element) return;
+
+      event.preventDefault();
+      void handleDeleteKeyRef.current(element);
+    }
+
+    window.addEventListener("keydown", handleDeleteKey);
+    return () => window.removeEventListener("keydown", handleDeleteKey);
+  }, []);
+
   const handleBlockedTimelineEdit = useCallback(
     (_element: TimelineElement) => {
       const now = Date.now();
