@@ -207,6 +207,25 @@ Never embed a raw flat image. Every image must have motion treatment:
 
 ---
 
+## Root index.html — Critical Layout
+
+Every beat host div MUST overlap in the same 1920×1080 frame. The runtime controls visibility via `visibility: hidden/visible` during seeking — this only works when beats occupy the same space. Without absolute positioning, beats stack vertically and only beat-1 is visible.
+
+Add this CSS in the root `index.html`'s `<style>` block:
+
+```css
+[data-composition-src] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+}
+```
+
+---
+
 ## Audio Wiring
 
 In the root `index.html`:
