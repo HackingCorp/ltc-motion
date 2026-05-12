@@ -1644,6 +1644,7 @@ export function initSandboxRuntimeModular(): void {
   });
   let transportTickCount = 0;
   let inTransportTick = false;
+  let lastRafMs = performance.now();
 
   const seekTimelineAndAdapters = (t: number) => {
     const tl = state.capturedTimeline;
@@ -1674,11 +1675,14 @@ export function initSandboxRuntimeModular(): void {
     }
   };
 
-  const transportTick = () => {
+  const transportTick = (fromInterval: boolean) => {
     if (state.tornDown || inTransportTick) return;
+    if (!fromInterval) {
+      lastRafMs = performance.now();
+      state.transportRafId = window.requestAnimationFrame(() => transportTick(false));
+    }
     inTransportTick = true;
     try {
-      state.transportRafId = window.requestAnimationFrame(transportTick);
       transportTickCount += 1;
 
       // Slower operations: timeline binding (~every 60 frames / ~1s at 60fps)
@@ -1965,8 +1969,18 @@ export function initSandboxRuntimeModular(): void {
     }
   }
 
-  // Start the rAF tick loop
-  state.transportRafId = window.requestAnimationFrame(transportTick);
+  // Start the rAF tick loop (primary) with a setInterval fallback.
+  // Chromium throttles rAF in deeply nested cross-origin iframes — e.g. an MCP
+  // widget iframe inside Electron (Claude desktop). The interval is a no-op when
+  // rAF is healthy; it takes over after RAF_STARVATION_MS of silence so that
+  // playback works in throttled environments without changing normal-browser behavior.
+  const RAF_STARVATION_MS = 100;
+  state.transportRafId = window.requestAnimationFrame(() => transportTick(false));
+  state.transportIntervalId = window.setInterval(() => {
+    if (!state.tornDown && performance.now() - lastRafMs > RAF_STARVATION_MS) {
+      transportTick(true);
+    }
+  }, 16);
   postTimeline();
   postState(true);
 
@@ -1976,6 +1990,10 @@ export function initSandboxRuntimeModular(): void {
     if (state.transportRafId != null) {
       window.cancelAnimationFrame(state.transportRafId);
       state.transportRafId = null;
+    }
+    if (state.transportIntervalId != null) {
+      window.clearInterval(state.transportIntervalId);
+      state.transportIntervalId = null;
     }
     state.transportClock = null;
     webAudio.destroy();

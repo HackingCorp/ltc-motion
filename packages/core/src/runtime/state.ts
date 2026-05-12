@@ -82,6 +82,8 @@ export type RuntimeState = {
   transportClock: TransportClock | null;
   /** rAF ID for the single-clock tick loop. */
   transportRafId: number | null;
+  /** setInterval ID for the RAF-starvation fallback tick loop. */
+  transportIntervalId: number | null;
 };
 
 export function createRuntimeState(): RuntimeState {
@@ -119,5 +121,6 @@ export function createRuntimeState(): RuntimeState {
     nativeVisualWatchdogTick: 0,
     transportClock: null,
     transportRafId: null,
+    transportIntervalId: null,
   };
 }
