@@ -270,6 +270,7 @@ test("preview matches render after UI edits", async ({ page, context }) => {
 
   // ── 8. Diff preview vs render frames; fail if avg luma diff > threshold ───
   const failures: string[] = [];
+  const yavgScores: Record<string, number> = {};
 
   for (const t of [0, 1, 2]) {
     const previewPng = resolve(DEBUG_DIR, `preview_t${t}.png`);
@@ -306,12 +307,15 @@ test("preview matches render after UI edits", async ({ page, context }) => {
     ) as { frames: Array<{ tags?: Record<string, string> }> };
 
     const yavg = parseFloat(probe.frames[0]?.tags?.["lavfi.signalstats.YAVG"] ?? "0");
+    yavgScores[`t${t}`] = yavg;
     if (yavg > MAX_YAVG) {
       failures.push(
         `t=${t}s: YAVG=${yavg.toFixed(2)}/255 exceeds ${MAX_YAVG} threshold (${((yavg / 255) * 100).toFixed(2)}%)`,
       );
     }
   }
+
+  writeFileSync(resolve(DEBUG_DIR, "yavg.json"), JSON.stringify(yavgScores), "utf-8");
 
   if (failures.length > 0) {
     throw new Error(

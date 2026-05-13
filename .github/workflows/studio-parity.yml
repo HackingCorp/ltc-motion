@@ -2,6 +2,7 @@ name: studio-parity
 
 permissions:
   contents: read
+  pull-requests: write
 
 on:
   pull_request:
@@ -68,19 +69,62 @@ jobs:
         run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends ffmpeg
 
       - name: Install Playwright browsers
-        run: npx playwright install chromium --with-deps
+        run: bunx playwright install chromium --with-deps
 
       - name: Run studio parity E2E
         run: bun run --cwd packages/studio test:e2e
 
-      - name: Upload diff artifacts
-        if: failure()
+      - name: Upload screenshots and diffs
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: studio-parity-diffs
+          name: studio-parity-screenshots
           path: packages/studio/e2e/.debug/
           if-no-files-found: ignore
           retention-days: 14
+
+      - name: Post parity results as PR comment
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+        with:
+          script: |
+            const { readFileSync } = await import('fs');
+
+            let scores = {};
+            try {
+              scores = JSON.parse(readFileSync('packages/studio/e2e/.debug/yavg.json', 'utf8'));
+            } catch {}
+
+            const threshold = 2.0;
+            const passed = Object.values(scores).every(v => v <= threshold);
+            const header = passed ? '✅ Studio parity passed' : '❌ Studio parity failed';
+
+            const rows = [0, 1, 2].map(t => {
+              const yavg = scores[`t${t}`];
+              if (yavg == null) return `| t=${t}s | — | — |`;
+              const pct = ((yavg / 255) * 100).toFixed(2);
+              const status = yavg <= threshold ? '✅' : '❌';
+              return `| t=${t}s | ${yavg.toFixed(2)} / 255 (${pct}%) | ${status} |`;
+            }).join('\n');
+
+            const artifactUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            const body = [
+              `## ${header}`,
+              '',
+              '| Frame | YAVG diff | Status |',
+              '|-------|-----------|--------|',
+              rows,
+              '',
+              `Threshold: ${threshold} / 255 (≈ 0.78%). [Download preview, render, and diff images](${artifactUrl}).`,
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
 
   gate:
     name: Studio parity gate
