@@ -80,9 +80,11 @@ try {
   console.warn("[Build] Warning: Could not copy runtime artifacts:", e.message);
 }
 
-// Generate .d.ts declarations (esbuild doesn't emit them)
+// Generate .d.ts declarations (esbuild doesn't emit them).
+// Use "bun x tsc" so Bun's module resolver handles node_modules junctions
+// on Windows instead of Node.js's realpathSync (which returns EPERM).
 import { execSync } from "child_process";
-execSync("tsc --emitDeclarationOnly --declaration --declarationMap", {
+execSync("bun x tsc --emitDeclarationOnly --declaration --declarationMap", {
   stdio: "inherit",
 });
 
