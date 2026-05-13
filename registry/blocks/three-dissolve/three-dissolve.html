@@ -947,6 +947,7 @@
           renderAt(window.__hfThreeTime || 0);
         } catch (error) {
           console.error("three-dissolve init error:", error);
+          if (!window.__hf) window.__hf = { duration: 8, seek: function () {} };
           resolveReady();
         }
       })();
