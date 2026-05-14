@@ -22,7 +22,15 @@ export default defineConfig({
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    {
+      name: "chromium",
+      use: {
+        ...devices["Desktop Chrome"],
+        launchOptions: { args: ["--force-color-profile=srgb"] },
+      },
+    },
+  ],
   webServer: {
     command: cliEntry.endsWith(".js")
       ? `node ${cliEntry} preview --port 4200 ${fixtureDir}`
