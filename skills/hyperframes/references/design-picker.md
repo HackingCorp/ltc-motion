@@ -12,17 +12,46 @@ Read these before generating options — they define the rules your options must
 - [../visual-styles.md](../visual-styles.md)
 - [beat-direction.md](beat-direction.md)
 
-## Building the picker
+## Creative process (do this BEFORE writing any data)
 
-1. Generate options **deeply contextual to the user's prompt**. Every category — not just architectures — must reflect the specific product, brand, audience, and mood. Generic options that could appear on any picker are a failure.
+<HARD-GATE>
+Do NOT skip to the data format section. Do NOT start generating architecture HTML. Complete the creative thinking below FIRST. If you jump straight to code, every project will look the same.
+</HARD-GATE>
 
-   **Mood boards** — as many as the creative space warrants (4-8). Every board must tell a different STORY about the brand, not just reshuffle the same elements. Ask: "what are the genuinely different ways to position this product?" A cat food brand might be: playful chaos, premium positioning, comfort/cozy, social-native, flavor showcase, humor-led, sensory/appetizing. Each is a different narrative, not a different font on the same layout.
+### Step 1: What is unique about THIS prompt?
 
-   **Architectures** — one per mood board minimum, each visually distinct. Use `{{prompt_headline}}` and `{{prompt_sub}}` tokens. If the user provided media assets, use them as background images (use `url(path)` without quotes — single quotes inside `style='...'` break the attribute).
+Before generating anything, answer these questions about the specific brief:
 
-   **Palettes** (5-6) — named after the brand's world, not generic moods. The palette names and colors should feel like they belong to THIS specific product. Always mix dark + light + tinted. **Every palette must be visually distinct at swatch size.** If two palettes share the same background lightness AND a similar accent hue, cut one. Test: would a user see the difference in a 14px swatch chip? If not, they're duplicates.
+- **What does this subject LOOK like?** Not generically — specifically. A Santorini travel video has white walls, blue domes, caldera cliffs. A hantavirus PSA has clinical sterility, warning signage, laboratory imagery. A rocket promo has exhaust plumes, mission control grids, countdown typography. The visual vocabulary of the subject should drive the layouts.
+- **What does the target emotion FEEL like as a frame?** Wanderlust is longing — empty space the viewer wants to fill. Urgency is compression — information crowding the viewer. Awe is scale — one element so large it overwhelms.
+- **What does the surface context demand?** A lobby screen is ambient and glanced-at. A YouTube pre-roll is competing for attention. A social story is vertical and fast. The same content looks different in each context.
+- **What does every other video for this subject look like?** That's what you must NOT produce for at least 3 of your 9 boards. If every travel video is a hero image with text overlay, your rare boards shouldn't be hero images with text overlay.
 
-   **Type pairings** (5-6) — **RUN the font discovery script from typography.md BEFORE generating pairings.** This is not optional. Download Google Fonts metadata, run the script, and pick from its output. You will otherwise reach for the same 8 fonts every time (Bricolage Grotesque, Instrument Serif, Fraunces, Archivo Black, DM Serif Display, Space Grotesk, Fredoka) — that's your training data default, not a contextual choice. Match the brand's energy and audience. Cross-category per typography.md (never two sans-serifs).
+### Step 2: Verbalized sampling
+
+Generate concepts from genuinely different reasoning paths. For each board, note which path produced it:
+
+- **From the subject** — what is the visual world of this specific thing?
+- **From the emotion** — what does the target feeling look like as a layout?
+- **From the audience** — what does this viewer expect? What would surprise them?
+- **From the anti-pattern** — what does every competitor do? Do the opposite.
+- **From an unusual format** — a letter, a recipe, a countdown, a newspaper, a Q&A, a map, a poem. What non-video format could this content take?
+
+**Rate each concept** as HIGH (every agent produces this), MID (some agents would), or LOW (most agents wouldn't). Keep at least 3 LOW boards. If you don't have 3 that make you uncomfortable, you haven't pushed far enough.
+
+**Anti-mode-collapse check:** After generating all 9, verify no two boards share the same layout wireframe. Draw the bounding boxes of major elements — if two boards produce the same silhouette, replace one.
+
+### Step 3: Generate the data
+
+Now — and only now — generate architectures, palettes, type pairings, and mood boards.
+
+**Mood boards** (9) — each tells a different STORY, not a different color scheme on the same layout.
+
+**Architectures** (9) — one per mood board, each a different structural shape. See the structural diversity section below for layout shapes.
+
+**Palettes** (6-9) — named after the subject's world. A Santorini picker has "Aegean Blue", "Caldera Pink", "Oia Cream" — not "Dark Premium" or "Warm Editorial." Mix light + dark + tinted.
+
+**Type pairings** (6-9) — **RUN the font discovery script from typography.md FIRST.** Match the subject's energy.
 
 2. `mkdir -p .hyperframes` then copy [../templates/design-picker.html](../templates/design-picker.html) to `.hyperframes/pick-design.html`.
 3. Replace these placeholders using Python (don't hand-escape quotes in sed):
