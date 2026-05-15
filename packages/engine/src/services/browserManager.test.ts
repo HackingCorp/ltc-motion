@@ -54,6 +54,36 @@ describe("buildChromeArgs browser GPU mode", () => {
   });
 });
 
+describe("buildChromeArgs compositor determinism flags", () => {
+  const base = { width: 1920, height: 1080 };
+
+  it("includes compositor determinism flags in screenshot mode", () => {
+    const args = buildChromeArgs({ ...base, captureMode: "screenshot" });
+    expect(args).toContain("--run-all-compositor-stages-before-draw");
+    expect(args).toContain("--disable-threaded-animation");
+    expect(args).toContain("--disable-threaded-scrolling");
+    expect(args).toContain("--enable-surface-synchronization");
+    expect(args).toContain("--disable-checker-imaging");
+    expect(args).toContain("--disable-image-animation-resync");
+    expect(args).toContain("--disable-new-content-rendering-timeout");
+  });
+
+  it("excludes beginFrame-exclusive flags in screenshot mode", () => {
+    const args = buildChromeArgs({ ...base, captureMode: "screenshot" });
+    expect(args).not.toContain("--deterministic-mode");
+    expect(args).not.toContain("--enable-begin-frame-control");
+  });
+
+  it("includes both compositor and beginFrame-exclusive flags in beginframe mode", () => {
+    const args = buildChromeArgs({ ...base, captureMode: "beginframe" });
+    expect(args).toContain("--run-all-compositor-stages-before-draw");
+    expect(args).toContain("--disable-threaded-animation");
+    expect(args).toContain("--enable-surface-synchronization");
+    expect(args).toContain("--deterministic-mode");
+    expect(args).toContain("--enable-begin-frame-control");
+  });
+});
+
 describe("resolveBrowserGpuMode", () => {
   beforeEach(() => {
     _resetAutoBrowserGpuModeCacheForTests();

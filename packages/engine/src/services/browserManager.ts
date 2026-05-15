@@ -77,13 +77,21 @@ let pooledCaptureMode: CaptureMode = "screenshot";
 // Preserve the producer-era export so re-export shims keep the same public API.
 export const ENABLE_BROWSER_POOL = DEFAULT_CONFIG.enableBrowserPool;
 
-// Flags only meaningful when Chrome's compositor is driven by
-// HeadlessExperimental.beginFrame. If we fall back to screenshot mode they
-// must be stripped — `--enable-begin-frame-control` in particular makes the
-// compositor wait for frames we'll never send, producing blank screenshots.
-const BEGINFRAME_ONLY_FLAGS = new Set([
+// Flags that ONLY work with HeadlessExperimental.beginFrame and must be
+// stripped in screenshot mode. `--enable-begin-frame-control` pauses the
+// compositor until explicit beginFrame calls — in screenshot mode this
+// produces blank captures. `--deterministic-mode` freezes the internal
+// clock, which can stall page-load timers in screenshot mode.
+const BEGINFRAME_EXCLUSIVE_FLAGS = new Set([
   "--deterministic-mode",
   "--enable-begin-frame-control",
+]);
+
+// Compositor determinism flags safe for BOTH beginframe and screenshot modes.
+// Without these, Chrome's compositor (especially Metal on Apple Silicon)
+// accumulates state drift over sustained frame captures, producing vertical
+// shifts after ~12s of rendering. Applied unconditionally in buildChromeArgs.
+const COMPOSITOR_DETERMINISM_FLAGS = [
   "--disable-new-content-rendering-timeout",
   "--run-all-compositor-stages-before-draw",
   "--disable-threaded-animation",
@@ -91,10 +99,10 @@ const BEGINFRAME_ONLY_FLAGS = new Set([
   "--disable-checker-imaging",
   "--disable-image-animation-resync",
   "--enable-surface-synchronization",
-]);
+];
 
 function stripBeginFrameFlags(args: string[]): string[] {
-  return args.filter((a) => !BEGINFRAME_ONLY_FLAGS.has(a));
+  return args.filter((a) => !BEGINFRAME_EXCLUSIVE_FLAGS.has(a));
 }
 
 /**
@@ -431,19 +439,14 @@ export function buildChromeArgs(
     "--disable-features=AudioServiceOutOfProcess,IsolateOrigins,site-per-process,Translate,BackForwardCache,IntensiveWakeUpThrottling",
   ];
 
-  // BeginFrame flags — only when using chrome-headless-shell on Linux
+  // Compositor determinism flags — safe for all capture modes. Prevents
+  // Metal compositor drift on Apple Silicon that causes vertical frame
+  // shifts after sustained screenshot captures.
+  chromeArgs.push(...COMPOSITOR_DETERMINISM_FLAGS);
+
+  // BeginFrame-exclusive flags — only when using chrome-headless-shell on Linux
   if (options.captureMode !== "screenshot") {
-    chromeArgs.push(
-      "--deterministic-mode",
-      "--enable-begin-frame-control",
-      "--disable-new-content-rendering-timeout",
-      "--run-all-compositor-stages-before-draw",
-      "--disable-threaded-animation",
-      "--disable-threaded-scrolling",
-      "--disable-checker-imaging",
-      "--disable-image-animation-resync",
-      "--enable-surface-synchronization",
-    );
+    chromeArgs.push("--deterministic-mode", "--enable-begin-frame-control");
   }
 
   if (gpuDisabled) {
