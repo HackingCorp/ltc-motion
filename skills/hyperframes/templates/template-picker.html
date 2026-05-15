@@ -167,12 +167,12 @@ body {
 .card.selected-exit {
   position: relative;
   z-index: 201;
-  animation: cardLift 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
+  animation: cardLift 1.6s cubic-bezier(0.16,1,0.3,1) forwards;
 }
 @keyframes cardLift {
   0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.06); opacity: 1; }
-  100% { transform: scale(1.06); opacity: 0; }
+  45% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1.08); opacity: 0; }
 }
 .loading-msg {
   position: fixed;
@@ -595,7 +595,7 @@ function selectTemplate(slug) {
     sessionStorage.setItem("templatePick", JSON.stringify(msg));
       window.location = "pick-design.html";
     }
-  }, 500);
+  }, 900);
 }
 
 buildPalChips();
