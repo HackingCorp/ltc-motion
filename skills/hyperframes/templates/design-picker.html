@@ -2166,7 +2166,8 @@
           Object.keys(tokens).forEach(function(k) { r = r.split(k).join(tokens[k]); });
           return '<div class="scene-cell" style="background:' + bg + ';"><div class="scene-cell-label">' + (sceneLabels[fi] || "/ Scene " + (fi+1)) + '</div><div class="scene-frame">' + r + '</div></div>';
         }).join("");
-        document.getElementById("sc-scene-grid").innerHTML = sceneHtml;
+        var _scGrid = document.getElementById("sc-scene-grid");
+        if (!_scGrid.querySelector("iframe")) _scGrid.innerHTML = sceneHtml;
 
         // Three.js shader background — rendered by module script, triggered via global hook
         var _hasBgPreset = picks.bg_mode !== null && picks.bg_mode > 0;
