@@ -195,7 +195,160 @@ Camera rules:
 - **sphere**: `camDist` ignored (always 14). `zoom` controls magnification (1 = full sphere, 15+ = surface detail). Higher zoom needs lower `strength`.
 - **water/plane**: `camDist` controls distance. `zoom` always 1. `posY` shifts the mesh vertically.
 
-Append the 3 custom backgrounds to the `BG_PRESETS` array via `BG_PRESETS.push(...)` after the built-in presets. If the preset has a `fragmentShader` field, register it in the `FRAGS` object so the Three.js module can use it.
+Append the 3 custom backgrounds to the `BG_PRESETS` array via `BG_PRESETS.push(...)` after the built-in presets. If the preset has a `fragmentShader` field, register it in `window._sgShaders` so the Three.js module can use it.
+
+**Injection point:** `BG_PRESETS` is declared AFTER the placeholder variables (`__ARCHITECTURES_JSON__` etc.) in the template. Insert `BG_PRESETS.push(...)` calls and `window._sgShaders[key] = '...'` assignments immediately AFTER the `BG_PRESETS` closing `];` — the marker for this is the line `var seControls = document.getElementById("se-controls");` which directly follows. Do NOT inject before `var CORNERS` or any other variable declared before `BG_PRESETS` — the array doesn't exist yet at that point and you'll get `Cannot read properties of undefined (reading 'push')`.
+
+## Alternative: Template-based picker
+
+Use this flow instead of generated moodboards when the user wants to browse pre-built visual directions. The templates come from the `beautiful-html-templates` library (34 HTML slide decks with diverse visual identities).
+
+### When to use
+
+- User says "show me templates", "browse options", or "what styles are available"
+- User brings an existing brand/design.md and wants to see it applied across templates
+- User wants to skip the creative brainstorming and pick from proven designs
+- The prompt is for a presentation deck rather than a video composition
+
+### Step 1: Generate contextual data from the prompt
+
+Generate a JSON object with three keys. This is the creative work — match everything to the prompt's subject and energy.
+
+**`palettes`** — 6 color palettes themed to the prompt. Always include `{"name":"Default", "bg":"__DEFAULT__"}` as the first entry (preserves original template colors). Each non-default palette has: `name`, `bg`, `fg`, `ac` (accent), `mt` (muted). Name palettes after the prompt's world, not generic labels.
+
+**`prompt_text`** — text pools for injecting into templates. Every template gets its placeholder text replaced with prompt-contextual content. The pools:
+
+| Key          | What it is                                                                           | Count needed | Example (for a coffee brand)                                                |
+| ------------ | ------------------------------------------------------------------------------------ | ------------ | --------------------------------------------------------------------------- |
+| `headline`   | Brand/product name for display slots                                                 | 1 string     | `"ROASTHAUS"`                                                               |
+| `sub`        | One-line descriptor                                                                  | 1 string     | `"Specialty Coffee Roasters"`                                               |
+| `taglines`   | Object with 6 tone keys: `bold`, `editorial`, `playful`, `dark`, `technical`, `warm` | 6 strings    | `{bold: "WAKE UP DIFFERENT", editorial: "The Art of the Morning Cup", ...}` |
+| `headlines`  | Slide-level headlines                                                                | 10+ strings  | `"Single Origin. Zero Compromise."`                                         |
+| `body`       | Paragraph-length descriptions                                                        | 8+ strings   | `"We source from 12 farms across 3 continents..."`                          |
+| `stats`      | Short metrics with units                                                             | 10+ strings  | `"12M+", "47°C", "98.6%"`                                                   |
+| `statLabels` | Labels for the stats                                                                 | 10+ strings  | `"Cups Served", "Optimal Temp", "Satisfaction"`                             |
+| `labels`     | ALL-CAPS chip/tag labels                                                             | 12+ strings  | `"ESPRESSO", "COLD BREW", "SUBSCRIPTION"`                                   |
+| `smalls`     | CTAs, links, small UI text                                                           | 12+ strings  | `"Shop Now →", "Free Shipping", "Our Story"`                                |
+
+The `taglines` object controls the display-level text per template. Each template gets assigned a tone based on its metadata:
+
+- `dark` — templates with `scheme: "dark"`
+- `warm` — templates with `density: "low"`
+- `technical` — templates with `density: "high"`
+- `playful` — templates whose tagline matches playful/cheerful/friendly/fun
+- `editorial` — templates whose tagline matches editorial/serif/literary/magazine
+- `bold` — everything else (default)
+
+**`prompt_desc`** — one-line description shown in the picker header. Example: `"Exciting promo video for HeyGen"`.
+
+### Step 2: Ensure templates are available
+
+```bash
+if [ ! -d /tmp/beautiful-html-templates ]; then
+  git clone --depth 1 https://github.com/zarazhangrui/beautiful-html-templates.git /tmp/beautiful-html-templates
+fi
+```
+
+### Step 3: Build and serve the picker
+
+```bash
+mkdir -p .hyperframes
+
+# Symlink templates into the project for iframe access
+ln -sf /tmp/beautiful-html-templates/templates templates
+
+# Write data.json via Python (don't hand-escape in sed)
+# Then generate the picker HTML
+cat data.json | python3 skills/hyperframes/scripts/build-template-picker.py \
+  --template skills/hyperframes/templates/template-picker.html \
+  --templates-dir /tmp/beautiful-html-templates/templates \
+  --output .hyperframes/template-picker.html
+```
+
+Serve: `cd <project-dir> && python3 -m http.server 8723 &` (use port 8723 or any unused port above 8000). Verify: `curl -s -o /dev/null -w "%{http_code}" http://localhost:8723/.hyperframes/template-picker.html` — only share the link if it returns 200.
+
+### Step 4: User selects a template
+
+The user browses templates, applies palette re-theming, cycles through slides, then clicks a template. The picker stores the selection in `sessionStorage` and navigates to `pick-design.html` for Phase 2 fine-tuning.
+
+For the bridge to work, `pick-design.html` must exist in `.hyperframes/` with the standard design-picker data (generate it using the normal moodboard flow with 1 architecture). The bridge code reads `sessionStorage.templatePick` and auto-advances to Phase 2.
+
+### Phase 2 bridge setup
+
+The template picker posts this message when a template is selected:
+
+```json
+{
+  "type": "templatePick",
+  "slug": "studio",
+  "name": "Studio",
+  "tagline": "Black canvas with electric-yellow type...",
+  "scheme": "dark",
+  "palette": { "bg": "#0F0A1A", "fg": "#FFFFFF", "accent": "#7C3AED", "muted": "#9CA3AF" }
+}
+```
+
+Add this bridge code at the end of `pick-design.html`'s main `<script>` block:
+
+```js
+function handleTemplatePick(pick) {
+  if (!pick || !pick.slug) return;
+  PROMPT.title = pick.name;
+  PROMPT.headline = pick.name.toUpperCase();
+  PROMPT.subline = pick.tagline;
+  if (ARCHITECTURES[0]) {
+    ARCHITECTURES[0].name = pick.name;
+    ARCHITECTURES[0].description = pick.tagline;
+    ARCHITECTURES[0].tag = pick.slug;
+    ARCHITECTURES[0].mood =
+      (pick.scheme === "dark" ? "Dark" : "Light") + " template — " + pick.tagline;
+  }
+  if (pick.palette) {
+    var bestIdx = 0,
+      bestDist = Infinity;
+    PALETTES.forEach(function (p, i) {
+      var d =
+        Math.abs(
+          parseInt(p.background.slice(1, 3), 16) - parseInt(pick.palette.bg.slice(1, 3), 16),
+        ) +
+        Math.abs(
+          parseInt(p.foreground.slice(1, 3), 16) - parseInt(pick.palette.fg.slice(1, 3), 16),
+        ) +
+        Math.abs(
+          parseInt(p.accent.slice(1, 3), 16) - parseInt(pick.palette.accent.slice(1, 3), 16),
+        );
+      if (d < bestDist) {
+        bestDist = d;
+        bestIdx = i;
+      }
+    });
+    overridePalette = bestIdx;
+  }
+  selectedMood = 0;
+  setTimeout(function () {
+    goToTune();
+  }, 300);
+}
+window.addEventListener("message", function (e) {
+  if (e.data && e.data.type === "templatePick") handleTemplatePick(e.data);
+});
+(function () {
+  var raw = sessionStorage.getItem("templatePick");
+  if (!raw) return;
+  sessionStorage.removeItem("templatePick");
+  try {
+    handleTemplatePick(JSON.parse(raw));
+  } catch (e) {}
+})();
+```
+
+**Important:** Guard all Phase 1 element references in `pick-design.html` since they may not exist when template picker replaces Phase 1:
+
+```js
+var moodGrid = document.getElementById("mood-grid") || document.createElement("div");
+var palBar = document.getElementById("pal-bar") || document.createElement("div");
+// Guard getElementById("mood-next-btn") and ("mood-title") similarly
+```
 
 2. `mkdir -p .hyperframes` then copy [../templates/design-picker.html](../templates/design-picker.html) to `.hyperframes/pick-design.html`.
 3. Replace these placeholders using Python (don't hand-escape quotes in sed):
