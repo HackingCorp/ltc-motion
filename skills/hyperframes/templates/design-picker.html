@@ -2406,7 +2406,7 @@
         var tabMood = document.getElementById("tab-mood");
         if (tabMood) {
           tabMood.textContent = "← Template";
-          tabMood.onclick = function() { window.location = "template-picker.html"; };
+          tabMood.onclick = function() { showPhase("mood"); };
         }
 
         selectedMood = 0;
