@@ -372,13 +372,20 @@ function getSlides(doc) {
   var slides = doc.querySelectorAll("section.slide, div.slide, .slide");
   if (slides.length === 0) return {slides: [], mode: "none"};
   var first = slides[0];
+  var win = first.ownerDocument.defaultView;
+  var cs = win.getComputedStyle(first);
   var parent = first.parentElement;
-  var ps = parent ? getComputedStyle(parent) : null;
-  if (ps && (ps.display === "flex" || ps.display === "inline-flex") && ps.flexWrap === "nowrap" && ps.overflowX !== "hidden") {
+  var ps = parent ? win.getComputedStyle(parent) : null;
+
+  // Detect stacked slides that need scroll navigation:
+  // - Horizontal flex layouts (flex: 100vw)
+  // - Vertical stacks where each slide is full viewport height
+  // - Any non-absolute layout where slides are sequential
+  if (ps && (ps.display === "flex" || ps.display === "inline-flex") && ps.flexWrap === "nowrap") {
     return {slides: slides, mode: "scroll"};
   }
-  var cs = first.ownerDocument.defaultView.getComputedStyle(first);
-  if (cs.flex && cs.flex.indexOf("100vw") !== -1) {
+  if (cs.position !== "absolute" && cs.position !== "fixed" && slides.length > 1) {
+    // Slides are in normal flow — need scroll to navigate
     return {slides: slides, mode: "scroll"};
   }
   return {slides: slides, mode: "active"};
@@ -387,35 +394,46 @@ function getSlides(doc) {
 function showSlide(doc, slides, mode, idx) {
   var target = slides[idx];
   if (!target) return;
+  var win = doc.defaultView;
 
-  slides.forEach(function(sl, i) {
-    if (i === idx) {
-      sl.classList.add("active");
+  if (mode === "active") {
+    // Deck-stage / absolute positioned: toggle visibility via class
+    slides.forEach(function(sl, i) {
+      if (i === idx) {
+        sl.classList.add("active");
+        sl.style.visibility = "visible";
+        sl.style.opacity = "1";
+        // Reset animation start states within this slide
+        sl.querySelectorAll("*").forEach(function(el) {
+          try { if (win.getComputedStyle(el).opacity === "0") el.style.opacity = "1"; } catch(e) {}
+        });
+      } else {
+        sl.classList.remove("active");
+        sl.style.visibility = "hidden";
+        sl.style.opacity = "0";
+      }
+    });
+  } else {
+    // Scroll-stacked: position via scrollTop, all slides stay visible
+    slides.forEach(function(sl, i) {
       sl.style.visibility = "visible";
       sl.style.opacity = "1";
       sl.style.display = "";
-      sl.querySelectorAll("*").forEach(function(el) {
-        try {
-          var w = target.ownerDocument.defaultView;
-          if (w && w.getComputedStyle(el).opacity === "0") el.style.opacity = "1";
-        } catch(e) {}
-      });
-    } else {
-      sl.classList.remove("active");
-      sl.style.visibility = "hidden";
-    }
-  });
-
-  // Position to the target slide without scrollIntoView (which bubbles)
-  var parent = target.parentElement;
-  if (parent) {
-    parent.scrollTop = target.offsetTop;
-    parent.scrollLeft = target.offsetLeft;
+      if (i === idx) {
+        sl.classList.add("active");
+        sl.querySelectorAll("*").forEach(function(el) {
+          try { if (win.getComputedStyle(el).opacity === "0") el.style.opacity = "1"; } catch(e) {}
+        });
+      } else {
+        sl.classList.remove("active");
+      }
+    });
+    // Scroll container to target
+    var parent = target.parentElement;
+    if (parent) { parent.scrollTop = target.offsetTop; parent.scrollLeft = target.offsetLeft; }
+    doc.documentElement.scrollTop = target.offsetTop;
+    doc.body.scrollTop = target.offsetTop;
   }
-  doc.documentElement.scrollTop = target.offsetTop;
-  doc.documentElement.scrollLeft = target.offsetLeft;
-  doc.body.scrollTop = target.offsetTop;
-  doc.body.scrollLeft = target.offsetLeft;
 }
 
 function goSlide(slug, delta) {
