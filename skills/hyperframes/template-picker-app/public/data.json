@@ -1,0 +1,736 @@
+{
+  "palettes": [
+    { "name": "Default", "bg": "__DEFAULT__" },
+    { "name": "HeyGen Purple", "bg": "#0F0A1A", "fg": "#FFFFFF", "ac": "#7C3AED", "mt": "#9CA3AF" },
+    { "name": "AI Cyan", "bg": "#0A1628", "fg": "#E0F0FF", "ac": "#00D4FF", "mt": "#6B8FAA" },
+    { "name": "Launch Red", "bg": "#0A0A0A", "fg": "#F5F5F5", "ac": "#FF5C5C", "mt": "#888888" },
+    { "name": "Creator Warm", "bg": "#FFFBF5", "fg": "#1A1A1A", "ac": "#E85D2A", "mt": "#888880" },
+    {
+      "name": "Enterprise Gold",
+      "bg": "#111827",
+      "fg": "#F9FAFB",
+      "ac": "#F59E0B",
+      "mt": "#6B7280"
+    },
+    { "name": "Social Magenta", "bg": "#FFFFFF", "fg": "#111111", "ac": "#E040FB", "mt": "#666666" }
+  ],
+  "typePairs": [
+    {
+      "name": "Impact Stack",
+      "headline": { "family": "Anton", "weight": 400 },
+      "body": { "family": "DM Mono", "weight": 400 },
+      "preview": "HEYGEN",
+      "body_preview": "AI-powered video creation."
+    },
+    {
+      "name": "Swiss Clean",
+      "headline": { "family": "Instrument Sans", "weight": 700 },
+      "body": { "family": "IBM Plex Serif", "weight": 300 },
+      "preview": "HEYGEN",
+      "body_preview": "Create videos in 175 languages."
+    },
+    {
+      "name": "Terminal",
+      "headline": { "family": "Geist", "weight": 900 },
+      "body": { "family": "Geist Mono", "weight": 300 },
+      "preview": "HEYGEN",
+      "body_preview": "npx heygen create --avatar ceo"
+    }
+  ],
+  "promptText": {
+    "headline": "HEYGEN",
+    "sub": "AI Video Creation Platform",
+    "taglines": {
+      "bold": "CREATE VIDEOS THAT MOVE PEOPLE",
+      "editorial": "The Future of Video Is Here",
+      "playful": "Make videos. Not excuses.",
+      "dark": "AI VIDEO. REDEFINED.",
+      "technical": "FROM SCRIPT TO SCREEN IN MINUTES",
+      "warm": "Every Story Deserves to Be Seen"
+    },
+    "headlines": [
+      "AI Avatars That Look Real",
+      "175+ Languages",
+      "Script to Video",
+      "Clone Any Voice",
+      "Enterprise Video API",
+      "Translate Globally",
+      "Your Brand Avatar",
+      "Video at Text Speed",
+      "Idea to Video",
+      "Camera-Free Studio"
+    ],
+    "body": [
+      "Create studio-quality videos with AI avatars, voice cloning, and automatic translation.",
+      "HeyGen turns scripts into professional videos in over 175 languages.",
+      "Skip the studio. Write your script, pick an avatar, render in minutes.",
+      "Enterprise teams produce training, demos, and marketing content at scale.",
+      "One script becomes 40 localized videos. Same avatar, every language.",
+      "API-first video generation for your product and workflow."
+    ],
+    "stats": ["10M+", "5 min", "175+", "99.9%", "300K+", "40x", "2B+", "85%"],
+    "statLabels": [
+      "Videos Created",
+      "Avg Render",
+      "Languages",
+      "Uptime",
+      "Users",
+      "Faster",
+      "Views",
+      "Cost Savings"
+    ],
+    "labels": [
+      "AVATARS",
+      "VOICES",
+      "LANGUAGES",
+      "API",
+      "ENTERPRISE",
+      "TEMPLATES",
+      "STREAMING",
+      "TRANSLATION",
+      "ANALYTICS",
+      "BRAND KIT"
+    ],
+    "smalls": [
+      "Try Free",
+      "Watch Demo",
+      "See Pricing",
+      "Book Demo",
+      "Get Started",
+      "Learn More",
+      "Case Study",
+      "View Docs",
+      "Sign Up",
+      "heygen.com"
+    ]
+  },
+  "promptDesc": "Exciting promo video for HeyGen",
+  "templates": [
+    {
+      "slug": "8-bit-orbit",
+      "name": "8-Bit Orbit",
+      "tagline": "Pixel-art neon arcade aesthetic on a deep navy void.",
+      "scheme": "dark",
+      "density": "medium",
+      "colorVars": [
+        "--neon-pink",
+        "--neon-cyan",
+        "--neon-yellow",
+        "--deep-navy",
+        "--dark-void",
+        "--soft-lavender"
+      ],
+      "slideCount": 32
+    },
+    {
+      "slug": "biennale-yellow",
+      "name": "Biennale Yellow",
+      "tagline": "Solar yellow on warm parchment with deep indigo serif and atmospheric sun-glow gradients.",
+      "scheme": "light",
+      "density": "medium",
+      "colorVars": [
+        "--paper",
+        "--paper-deep",
+        "--sun",
+        "--sun-soft",
+        "--ink",
+        "--ember",
+        "--haze",
+        "--line"
+      ],
+      "slideCount": 16
+    },
+    {
+      "slug": "block-frame",
+      "name": "BlockFrame",
+      "tagline": "Neobrutalist deck with pastel-neon color blocks and chunky black borders.",
+      "scheme": "light",
+      "density": "high",
+      "colorVars": [
+        "--pink",
+        "--blue",
+        "--green",
+        "--yellow",
+        "--cream",
+        "--black",
+        "--white",
+        "--offwhite"
+      ],
+      "slideCount": 27
+    },
+    {
+      "slug": "blue-professional",
+      "name": "Blue Professional",
+      "tagline": "Cream paper background with electric cobalt blue accents; clean modern professional.",
+      "scheme": "light",
+      "density": "medium",
+      "colorVars": [
+        "--bg",
+        "--primary",
+        "--text",
+        "--text-muted",
+        "--text-light",
+        "--accent-light",
+        "--accent-medium",
+        "--border",
+        "--card-bg"
+      ],
+      "slideCount": 25
+    },
+    {
+      "slug": "bold-poster",
+      "name": "Bold Poster",
+      "tagline": "Editorial poster aesthetic with massive Shrikhand display and a single fire-engine red accent.",
+      "scheme": "light",
+      "density": "low",
+      "colorVars": ["--bg", "--dark", "--red", "--light"],
+      "slideCount": 11
+    },
+    {
+      "slug": "broadside",
+      "name": "Broadside",
+      "tagline": "Dark editorial canvas with a single fire orange accent and bilingual Latin/Chinese type stack.",
+      "scheme": "dark",
+      "density": "medium",
+      "colorVars": [
+        "--c-bg",
+        "--c-bg-alt",
+        "--c-bg-light",
+        "--c-bg-light-alt",
+        "--c-bg-orange",
+        "--c-fg",
+        "--c-fg-2",
+        "--c-fg-3",
+        "--c-fg-light",
+        "--c-fg-light-2",
+        "--c-fg-light-3",
+        "--c-accent",
+        "--c-border",
+        "--c-border-light"
+      ],
+      "slideCount": 63
+    },
+    {
+      "slug": "capsule",
+      "name": "Capsule",
+      "tagline": "Modular pill-shaped cards on warm bone with a full pastel-pop palette.",
+      "scheme": "light",
+      "density": "medium",
+      "colorVars": [
+        "--bg",
+        "--fg",
+        "--coral",
+        "--lime",
+        "--lavender",
+        "--sky",
+        "--violet",
+        "--yellow",
+        "--peach",
+        "--mint",
+        "--outline",
+        "--shadow"
+      ],
+      "slideCount": 23
+    },
+    {
+      "slug": "cartesian",
+      "name": "Cartesian",
+      "tagline": "Quiet warm-neutral palette with classical Playfair serifs; tasteful and unhurried.",
+      "scheme": "light",
+      "density": "low",
+      "colorVars": [
+        "--bg-primary",
+        "--bg-secondary",
+        "--text-primary",
+        "--text-secondary",
+        "--accent",
+        "--line"
+      ],
+      "slideCount": 11
+    },
+    {
+      "slug": "cobalt-grid",
+      "name": "Cobalt Grid",
+      "tagline": "Electric cobalt serifs on a graph-paper canvas, anchored by stair-stepped pixel-glitch decorations and slim hairline rules.",
+      "scheme": "light",
+      "density": "medium",
+      "colorVars": ["--paper", "--paper-2", "--ink", "--ink-soft", "--grid", "--rule"],
+      "slideCount": 16
+    },
+    {
+      "slug": "coral",
+      "name": "Coral",
+      "tagline": "Cream and coral on near-black, set in oversized Bebas Neue.",
+      "scheme": "mixed",
+      "density": "medium",
+      "colorVars": [
+        "--coral",
+        "--coral-dark",
+        "--cream",
+        "--cream-dark",
+        "--black",
+        "--gray",
+        "--light-gray"
+      ],
+      "slideCount": 19
+    },
+    {
+      "slug": "creative-mode",
+      "name": "Creative Mode",
+      "tagline": "Cream paper canvas with confident multi-color (green, pink, orange, yellow) accents and Archivo Black display.",
+      "scheme": "light",
+      "density": "medium-high",
+      "colorVars": [
+        "--cream",
+        "--cream-2",
+        "--green",
+        "--green-dark",
+        "--pink",
+        "--pink-dark",
+        "--orange",
+        "--yellow",
+        "--ink",
+        "--ink-2",
+        "--rule"
+      ],
+      "slideCount": 16
+    },
+    {
+      "slug": "daisy-days",
+      "name": "Daisy Days",
+      "tagline": "Cheerful pastel deck with hand-drawn daisies, stars, and rainbows. Friendly, soft, and warm.",
+      "scheme": "light",
+      "density": "medium",
+      "colorVars": [
+        "--cream",
+        "--turquoise",
+        "--soft-pink",
+        "--butter",
+        "--mint",
+        "--lavender",
+        "--peach",
+        "--sky",
+        "--coral",
+        "--text-dark",
+        "--text-muted",
+        "--border"
+      ],
+      "slideCount": 22
+    },
+    {
+      "slug": "editorial-forest",
+      "name": "Editorial Forest",
+      "tagline": "Forest green, dusty pink, and warm cream meet Source Serif 4 in a quiet, intentional quarterly-review deck.",
+      "scheme": "mixed",
+      "density": "medium",
+      "colorVars": [
+        "--green",
+        "--green-deep",
+        "--green-lite",
+        "--pink",
+        "--pink-deep",
+        "--cream",
+        "--cream-2",
+        "--ink"
+      ],
+      "slideCount": 8
+    },
+    {
+      "slug": "editorial-tri-tone",
+      "name": "Editorial Tri-Tone",
+      "tagline": "Three-color editorial system: dusty pink, mustard cream, and deep burgundy, set in Bricolage + Instrument Serif.",
+      "scheme": "mixed",
+      "density": "medium",
+      "colorVars": [
+        "--pink",
+        "--pink-deep",
+        "--cream",
+        "--navy",
+        "--forest",
+        "--burgundy",
+        "--lime",
+        "--sky",
+        "--terracotta",
+        "--butter",
+        "--ink"
+      ],
+      "slideCount": 8
+    },
+    {
+      "slug": "emerald-editorial",
+      "name": "Emerald Editorial",
+      "tagline": "A magazine-cover business deck: emerald + navy + paper, double-rule masthead ornaments, and a bold Bodoni-style display serif.",
+      "scheme": "mixed",
+      "density": "medium",
+      "colorVars": [
+        "--bg",
+        "--bg-2",
+        "--bg-3",
+        "--ink",
+        "--ink-2",
+        "--ink-3",
+        "--paper",
+        "--rule",
+        "--rule-strong"
+      ],
+      "slideCount": 16
+    },
+    {
+      "slug": "grove",
+      "name": "Grove",
+      "tagline": "Forest-green canvas with cream type, classical Playfair serifs, and a single rust accent.",
+      "scheme": "mixed",
+      "density": "medium",
+      "colorVars": [
+        "--c-bg",
+        "--c-bg-alt",
+        "--c-bg-light",
+        "--c-bg-light-alt",
+        "--c-fg",
+        "--c-fg-2",
+        "--c-fg-3",
+        "--c-fg-light",
+        "--c-fg-light-2",
+        "--c-fg-light-3",
+        "--c-accent",
+        "--c-border",
+        "--c-border-light"
+      ],
+      "slideCount": 45
+    },
+    {
+      "slug": "long-table",
+      "name": "Long Table",
+      "tagline": "Warm cream and rust-red supper-club aesthetic with bold uppercase grotesk headlines, Fraunces serifs, and pill-shaped outlined buttons.",
+      "scheme": "light",
+      "density": "medium",
+      "colorVars": ["--paper", "--paper-d", "--paper-vd", "--ink", "--ink-dp", "--rule"],
+      "slideCount": 16
+    },
+    {
+      "slug": "mat",
+      "name": "Mat",
+      "tagline": "Dark sage canvas with bone paper and burnt-orange accent; mid-century modern with wood undertones.",
+      "scheme": "mixed",
+      "density": "medium",
+      "colorVars": [
+        "--c-bg",
+        "--c-bg-alt",
+        "--c-bg-light",
+        "--c-bg-light-alt",
+        "--c-fg",
+        "--c-fg-2",
+        "--c-fg-3",
+        "--c-fg-light",
+        "--c-fg-light-2",
+        "--c-fg-light-3",
+        "--c-accent",
+        "--c-border",
+        "--c-border-light",
+        "--c-wood"
+      ],
+      "slideCount": 36
+    },
+    {
+      "slug": "monochrome",
+      "name": "Monochrome",
+      "tagline": "Ivory ledger paper with all-black type; Lora serif headlines, Jost body, no color at all.",
+      "scheme": "light",
+      "density": "high",
+      "colorVars": [
+        "--c-bg",
+        "--c-bg-alt",
+        "--c-bg-light",
+        "--c-bg-light-alt",
+        "--c-bg-cream",
+        "--c-fg",
+        "--c-fg-2",
+        "--c-fg-3",
+        "--c-fg-light",
+        "--c-fg-light-2",
+        "--c-fg-light-3",
+        "--c-accent",
+        "--c-border",
+        "--c-border-light",
+        "--c-card-a",
+        "--c-card-b",
+        "--c-card-c"
+      ],
+      "slideCount": 82
+    },
+    {
+      "slug": "neo-grid-bold",
+      "name": "Neo-Grid Bold",
+      "tagline": "Editorial neo-brutalism with a single neon yellow accent on off-white paper.",
+      "scheme": "light",
+      "density": "high",
+      "colorVars": ["--bg", "--ink", "--paper", "--accent", "--line", "--muted"],
+      "slideCount": 24
+    },
+    {
+      "slug": "peoples-platform",
+      "name": "People's Platform (Block & Bold)",
+      "tagline": "Activist poster energy: blue, orange, red on cream, with Alfa Slab + Caveat Brush.",
+      "scheme": "light",
+      "density": "medium-high",
+      "colorVars": [
+        "--blue",
+        "--blue-deep",
+        "--orange",
+        "--orange-deep",
+        "--red",
+        "--red-deep",
+        "--cream",
+        "--paper",
+        "--ink"
+      ],
+      "slideCount": 10
+    },
+    {
+      "slug": "pin-and-paper",
+      "name": "Pin & Paper",
+      "tagline": "Yellow paper with safety-pin illustrations, ink-blue handwritten Caveat, paper-grain texture.",
+      "scheme": "light",
+      "density": "medium",
+      "colorVars": [],
+      "slideCount": 22
+    },
+    {
+      "slug": "pink-script",
+      "name": "Pink Script \u2014 After Hours",
+      "tagline": "Black canvas, hot pink accent, pearl-cream paper, Instrument Serif headlines: late-night editorial luxury.",
+      "scheme": "dark",
+      "density": "low",
+      "colorVars": [
+        "--ink",
+        "--ink-2",
+        "--paper",
+        "--pink",
+        "--pink-2",
+        "--pink-deep",
+        "--line",
+        "--mute",
+        "--hair"
+      ],
+      "slideCount": 18
+    },
+    {
+      "slug": "playful",
+      "name": "Playful",
+      "tagline": "Sun-warm peach background with Syne display: a friendly indie launch deck.",
+      "scheme": "light",
+      "density": "medium",
+      "colorVars": ["--bg", "--bg-alt", "--text", "--accent", "--light"],
+      "slideCount": 11
+    },
+    {
+      "slug": "raw-grid",
+      "name": "Raw Grid",
+      "tagline": "Neo-brutalist deck with thick borders, offset shadows, and a pink/sage/ink palette.",
+      "scheme": "light",
+      "density": "high",
+      "colorVars": ["--black", "--white", "--pink", "--green", "--gray", "--darkgray"],
+      "slideCount": 21
+    },
+    {
+      "slug": "retro-windows",
+      "name": "Retro Windows",
+      "tagline": "Windows 95 chrome: gray title bars, MS Sans Serif, pixel typography, full nostalgia.",
+      "scheme": "light",
+      "density": "medium",
+      "colorVars": [
+        "--bg-gray",
+        "--bg-light",
+        "--bg-dark",
+        "--blue-navy",
+        "--blue-bright",
+        "--blue-light",
+        "--white",
+        "--black",
+        "--text-dark",
+        "--btn-face",
+        "--btn-highlight",
+        "--btn-shadow",
+        "--btn-dark-shadow",
+        "--green-retro",
+        "--red-retro",
+        "--yellow-retro",
+        "--cyan-retro"
+      ],
+      "slideCount": 11
+    },
+    {
+      "slug": "retro-zine",
+      "name": "Retro Zine",
+      "tagline": "Beige paper with green accent and Bebas Neue + Caveat: a riso-printed zine in HTML form.",
+      "scheme": "light",
+      "density": "medium",
+      "colorVars": [
+        "--bg",
+        "--bg-dark",
+        "--green",
+        "--green-light",
+        "--black",
+        "--white",
+        "--line"
+      ],
+      "slideCount": 12
+    },
+    {
+      "slug": "sakura-chroma",
+      "name": "Sakura Chroma",
+      "tagline": "Vintage Japanese cassette-package aesthetic: cream paper, diagonal rainbow ribbons, condensed bold type, JIS-style spec checkboxes.",
+      "scheme": "light",
+      "density": "medium",
+      "colorVars": [
+        "--paper",
+        "--paper-dk",
+        "--ink",
+        "--red",
+        "--pink",
+        "--orange",
+        "--green",
+        "--blue",
+        "--yellow",
+        "--line"
+      ],
+      "slideCount": 16
+    },
+    {
+      "slug": "scatterbrain",
+      "name": "Scatterbrain",
+      "tagline": "Post-it inspired: pastel sticky notes, Caveat handwriting, Shrikhand and Zilla Slab type stack.",
+      "scheme": "light",
+      "density": "high",
+      "colorVars": [
+        "--yellow",
+        "--yellow-deep",
+        "--blue",
+        "--blue-deep",
+        "--pink",
+        "--pink-deep",
+        "--green",
+        "--green-deep",
+        "--orange",
+        "--purple",
+        "--cream",
+        "--paper",
+        "--ink",
+        "--ink-light",
+        "--shadow",
+        "--shadow-deep"
+      ],
+      "slideCount": 30
+    },
+    {
+      "slug": "signal",
+      "name": "Signal",
+      "tagline": "Deep navy canvas with bone paper and a single muted-gold accent; institutional with quiet weight.",
+      "scheme": "mixed",
+      "density": "high",
+      "colorVars": [
+        "--c-bg",
+        "--c-bg-alt",
+        "--c-bg-light",
+        "--c-bg-light-alt",
+        "--c-fg",
+        "--c-fg-2",
+        "--c-fg-3",
+        "--c-fg-light",
+        "--c-fg-light-2",
+        "--c-fg-light-3",
+        "--c-accent",
+        "--c-border",
+        "--c-border-light"
+      ],
+      "slideCount": 75
+    },
+    {
+      "slug": "soft-editorial",
+      "name": "Soft Editorial",
+      "tagline": "Cormorant Garamond serif on warm paper with sage, blush, and lemon accents.",
+      "scheme": "light",
+      "density": "low",
+      "colorVars": [
+        "--paper",
+        "--paper-2",
+        "--ink",
+        "--ink-soft",
+        "--pink",
+        "--lemon",
+        "--blush",
+        "--sage",
+        "--lilac"
+      ],
+      "slideCount": 24
+    },
+    {
+      "slug": "stencil-tablet",
+      "name": "Stencil & Tablet",
+      "tagline": "Bone paper with stencil-cut headlines and a six-color earth palette: archaeology meets brand.",
+      "scheme": "light",
+      "density": "medium",
+      "colorVars": [
+        "--bone",
+        "--black",
+        "--ink",
+        "--paper",
+        "--sienna",
+        "--magenta",
+        "--orange",
+        "--teal",
+        "--blue",
+        "--mustard",
+        "--olive"
+      ],
+      "slideCount": 22
+    },
+    {
+      "slug": "studio",
+      "name": "Studio",
+      "tagline": "Black canvas with electric-yellow type; high-voltage design studio aesthetic.",
+      "scheme": "dark",
+      "density": "medium",
+      "colorVars": [
+        "--c-bg",
+        "--c-bg-alt",
+        "--c-bg-light",
+        "--c-bg-light-alt",
+        "--c-fg",
+        "--c-fg-2",
+        "--c-fg-3",
+        "--c-fg-light",
+        "--c-fg-light-2",
+        "--c-fg-light-3",
+        "--c-accent",
+        "--c-border",
+        "--c-border-light"
+      ],
+      "slideCount": 39
+    },
+    {
+      "slug": "vellum",
+      "name": "Vellum",
+      "tagline": "Deep navy canvas with warm-yellow Cormorant serifs and a single dusty teal accent. A quiet, scholarly aesthetic.",
+      "scheme": "dark",
+      "density": "low",
+      "colorVars": [
+        "--c-bg",
+        "--c-bg-alt",
+        "--c-bg-light",
+        "--c-bg-light-alt",
+        "--c-fg",
+        "--c-fg-2",
+        "--c-fg-3",
+        "--c-fg-light",
+        "--c-fg-light-2",
+        "--c-fg-light-3",
+        "--c-accent",
+        "--c-emphasis",
+        "--c-border",
+        "--c-border-light"
+      ],
+      "slideCount": 28
+    }
+  ]
+}

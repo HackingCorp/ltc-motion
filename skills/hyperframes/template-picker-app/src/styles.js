@@ -1,0 +1,15 @@
+export const theme = {
+  bg: "#0e0e0e",
+  surface: "#161616",
+  surfaceHover: "#1e1e1e",
+  border: "#222",
+  borderHover: "#444",
+  borderActive: "#4ade80",
+  text: "#eee",
+  textMuted: "#888",
+  textDim: "#555",
+  accent: "#4ade80",
+  font: "system-ui, -apple-system, sans-serif",
+  mono: "monospace",
+  radius: "4px",
+};
