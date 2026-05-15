@@ -615,11 +615,6 @@ function buildGrid() {
     card.innerHTML =
       '<div class="cprev">' +
         '<iframe id="ifr-' + t.slug + '" src="/templates/' + t.slug + '/template.html" sandbox="allow-same-origin" loading="lazy"></iframe>' +
-        '<div class="cnav">' +
-          '<button onclick="event.stopPropagation();goSlide(\'' + t.slug + '\',-1)">&#9664;</button>' +
-          '<span class="sn" id="num-' + t.slug + '">...</span>' +
-          '<button onclick="event.stopPropagation();goSlide(\'' + t.slug + '\',1)">&#9654;</button>' +
-        '</div>' +
       '</div>' +
       '<div class="cinfo">' +
         '<div><div class="nm">' + t.name + '</div><div class="tl">' + t.tagline + '</div></div>' +
