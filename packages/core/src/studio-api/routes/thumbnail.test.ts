@@ -151,30 +151,6 @@ describe("registerThumbnailRoutes", () => {
     );
   });
 
-  it("keeps changed studio manual edits separated in the disk cache", async () => {
-    const adapter = createAdapter();
-    const project = await adapter.resolveProject("demo");
-    if (!project) throw new Error("missing project");
-    const app = new Hono();
-    registerThumbnailRoutes(app, adapter);
-
-    const indexPath = join(project.dir, "index.html");
-    writeFileSync(indexPath, `<div data-composition-id="main" data-width="640" data-height="360">`);
-    const manualEditsDir = join(project.dir, ".hyperframes");
-    mkdirSync(manualEditsDir, { recursive: true });
-    const manualEditsPath = join(manualEditsDir, "studio-manual-edits.json");
-    writeFileSync(manualEditsPath, `{"version":1,"edits":[]}`);
-
-    await app.request("http://localhost/projects/demo/thumbnail/index.html?t=2&v=test");
-    writeFileSync(
-      manualEditsPath,
-      `{"version":1,"edits":[{"kind":"rotation","target":{"sourceFile":"index.html","id":"card"},"angle":30}]}`,
-    );
-    await app.request("http://localhost/projects/demo/thumbnail/index.html?t=2&v=test");
-
-    expect(adapter.generateThumbnail).toHaveBeenCalledTimes(2);
-  });
-
   it("keeps changed studio motion separated in the disk cache", async () => {
     const adapter = createAdapter();
     const project = await adapter.resolveProject("demo");

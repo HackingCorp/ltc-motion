@@ -19,15 +19,8 @@ describe("createStudioDevRenderBodyScripts", () => {
     return projectDir;
   }
 
-  it("injects both manual edit and Studio GSAP motion render scripts in dev", () => {
+  it("injects Studio GSAP motion render script in dev", () => {
     const dir = createProject();
-    writeFileSync(
-      join(dir, ".hyperframes/studio-manual-edits.json"),
-      JSON.stringify({
-        version: 1,
-        edits: [{ kind: "text", target: { sourceFile: "index.html" } }],
-      }),
-    );
     writeFileSync(
       join(dir, ".hyperframes/studio-motion.json"),
       JSON.stringify({
@@ -50,9 +43,14 @@ describe("createStudioDevRenderBodyScripts", () => {
       activeCompositionPath: "compositions/scene.html",
     });
 
-    expect(scripts).toHaveLength(2);
-    expect(scripts[0]).toContain("__hfStudioManualEditsApply");
-    expect(scripts[1]).toContain("__hfStudioMotionApply");
+    expect(scripts).toHaveLength(1);
+    expect(scripts[0]).toContain("__hfStudioMotionApply");
     expect(scripts.join("\n")).toContain("compositions/scene.html");
+  });
+
+  it("returns empty array when no motion manifest exists", () => {
+    const dir = createProject();
+    const scripts = createStudioDevRenderBodyScripts(dir);
+    expect(scripts).toHaveLength(0);
   });
 });

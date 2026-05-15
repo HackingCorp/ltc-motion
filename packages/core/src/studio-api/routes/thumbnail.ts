@@ -3,7 +3,6 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync, statSync } from "no
 import { join } from "node:path";
 import { createHash } from "node:crypto";
 import type { StudioApiAdapter } from "../types.js";
-import { STUDIO_MANUAL_EDITS_PATH } from "../helpers/manualEditsRenderScript.js";
 import { STUDIO_MOTION_PATH } from "../helpers/studioMotionRenderScript.js";
 
 const THUMBNAIL_CACHE_VERSION = "v4";
@@ -50,13 +49,6 @@ export function registerThumbnailRoutes(api: Hono, adapter: StudioApiAdapter): v
         if (hMatch?.[1]) compH = parseInt(hMatch[1]);
       }
     }
-    const manualEditsFile = join(project.dir, STUDIO_MANUAL_EDITS_PATH);
-    let manualEditsKey = "";
-    if (existsSync(manualEditsFile)) {
-      const manualEditsContent = readFileSync(manualEditsFile, "utf-8");
-      manualEditsKey = `_${createHash("sha1").update(manualEditsContent).digest("hex").slice(0, 16)}`;
-      sourceMtime = Math.max(sourceMtime, Math.round(statSync(manualEditsFile).mtimeMs));
-    }
     const motionFile = join(project.dir, STUDIO_MOTION_PATH);
     let motionKey = "";
     if (existsSync(motionFile)) {
@@ -78,7 +70,7 @@ export function registerThumbnailRoutes(api: Hono, adapter: StudioApiAdapter): v
     const urlVersionKey = urlVersion
       ? `_${urlVersion.replace(/[^a-zA-Z0-9_-]+/g, "_").slice(0, 32)}`
       : "";
-    const cacheKey = `${THUMBNAIL_CACHE_VERSION}${urlVersionKey}${manualEditsKey}${motionKey}_${format}_${compPath.replace(/\//g, "_")}_${compW}x${compH}_${sourceMtime}_${seekTime.toFixed(2)}${selectorKey}.${format === "png" ? "png" : "jpg"}`;
+    const cacheKey = `${THUMBNAIL_CACHE_VERSION}${urlVersionKey}${motionKey}_${format}_${compPath.replace(/\//g, "_")}_${compW}x${compH}_${sourceMtime}_${seekTime.toFixed(2)}${selectorKey}.${format === "png" ? "png" : "jpg"}`;
     const cachePath = join(cacheDir, cacheKey);
     if (existsSync(cachePath)) {
       return new Response(new Uint8Array(readFileSync(cachePath)), {

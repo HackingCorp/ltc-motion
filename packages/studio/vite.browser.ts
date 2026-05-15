@@ -4,7 +4,6 @@ import { existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import {
   createStudioDevRenderBodyScripts,
-  readStudioDevManualEditManifestContent,
   readStudioDevMotionManifestContent,
 } from "./vite.studioMotion";
 import { seekThumbnailPreview } from "./vite.thumbnail";
@@ -72,12 +71,8 @@ async function reapplyStudioRenderBodyScriptsToThumbnailPage(
 ): Promise<void> {
   await page.evaluate(() => {
     const runtimeWindow = window as Window & {
-      __hfStudioManualEditsApply?: () => number;
       __hfStudioMotionApply?: () => number;
     };
-    if (typeof runtimeWindow.__hfStudioManualEditsApply === "function") {
-      runtimeWindow.__hfStudioManualEditsApply();
-    }
     if (typeof runtimeWindow.__hfStudioMotionApply === "function") {
       runtimeWindow.__hfStudioMotionApply();
     }
@@ -100,15 +95,11 @@ export async function generateThumbnail(opts: GenerateThumbnailOptions): Promise
   const selectorKey = opts.selector
     ? `_${opts.selector.replace(/[^a-zA-Z0-9_-]+/g, "_").slice(0, 80)}_${opts.selectorIndex ?? 0}`
     : "";
-  const manualManifestContent = readStudioDevManualEditManifestContent(opts.project.dir);
-  const manualManifestKey = manualManifestContent.trim()
-    ? `_${createHash("sha1").update(manualManifestContent).digest("hex").slice(0, 16)}`
-    : "";
   const motionManifestContent = readStudioDevMotionManifestContent(opts.project.dir);
   const motionManifestKey = motionManifestContent.trim()
     ? `_${createHash("sha1").update(motionManifestContent).digest("hex").slice(0, 16)}`
     : "";
-  const cacheKey = `${THUMBNAIL_CACHE_VERSION}${manualManifestKey}${motionManifestKey}_${opts.compPath.replace(/\//g, "_")}_${opts.seekTime.toFixed(2)}${selectorKey}.${opts.format === "png" ? "png" : "jpg"}`;
+  const cacheKey = `${THUMBNAIL_CACHE_VERSION}${motionManifestKey}_${opts.compPath.replace(/\//g, "_")}_${opts.seekTime.toFixed(2)}${selectorKey}.${opts.format === "png" ? "png" : "jpg"}`;
 
   let bufferPromise = _thumbnailInflight.get(cacheKey);
   if (!bufferPromise) {
