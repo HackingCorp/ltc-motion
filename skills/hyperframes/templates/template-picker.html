@@ -167,10 +167,13 @@ body {
 .card.selected-exit {
   position: relative;
   z-index: 201;
-  transition: transform 0.8s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease 0.5s;
-  transform: scale(2.5);
+  animation: cardZoom 0.9s cubic-bezier(0.4,0,0,1) forwards;
 }
-.card.selected-exit.fade { opacity: 0; transform: scale(3.5); }
+@keyframes cardZoom {
+  0% { transform: scale(1); opacity: 1; }
+  60% { opacity: 1; }
+  100% { transform: scale(4); opacity: 0; }
+}
 .loading-msg {
   position: fixed;
   bottom: 20px;
@@ -584,9 +587,6 @@ function selectTemplate(slug) {
   var overlay = document.getElementById("trans-overlay");
   overlay.classList.add("active");
   if (card) card.classList.add("selected-exit");
-  setTimeout(function() {
-    if (card) card.classList.add("fade");
-  }, 400);
 
   setTimeout(function() {
     if (window.parent !== window) {
