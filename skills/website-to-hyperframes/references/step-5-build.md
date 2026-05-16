@@ -107,6 +107,28 @@ Then in `index.html` use the local file:
 
 Call `HyperShader.init()` as documented. Read [the shader transitions section in the main hyperframes skill](../../hyperframes/references/transitions.md) for the full API. Key rule: `scenes.length === transitions.length + 1`.
 
+**Critical: beat host divs must have sequential `data-start` and matching `data-duration`.** Do NOT set `data-start="0"` and `data-duration="[total_video_length]"` on all beats. The render engine seeks each beat's sub-composition timeline to `global_time - beat.data_start`. If `data-start=0` on all beats, each beat's internal timeline is seeked to the GLOBAL time — at global t=10s, a beat whose GSAP timeline lasts 5.5s is seeked to t=10, past its end. The engine makes the sub-composition invisible once its timeline is exhausted. All beats go blank as soon as their individual GSAP timelines end.
+
+Correct pattern — `data-start` at the transition point, `data-duration` equal to the beat's GSAP timeline length, all on the same `data-track-index`:
+
+```html
+<!-- Beat 2: HyperShader transition into it starts at t=4.0 -->
+<!-- Beat 2's GSAP timeline spans 5.5s (BEAT=5.5 constant in the composition) -->
+<div
+  id="beat-2"
+  class="scene"
+  data-composition-id="beat-2-features"
+  data-composition-src="compositions/beat-2-features.html"
+  data-start="4.0"
+  data-duration="5.5"
+  data-track-index="1"
+  data-width="1920"
+  data-height="1080"
+></div>
+```
+
+All beats should use `data-track-index="1"`. HyperShader manages which scene is visible via opacity — the track system just needs sequential non-conflicting time ranges.
+
 **Font handling:** Common fonts are auto-resolved by the renderer: use `"Inter"` (not `"Inter Variable"` — the compiler only maps the base name), `"Roboto"`, `"JetBrains Mono"`, `"Poppins"`. If a composition uses `"Inter Variable"` it will log compiler warnings and may fall back incorrectly — always use `"Inter"`. Only brand-specific fonts (GT Walsheim, Aeonik, etc.) need `@font-face`. Check `capture/assets/fonts/` — hashed filenames are Google Fonts subsets that auto-resolve; recognizable filenames (e.g. `BrandSans-Bold.woff2`) are brand fonts that need `@font-face` declarations.
 
 **Brand font @font-face:** If the storyboard's BRAND VALUES lists a brand-specific font with a path in `capture/assets/fonts/`, add the `@font-face` block at the top of each composition that uses it — sub-agents won't do this unless you tell them explicitly. Paste the exact `@font-face` declaration in the sub-agent prompt's BRAND VALUES section. Without this, every composition falls back to `system-ui` and the brand typeface never loads.
