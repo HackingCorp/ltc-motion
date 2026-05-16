@@ -352,8 +352,8 @@
       }
       .specimen-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 6px;
         margin-top: 12px;
       }
       .specimen-cell {
@@ -363,7 +363,11 @@
         aspect-ratio: 16/9;
         border: 1px solid rgba(128,128,128,0.1);
         background: #111;
+        cursor: pointer;
+        transition: border-color 0.15s;
       }
+      .specimen-cell:hover { border-color: rgba(255,255,255,0.3); }
+      .specimen-cell.active { border-color: #fff; border-width: 2px; }
       .specimen-cell iframe {
         width: 1920px;
         height: 1080px;
@@ -1432,11 +1436,11 @@
         chip.className = "pal-bar-chip";
         chip.innerHTML =
           '<div class="pal-bar-chip-swatches"><div class="pal-bar-chip-swatch" style="background:' +
-          p.background +
+          p.secondary +
           ';border:1px solid rgba(255,255,255,0.08);"></div><div class="pal-bar-chip-swatch" style="background:' +
           p.accent +
           ';"></div><div class="pal-bar-chip-swatch" style="background:' +
-          p.foreground +
+          p.primary +
           ';border:1px solid rgba(255,255,255,0.08);"></div></div><span class="pal-bar-chip-name">' +
           p.name +
           "</span>";
@@ -1635,17 +1639,17 @@
         el.className = "opt";
         el.innerHTML =
           '<div class="opt-inner"><div class="pal-strip"><div style="background:' +
-          p.background +
+          p.secondary +
           ';"></div><div style="background:' +
-          (p.muted || p.mid || "#888") +
+          p.tertiary +
           ';"></div><div style="background:' +
           p.accent +
           ';"></div><div style="background:' +
-          p.foreground +
+          p.primary +
           ';"></div></div><div class="opt-name">' +
           p.name +
           '</div><div class="opt-desc">' +
-          p.description +
+          (p.desc || "") +
           "</div></div>";
         el.onclick = function () {
           sel("palette", i, palOpts);
@@ -2206,7 +2210,7 @@
       function getBgColors() {
         if (seUsePal.checked && picks.palette !== null) {
           var p = PALETTES[picks.palette];
-          return [p.background, p.accent, p.muted];
+          return [p.secondary, p.accent, p.tertiary];
         }
         return [seC1.value, seC2.value, seC3.value];
       }
@@ -2214,7 +2218,7 @@
       seUsePal.addEventListener("change", function() {
         if (this.checked && picks.palette !== null) {
           var p = PALETTES[picks.palette];
-          seC1.value = p.background; seC2.value = p.accent; seC3.value = p.muted;
+          seC1.value = p.secondary; seC2.value = p.accent; seC3.value = p.tertiary;
         }
         if (typeof window._sgUpdateBg === "function") window._sgUpdateBg();
       });
@@ -2320,16 +2324,16 @@
 
         var a = ARCHITECTURES[picks.arch];
         var th = picks.theme !== null ? THEMES[picks.theme] : THEMES[0];
-        var p = picks.palette !== null ? PALETTES[picks.palette] : { accent: "#888", muted: "#555", name: "Default" };
+        var p = picks.palette !== null ? PALETTES[picks.palette] : { primary: "#eee", secondary: "#0e0e0e", tertiary: "#555", accent: "#888", name: "Default" };
         var t = picks.type !== null ? TYPEPAIRS[picks.type] : { headline: { family: "system-ui", weight: "600" }, body: { family: "system-ui", weight: "400" }, name: "Default" };
         var cr = picks.corners !== null ? CORNERS[picks.corners] : { name: "Slight", value: "4px" };
         var dn = picks.density !== null ? picks.density : 1;
         var dp = picks.depth !== null ? DEPTHS[picks.depth] : DEPTHS[0];
         var easeObj = picks.easing !== null ? EASINGS[picks.easing] : null;
         var bg, fg;
-        if (th.id === "palette" && p.background) { bg = p.background; fg = p.foreground; }
+        if (th.id === "palette" && p.secondary) { bg = p.secondary; fg = p.primary; }
         else { bg = th.bg; fg = th.fg; }
-        var ac = p.accent, mt = p.muted || al(fg, 0.4);
+        var ac = p.accent, mt = p.tertiary || al(fg, 0.4);
         var isDark = bg && bg[0] === "#" ? parseInt(bg.slice(1, 3), 16) < 80 : true;
         var pad = [12, 20, 36][dn] + "px", gap = [8, 16, 28][dn] + "px";
         var shCol = isDark ? ac : fg;
@@ -2361,10 +2365,10 @@
 
         // ── Palette ──
         var swatchData = [
-          { name: "Canvas", hex: bg, role: "Frame background" },
-          { name: "Text", hex: fg, role: "Primary readable text" },
-          { name: "Accent", hex: ac, role: "Hero stats, focal elements" },
-          { name: "Muted", hex: mt, role: "Captions, labels, secondary" },
+          { name: "Primary", hex: p.primary, role: "Text, headings" },
+          { name: "Secondary", hex: p.secondary, role: "Background, canvas" },
+          { name: "Tertiary", hex: p.tertiary, role: "Borders, captions, muted" },
+          { name: "Accent", hex: p.accent, role: "Focal elements, CTAs" },
         ];
         document.getElementById("sc-palette-lead").textContent = p.name + " palette. Accent (" + ac + ") carries every focal element. Use it scarcely.";
         var swatchHtml = swatchData.map(function(s) {
@@ -2386,63 +2390,60 @@
         }).join("");
         document.getElementById("sc-type-specimens").innerHTML = typeHtml;
 
-        // ── Scenes ──
-        var frames = a.preview_frames || [a.preview_html || ""];
-        var sceneLabels = ["/ Scene 1 · Hook", "/ Scene 2 · Proof", "/ Scene 3 · Action", "/ Scene 4 · Close"];
-        var sceneHtml = frames.map(function(f, fi) {
-          var r = f || "";
-          Object.keys(tokens).forEach(function(k) { r = r.split(k).join(tokens[k]); });
-          return '<div class="scene-cell" style="background:' + bg + ';"><div class="scene-cell-label">' + (sceneLabels[fi] || "/ Scene " + (fi+1)) + '</div><div class="scene-frame">' + r + '</div></div>';
-        }).join("");
-        var _scGrid = document.getElementById("sc-scene-grid");
-        if (!window._templatePreviewInline) {
-          _scGrid.innerHTML = sceneHtml;
-        }
-        // Apply --tp-* tokens to inline template content
-        if (window._templatePreviewInline && picks.palette !== 0) {
-          var tpContainer = _scGrid.querySelector("[class^='tp-']");
-          if (tpContainer) {
-            tpContainer.style.setProperty("--tp-bg", bg);
-            tpContainer.style.setProperty("--tp-fg", fg);
-            tpContainer.style.setProperty("--tp-ac", ac);
-            tpContainer.style.setProperty("--tp-mt", mt);
-            tpContainer.style.setProperty("--tp-surface", bg);
-            tpContainer.style.setProperty("--tp-border", mt);
-            tpContainer.style.setProperty("--tp-hf", '"' + t.headline.family + '"');
-            tpContainer.style.setProperty("--tp-bf", '"' + t.body.family + '"');
-          }
-        } else if (window._templatePreviewInline && picks.palette === 0) {
-          var tpContainer = _scGrid.querySelector("[class^='tp-']");
-          if (tpContainer) {
-            ["--tp-bg","--tp-fg","--tp-ac","--tp-mt","--tp-surface","--tp-border","--tp-hf","--tp-bf"].forEach(function(v) {
-              tpContainer.style.removeProperty(v);
-            });
-          }
-        }
+        // ── Apply fine-tune overrides to template iframes ──
+        if (window._templatePreviewInline) {
+          var overrideCss = ":root {\n";
 
-        // Three.js shader background — rendered by module script, triggered via global hook
-        var _hasBgPreset = picks.bg_mode !== null && picks.bg_mode > 0;
+          // Palette
+          if (picks.palette !== null && picks.palette > 0) {
+            overrideCss +=
+              "  --tp-primary: " + p.primary + " !important;\n" +
+              "  --tp-secondary: " + p.secondary + " !important;\n" +
+              "  --tp-tertiary: " + p.tertiary + " !important;\n" +
+              "  --tp-accent: " + p.accent + " !important;\n";
+          }
 
-        // Scale scene frames — retry until cells have width
-        if (window._scaleRetry) clearTimeout(window._scaleRetry);
-        if (window._scaleScenes) window.removeEventListener("resize", window._scaleScenes);
-        function scaleScenes() {
-          var allDone = true;
-          document.querySelectorAll(".scene-cell").forEach(function(cell) {
-            var f = cell.querySelector(".scene-frame");
-            if (!f) return;
-            var cw = cell.offsetWidth;
-            if (cw <= 0) { allDone = false; return; }
-            var s = cw / 1920;
-            f.style.transform = "scale(" + s + ")";
-            f.style.background = _hasBgPreset ? "transparent" : bg;
+          // Surface tokens
+          overrideCss +=
+            "  --tp-radius: " + cr.value + ";\n" +
+            "  --tp-padding: " + pad + ";\n" +
+            "  --tp-gap: " + gap + ";\n" +
+            "  --tp-shadow: " + shadow + ";\n" +
+            "}\n";
+
+          // Corners: override border-radius on interactive/card elements
+          overrideCss +=
+            "[class*='card'], [class*='btn'], [class*='button'], [class*='tag'], [class*='badge'], " +
+            "[class*='chip'], [class*='pill'], [class*='box'], [class*='panel'], [class*='modal'], " +
+            "button, input, .rounded, [class*='round'] { border-radius: " + cr.value + " !important; }\n";
+
+          // Density: override padding/gap on layout containers
+          var padNum = parseInt(pad);
+          var gapNum = parseInt(gap);
+          overrideCss +=
+            "[class*='content'], [class*='grid'], [class*='container'], [class*='wrapper'], " +
+            "[class*='layout'], [class*='section'], .slide-content { " +
+            "gap: " + gap + " !important; }\n" +
+            "[class*='card'], [class*='panel'], [class*='box'], [class*='cell'] { " +
+            "padding: " + pad + " !important; }\n";
+
+          // Depth: override box-shadow
+          if (shadow !== "none") {
+            overrideCss +=
+              "[class*='card'], [class*='panel'], [class*='box'], [class*='elevated'], " +
+              "[class*='shadow'], [class*='float'] { box-shadow: " + shadow + " !important; }\n";
+          }
+
+          document.querySelectorAll("#sc-scene-grid iframe, #sc-specimen-grid iframe").forEach(function(ifr) {
+            if (!ifr.contentDocument) return;
+            var style = ifr.contentDocument.getElementById("tp-finetune-override");
+            if (!style) { style = ifr.contentDocument.createElement("style"); style.id = "tp-finetune-override"; ifr.contentDocument.head.appendChild(style); }
+            style.textContent = overrideCss;
           });
-          if (!allDone) window._scaleRetry = setTimeout(scaleScenes, 50);
-          else if (typeof window._sgUpdateBg === "function") window._sgUpdateBg();
         }
-        window._scaleScenes = scaleScenes;
-        window._scaleRetry = setTimeout(scaleScenes, 100);
-        window.addEventListener("resize", scaleScenes);
+
+        // ── Shader background ──
+        if (typeof window._sgUpdateBg === "function") window._sgUpdateBg();
 
         // ── Motion ──
         var motionLead = easeObj ? easeObj.name + " energy. Entry easing: " + easeObj.value + " — " + easeObj.desc + "." : "Select an easing to preview.";
@@ -2496,9 +2497,9 @@
         if (picks.theme === null || picks.arch === null || picks.palette === null || picks.type === null || picks.corners === null || picks.density === null || picks.depth === null) return;
         var a = ARCHITECTURES[picks.arch], p = PALETTES[picks.palette], t = TYPEPAIRS[picks.type];
         var th = THEMES[picks.theme], cr = CORNERS[picks.corners], dn = DENSITIES[picks.density], dp = DEPTHS[picks.depth];
-        var bg = th.id === "palette" && p.background ? p.background : th.bg;
-        var fg = th.id === "palette" && p.foreground ? p.foreground : th.fg;
-        var ac = p.accent, mt = p.muted || p.mid || "#888";
+        var bg = th.id === "palette" && p.secondary ? p.secondary : th.bg;
+        var fg = th.id === "palette" && p.primary ? p.primary : th.fg;
+        var ac = p.accent, mt = p.tertiary || "#888";
         var padVal = { Tight: "8px", Normal: "16px", Generous: "32px" }[dn.name] || "16px";
         var gapVal = { Tight: "8px", Normal: "16px", Generous: "28px" }[dn.name] || "16px";
         var easeObj = picks.easing !== null ? EASINGS[picks.easing] : null;
@@ -2843,17 +2844,19 @@
               tpOnIframeLoad(pick.slug, ifr);
               var scale = wrap.offsetWidth / 1920;
               ifr.style.transform = "scale(" + scale + ")";
-              // Build specimen grid with remaining slides
+              // Build specimen grid with ALL slides (including first)
               var doc = ifr.contentDocument;
               if (!doc) return;
               var slides = doc.querySelectorAll("section.slide, div.slide, .slide, deck-stage > section");
               var specGrid = document.getElementById("sc-specimen-grid");
-              if (specGrid && slides.length > 1) {
+              window._heroSlideIdx = 0;
+              if (specGrid && slides.length > 0) {
                 specGrid.innerHTML = "";
-                for (var si = 1; si < Math.min(slides.length, 7); si++) {
+                for (var si = 0; si < slides.length; si++) {
                   (function(slideIdx) {
                     var cell = document.createElement("div");
-                    cell.className = "specimen-cell";
+                    cell.className = "specimen-cell" + (slideIdx === 0 ? " active" : "");
+                    cell.dataset.slideIdx = slideIdx;
                     var specIfr = document.createElement("iframe");
                     specIfr.src = "templates/" + pick.slug + "/template.html";
                     specIfr.sandbox = "allow-same-origin";
@@ -2865,6 +2868,20 @@
                     label.textContent = "Slide " + (slideIdx + 1);
                     cell.appendChild(label);
                     specGrid.appendChild(cell);
+                    // Click to swap hero
+                    cell.addEventListener("click", function() {
+                      specGrid.querySelectorAll(".specimen-cell").forEach(function(c) { c.classList.remove("active"); });
+                      cell.classList.add("active");
+                      window._heroSlideIdx = slideIdx;
+                      // Update hero iframe to show this slide
+                      var heroIfr = document.querySelector("#sc-scene-grid iframe");
+                      if (heroIfr && heroIfr.contentDocument) {
+                        var hSlides = heroIfr.contentDocument.querySelectorAll("section.slide, div.slide, .slide, deck-stage > section");
+                        hSlides.forEach(function(s, i) {
+                          s.classList.toggle("tp-active", i === slideIdx);
+                        });
+                      }
+                    });
                     specIfr.addEventListener("load", function() {
                       var sDoc = specIfr.contentDocument;
                       var sWin = specIfr.contentWindow;
@@ -3003,21 +3020,34 @@ void main(){
     function _sgUpdateBgNow() {
       destroyRenderers();
       const bgMode = window.picks ? window.picks.bg_mode : 0;
-      if (!bgMode || bgMode <= 0) return;
-      const preset = window.BG_PRESETS ? window.BG_PRESETS[bgMode] : null;
-      if (!preset || !preset.type) return;
+      const hasShader = bgMode && bgMode > 0;
+      const preset = hasShader && window.BG_PRESETS ? window.BG_PRESETS[bgMode] : null;
+
+      // Make template iframes transparent or opaque based on shader selection
+      document.querySelectorAll('#sc-scene-grid iframe, #sc-specimen-grid iframe').forEach(ifr => {
+        if (!ifr.contentDocument) return;
+        let style = ifr.contentDocument.getElementById('tp-shader-bg');
+        if (!style) { style = ifr.contentDocument.createElement('style'); style.id = 'tp-shader-bg'; ifr.contentDocument.head.appendChild(style); }
+        style.textContent = hasShader
+          ? 'html, body, .stage, .deck, .slide-deck, .slides-container { background: transparent !important; } .slide.tp-active, .slide.active { background: transparent !important; }'
+          : '';
+      });
+
+      if (!hasShader || !preset || !preset.type) return;
 
       const colors = window.getBgColors ? window.getBgColors() : ["#ffffff","#888888","#444444"];
-      const cells = document.querySelectorAll('.scene-cell');
-      if (cells.length === 0) return;
+      // Target: hero wrapper + specimen cells
+      const containers = document.querySelectorAll('#sc-scene-grid > div, .specimen-cell');
+      if (containers.length === 0) return;
 
-      cells.forEach(cell => {
-        cell.querySelectorAll('canvas.sg-bg').forEach(c => c.remove());
+      containers.forEach(container => {
+        container.style.position = 'relative';
+        container.querySelectorAll('canvas.sg-bg').forEach(c => c.remove());
 
         const canvas = document.createElement('canvas');
         canvas.className = 'sg-bg';
         canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;';
-        cell.insertBefore(canvas, cell.firstChild);
+        container.insertBefore(canvas, container.firstChild);
 
         const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
@@ -3060,13 +3090,6 @@ void main(){
         mesh.rotation.set(degToRad(preset.rotX), degToRad(preset.rotY), degToRad(preset.rotZ));
         mesh.position.set(preset.posX || 0, preset.posY || 0, preset.posZ || 0);
         scene.add(mesh);
-
-        const frame = cell.querySelector('.scene-frame');
-        if (frame) {
-          frame.style.background = 'transparent';
-          const root = frame.querySelector(':scope > div');
-          if (root) root.style.background = 'transparent';
-        }
 
         activeRenderers.push({ renderer, scene, camera, uniforms, canvas });
       });

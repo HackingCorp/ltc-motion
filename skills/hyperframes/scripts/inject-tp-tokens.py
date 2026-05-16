@@ -133,6 +133,11 @@ def inject_tokens_into_css(css_content, scheme):
     for role in ['primary', 'secondary', 'tertiary', 'accent']:
         if role in roles:
             tp_lines.append(f"    --tp-{role}: {roles[role]['hex']};")
+    tp_lines.append("    /* Surface tokens */")
+    tp_lines.append("    --tp-radius: 4px;")
+    tp_lines.append("    --tp-padding: 20px;")
+    tp_lines.append("    --tp-gap: 16px;")
+    tp_lines.append("    --tp-shadow: none;")
     tp_block = "\n".join(tp_lines) + "\n"
 
     root_block = root_match.group(1)
