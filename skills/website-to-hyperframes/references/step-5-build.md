@@ -364,28 +364,7 @@ Brand values are in the BRAND VALUES section above — no need to read DESIGN.md
 - Use tl.fromTo() not tl.from() for entrance animations
 - No CSS transform for centering — use flexbox
 - Never stack two transform tweens on same element
-
-═══ EASING — stop using power2.out on everything ═══
-Generic power2.out on every tween is the hallmark of AI-generated video.
-Pick easing per INTENT:
-
-| Intent              | GSAP Ease              | When to use                                    |
-|---------------------|------------------------|------------------------------------------------|
-| Snap (iOS-like)     | power4.out             | Hero text landing, UI elements clicking in     |
-| Whip overshoot      | back.out(1.7)          | Numbers, badges, anything that needs impact    |
-| Soft land           | expo.out               | Per-word text reveals, gentle entrances         |
-| Mechanical          | power1.out or "none"   | Terminal text, code typing, linear motion      |
-| Bounce settle       | elastic.out(1, 0.5)    | Stats, counters, CTA pills                    |
-| Dramatic entrance   | expo.inOut             | Full-screen statements, hero reveals           |
-| Subtle drift        | "none"                 | Background parallax, Ken Burns, camera drift   |
-
-Apply per beat type:
-- Statement text → expo.out (dramatic) or power4.out (snap)
-- Product screenshots → no easing on Ken Burns (linear drift)
-- Numbers/stats → back.out(1.7) (whip overshoot for impact)
-- Rapid-fire category words → tl.set() (hard cut, no easing)
-- CTA pill → elastic.out(1, 0.5) (bounce settle, last thing viewer sees)
-- Staggered items → power4.out with 0.08-0.15s stagger
+- EASING: do NOT use power2.out on everything. Pick per intent: hero text → power4.out (snap), numbers/badges → back.out(1.7) (whip overshoot), gentle entrances → expo.out (soft land), code/terminal → power1.out (mechanical), counters/CTA pills → elastic.out(1, 0.5) (bounce), hero reveals → expo.inOut (dramatic), background drift → "none" (linear). Staggered items: power4.out with 0.08-0.15s stagger.
 ```
 
 The storyboard beat already contains everything — the concept, the visual choreography with exact timings, the CSS values, the SFX cues. The sub-agent's job is to translate that description into working HTML/CSS/GSAP, not to re-invent the creative direction. If you want, you can also paste any other relative and useful context to subagents if think it's good, why not.
