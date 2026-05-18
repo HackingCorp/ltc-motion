@@ -682,11 +682,25 @@ export async function initializeSession(session: CaptureSession): Promise<void> 
   await applyVideoMetadataHints(page, session.options.videoMetadataHints);
 
   // Same readyState contract as the screenshot path above (>= 2 / HAVE_CURRENT_DATA).
-  await pollVideosReady(
+  const bfVideosReady = await pollVideosReady(
     page,
     session.options.skipReadinessVideoIds ?? [],
     session.config?.playerReadyTimeout ?? DEFAULT_CONFIG.playerReadyTimeout,
   );
+  if (!bfVideosReady) {
+    const failedVideos = await page.evaluate((skipIdList: readonly string[]) => {
+      const skip = new Set(skipIdList);
+      return Array.from(document.querySelectorAll("video"))
+        .filter((v) => !skip.has(v.id))
+        .filter((v) => (v as HTMLVideoElement).readyState < 2 && !(v as HTMLVideoElement).error)
+        .map((v) => (v as HTMLVideoElement).src || v.getAttribute("src") || "(no src)")
+        .join(", ");
+    }, session.options.skipReadinessVideoIds ?? []);
+    console.warn(
+      `[FrameCapture] Some video elements did not decode within ${pageReadyTimeout}ms: ${failedVideos}. ` +
+        `Continuing render — affected videos will appear as blank/black frames.`,
+    );
+  }
 
   // Font check (no rAF dependency — uses fonts.ready API directly)
   await page.evaluate(`document.fonts?.ready`);

@@ -21,7 +21,10 @@ import {
   type ResolvedDuration,
   type UnresolvedElement,
 } from "@hyperframes/core";
-import { inlineSubCompositions as inlineSubCompositionsShared } from "@hyperframes/core/compiler";
+import {
+  inlineSubCompositions as inlineSubCompositionsShared,
+  prepareFlattenedInnerRoot,
+} from "@hyperframes/core/compiler";
 import { extractMediaMetadata, extractAudioMetadata } from "../utils/ffprobe.js";
 import { isPathInside, toExternalAssetKey } from "../utils/paths.js";
 import {
@@ -559,19 +562,6 @@ function inlineSubCompositions(
 
   if (!hosts.length) return html;
 
-  const FLATTENED_INNER_ROOT_STRIP_ATTRS = [
-    "data-composition-id",
-    "data-composition-file",
-    "data-start",
-    "data-duration",
-    "data-end",
-    "data-track-index",
-    "data-track",
-    "data-composition-src",
-    "data-hf-authored-duration",
-    "data-hf-authored-end",
-  ];
-
   const result = inlineSubCompositionsShared(
     document as unknown as Document,
     hosts as unknown as Element[],
@@ -587,19 +577,7 @@ function inlineSubCompositions(
         return compHtml;
       },
       parseHtml: (htmlStr: string) => parseHTML(htmlStr).document as unknown as Document,
-      flattenInnerRoot: (innerRoot: Element): Element => {
-        const prepared = innerRoot.cloneNode(true) as Element;
-        const authoredRootId = prepared.getAttribute("id")?.trim();
-        for (const attrName of FLATTENED_INNER_ROOT_STRIP_ATTRS) {
-          prepared.removeAttribute(attrName);
-        }
-        if (authoredRootId) {
-          prepared.removeAttribute("id");
-          prepared.setAttribute("data-hf-authored-id", authoredRootId);
-        }
-        prepared.setAttribute("data-hf-inner-root", "true");
-        return prepared;
-      },
+      flattenInnerRoot: prepareFlattenedInnerRoot as (innerRoot: Element) => Element,
       scriptErrorLabel: "[Compiler] Composition script failed",
     },
   );

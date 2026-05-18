@@ -964,7 +964,7 @@ export function initSandboxRuntimeModular(): void {
     return true;
   };
 
-  (window as any).__hfForceTimelineRebind = () => {
+  (window as Window & { __hfForceTimelineRebind?: () => void }).__hfForceTimelineRebind = () => {
     childrenBound = false;
     bindRootTimelineIfAvailable();
   };
