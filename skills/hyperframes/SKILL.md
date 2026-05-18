@@ -30,21 +30,24 @@ Most prompts already answer 2-3 of these — a typical brief is 2-3 questions, n
 
 ### Step 1: Design system
 
-Check for a design system file in the project. These are the source of truth for brand colors, fonts, slide layouts, shader backgrounds, and constraints. Use exact values — don't invent colors or substitute fonts.
+**Always check for DESIGN.html first.** At the start of any composition task, look for `DESIGN.html` in the project root. This is the primary design system format — a self-contained HTML document with rendered sections for palette, typography, surface, motion, background shader, guidelines, and template slide gallery.
 
-**Supported formats (check in this order):**
+**Check in this order:**
 
-1. **`DESIGN.html`** — the full design system document. A self-contained HTML file with rendered sections for palette, typography, surface, motion, background shader, guidelines, and template slide gallery. Read [references/design-html.md](references/design-html.md) for how to parse it.
-2. **`design.md` or `DESIGN.md`** — a simpler format with YAML frontmatter or prose. Extract palette, font, and constraint values directly.
+1. **`DESIGN.html` exists** → Read it using the guide at [references/design-html.md](references/design-html.md). This is the source of truth for brand colors, fonts, slide layouts, shader backgrounds, and constraints. Use exact values — don't invent colors or substitute fonts. Proceed to Step 2.
+
+2. **No `DESIGN.html`, but `design.md` or `DESIGN.md` exists** → Prompt the user:
+
+   > "I found a design.md but no DESIGN.html. Would you like me to generate a visual design system showcase from it? This creates a rendered HTML document with palette swatches, typography specimens, surface tokens, motion config, guidelines, and a template slide gallery — all styled to match your design system's character."
+   - **If yes** → Read [references/design-showcase.md](references/design-showcase.md) for the full generation process: extracting palette/type/motion from the spec, placing the system on character axes, building the showcase page section by section, and the agent contract (token IDs, template CSS, slide skeletons). Save the result as `DESIGN.html` in the project root. Then read it back using [references/design-html.md](references/design-html.md) and proceed to Step 2.
+   - **If no** → Extract palette, font, and constraint values directly from the markdown file. Proceed to Step 2.
+
+3. **Neither exists** → Offer the user a choice:
+   1. **User named a style or mood?** → Read [visual-styles.md](./visual-styles.md) for the 8 named presets. Pick the closest match.
+   2. **Want to browse options visually?** → Run the design picker: read [references/design-picker.md](references/design-picker.md) for the full workflow. This serves a visual picker page. The user configures mood, palette, typography, and motion in the browser, then exports a DESIGN.html.
+   3. **Want to skip and go fast?** → Ask: mood, light or dark, any brand colors/fonts? Then pick a palette from [house-style.md](./house-style.md).
 
 If a design file names fonts you can't find locally (no `fonts/` directory with `.woff2` files, not a built-in font), warn the user before writing HTML: "The design specifies [font name] but no font files found. Please add .woff2 files to `fonts/` or I'll fall back to [closest built-in alternative]."
-
-If no design file exists, offer the user a choice:
-
-1. **User named a style or mood?** → Read [visual-styles.md](./visual-styles.md) for the 8 named presets. Pick the closest match.
-2. **Want to browse options visually?** → Run the design picker: read [references/design-picker.md](references/design-picker.md) for the full workflow. This serves a visual picker page. The user configures mood, palette, typography, and motion in the browser, then exports a DESIGN.html.
-
-**Converting design.md → DESIGN.html:** If you have a `design.md` and need to produce a `DESIGN.html` showcase, read [references/design-showcase.md](references/design-showcase.md). It covers the full process: extracting palette/type/motion from the spec, placing the system on character axes, building the showcase page section by section, and the agent contract (token IDs, template CSS, slide skeletons). 3. **Want to skip and go fast?** → Ask: mood, light or dark, any brand colors/fonts? Then pick a palette from [house-style.md](./house-style.md).
 
 **The design file defines the brand. It does not define video composition rules.** Those come from [references/video-composition.md](references/video-composition.md) and [house-style.md](./house-style.md). Use brand colors at video-appropriate scale — not at web-UI opacity.
 
