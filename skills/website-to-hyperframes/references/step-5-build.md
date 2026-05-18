@@ -274,8 +274,9 @@ Each sub-agent reads [beat-builder-guide.md](beat-builder-guide.md) — it has e
 Build the composition for Beat N. Save to compositions/beat-N-name.html.
 
 FIRST: Read skills/website-to-hyperframes/references/beat-builder-guide.md
-It has your full workflow, all rules, easing vocabulary, validation commands,
-file references to read, and the report-back protocol.
+It has your full workflow, all rules, easing vocabulary, file references,
+and the report-back protocol. Follow its 5-step workflow exactly:
+build → lint (`npx hyperframes lint .`) → snapshot (`npx tsx packages/cli/src/cli.ts snapshot . --frames 3`) → view contact sheet → fix issues → report back with specific frame descriptions.
 
 ═══ PREVIOUS BEAT (Beat N-1) ═══
 [paste the FULL previous beat section from STORYBOARD.md]

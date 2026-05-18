@@ -155,13 +155,13 @@ Let the user pick one or combine elements.
 
 ## Gate
 
-You have all of these before proceeding:
+Extract these from the user's prompt — most are already there:
 
-1. **Video type** — social ad, demo, launch teaser, brand reel, or custom
-2. **Duration** — explicit or inferred from type
-3. **Style direction** — mapped to visual-vocabulary dimensions
-4. **Specific requests** — any particular scenes/effects the user wants (can be empty if "surprise me")
-5. **Narration** — yes (full), minimal (hook only), or no (visual-only)
-6. **Format** — landscape, portrait, or square
+1. **Video type** — infer from prompt ("product demo", "promo", "launch video", etc.)
+2. **Duration** — infer from type if not stated (demo: 30-45s, social: 15-20s, teaser: 15-25s)
+3. **Style direction** — map their words to visual-vocabulary dimensions
+4. **Specific requests** — any scenes/effects they mentioned
+5. **Narration** — stated or infer (if they said "no narration" or "just visuals", respect it)
+6. **Format** — landscape unless they specified otherwise
 
-Proceed directly to Step 3. The storyboard's Global Direction section captures the creative plan — no separate summary needed.
+**Do not ask the user to confirm what they already said.** If the prompt was "make a product demo for huly.io, show the kanban board, dark cinematic feel, full narration" — you already have type (demo), style (dark cinematic), specific requests (kanban board), and narration (full). Proceed to Step 3.

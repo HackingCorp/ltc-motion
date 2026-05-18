@@ -62,13 +62,13 @@ Write DESIGN.md — a brand cheat sheet covering the visual identity: colors, ty
 
 ---
 
-## Step 2: Creative Brief 💬
+## Step 2: Creative Brief
 
 **Read:** [references/step-2-brief.md](references/step-2-brief.md), [references/visual-vocabulary.md](references/visual-vocabulary.md), [references/capabilities-overview.md](references/capabilities-overview.md)
 
-You now know the brand inside-out. Before making any creative decisions, talk to the user. Show them what you found, what assets are available, what HyperFrames can do with them, and ask what they want. Map their words to concrete visual-vocabulary dimensions.
+Parse what the user already told you in their prompt. Most prompts already specify video type, style, and what to show. Only ask about things genuinely missing — don't re-ask what they said.
 
-**Gate:** User has confirmed the Creative Direction Summary — video type, duration, style direction, specific requests, format.
+**Gate:** You know the video type, duration, style, and format — either from the user's prompt or by deciding yourself.
 
 ---
 

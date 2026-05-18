@@ -1,16 +1,34 @@
 # Step 3: Storyboard + Script
 
-**Before writing a single beat, answer this in one sentence:**
+## First decision: PACING
 
-> "What makes this video different from a generic [video type] for any [industry] brand?"
+Decide pacing BEFORE anything else. This determines beat count, beat duration, and architecture — everything flows from it.
 
-If you can't answer it, you haven't thought enough. The answer must come from this brand's specific DESIGN.md, captured assets, and what the user said — not from a lookup table. If the only thing you can say is "it uses their colors," that's not enough.
+Read the user's prompt and the style direction from Step 2. Map to one of these:
+
+| User says                                                   | Pacing       | Beat count | Beat duration | Architecture                                               |
+| ----------------------------------------------------------- | ------------ | ---------- | ------------- | ---------------------------------------------------------- |
+| "fast", "punchy", "rapid cuts", "energetic", "social ad"    | **Fast**     | 8–15       | 0.7–1.8s      | Single-file stacked beats, hard cuts                       |
+| "demo", "walkthrough", "product tour", "show features"      | **Moderate** | 4–6        | 3–5s          | Sub-compositions, CSS crossfades                           |
+| "cinematic", "premium", "slow", "let it breathe", "elegant" | **Slow**     | 3–4        | 5–8s          | Sub-compositions, long crossfades                          |
+| "launch", "announcement", "story", "narrative"              | **Arc**      | 5–7        | varies        | Slow opener → building middle → fast peak → resolved close |
+
+**Write your pacing choice at the top of STORYBOARD.md.** Example: `**Pacing: Fast** — 12 beats, stacked divs, hard cuts.`
+
+If the user said "dark cinematic feel" — that's SLOW, not fast. If they said "rapid cuts, bold typography" — that's FAST. Don't default to moderate when the prompt gives you a clear signal.
 
 ---
 
-**Before writing anything, fully re-read these files:**
+**Before writing beats, answer this in one sentence:**
 
-- **The Creative Direction Summary** from Step 2 — the user's confirmed video type, style, specific requests, and format. Every creative decision must honor what the user asked for.
+> "What makes this video different from a generic [video type] for any [industry] brand?"
+
+If you can't answer it, you haven't thought enough.
+
+---
+
+**Re-read these files before writing:**
+
 - **DESIGN.md** — your color palette, font rules, components, Do's/Don'ts. Every visual must be grounded in this brand identity. If it says "white backgrounds with purple accent" — plan light scenes, not dark moody ones.
 - **[visual-vocabulary.md](visual-vocabulary.md)** — translate the user's style direction into concrete dimension values (pacing, density, transitions, mood, motion, audio). Note any per-beat overrides the user requested.
 - **Asset discovery — use the contact sheets.** View `capture/assets/contact-sheet-*.jpg` and `capture/assets/svgs/contact-sheet-*.jpg`. Each grid cell is labeled with the filename. This is how you browse what's available without opening 50 individual files. When you find an asset you want to use, note the filename from the label and reference it as `capture/assets/<filename>`. If an asset looks promising but you need to check resolution or detail, THEN open the individual file. Also read `capture/extracted/asset-descriptions.md` for one-line summaries. **Understand what each asset IS before using it.** Product screenshots (dashboards, UI, features) show what the product does — strongest visuals. Decorative assets (abstract gradients, illustrations) can work as backgrounds or atmospheric elements, but don't make them THE beat content — a gradient filling a frame says nothing. Every asset should serve the beat's concept. **Never use contact sheets or scroll screenshots in the video** — contact sheets have grid labels and headers baked in, scroll screenshots are raw browser captures. Both are for AI to BROWSE and understand the site, not to place in compositions.
@@ -185,16 +203,7 @@ Each beat is a WORLD, not a layout. Write what the viewer EXPERIENCES before you
 
 **Rhythm** — declare your scene rhythm before implementing: fast-fast-SLOW-fast-SHADER-hold. The rhythm comes from the brand and content, not a template.
 
-Decide the number of beats and their durations based on the pacing from the Creative Brief (Step 2). The pacing dimension maps directly to beat count and duration:
-
-| Pacing       | Beat count | Beat duration | Total  | Architecture                                                                                                                                                              | When                                          |
-| ------------ | ---------- | ------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| **Fast**     | 8–15       | 0.7–1.8s      | 15–25s | Single-file stacked divs, hard cuts via `tl.set()`. One focus per frame — billboard-per-beat pattern. No sub-compositions, no HyperShader.                                | Social ads, hype launches, product drops      |
-| **Moderate** | 4–6        | 3–5s          | 20–35s | Sub-compositions with CSS crossfade transitions. Multiple elements per beat, sequential entrances.                                                                        | Product tours, demos, explainers              |
-| **Slow**     | 3–4        | 5–8s          | 20–35s | Sub-compositions with long crossfades (0.8–1.2s). Ken Burns drift, parallax layers, breathing room before text enters. Continuous subtle motion — nothing is ever static. | Cinematic, premium brand, Apple-keynote style |
-| **Arc**      | 5–7        | varies        | 25–40s | Slow opening (5–8s) → building middle beats (3–4s) → fast peak (1–2s) → resolved close (4–6s). Mix architectures per section.                                             | Launch announcements, narrative storytelling  |
-
-**Do not default to moderate.** Read the pacing dimension from the Creative Brief. If the user said "cinematic" or "premium," that's slow — 3–4 beats at 5–8s each. If they said "punchy" or "social ad," that's fast — load `/launch-video`. Most agents default to 5 beats at 3–4s regardless of direction. That's the mushy middle and it produces generic videos.
+Use the pacing you decided at the top of this step. The beat count, duration, and architecture are already set.
 
 **Cut the video to match the narration length** — if the script produces 22 seconds of audio, the video should be 24 seconds with a 2-second CTA hold, not 30 seconds with 8 seconds of dead silence. Empty time at the end where nothing is happening loses the viewer.
 

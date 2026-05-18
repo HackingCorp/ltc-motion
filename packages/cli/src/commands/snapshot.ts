@@ -198,6 +198,29 @@ async function captureSnapshots(
       // Extra settle time for media, fonts, and animations to initialize
       await new Promise((r) => setTimeout(r, 1500));
 
+      // Font verification — report which fonts loaded vs fell back
+      const fontReport = await page
+        .evaluate(() => {
+          const loaded: string[] = [];
+          const failed: string[] = [];
+          (document as any).fonts.forEach((f: any) => {
+            const entry = `${f.family} (${f.weight} ${f.style})`;
+            if (f.status === "loaded") loaded.push(entry);
+            else failed.push(entry + ` [${f.status}]`);
+          });
+          return { loaded, failed };
+        })
+        .catch(() => ({ loaded: [] as string[], failed: [] as string[] }));
+
+      if (fontReport.loaded.length > 0 || fontReport.failed.length > 0) {
+        console.log(
+          `\n   ${c.dim("Fonts loaded:")} ${fontReport.loaded.length > 0 ? fontReport.loaded.join(", ") : "none"}`,
+        );
+        if (fontReport.failed.length > 0) {
+          console.log(`   ${c.error("Fonts FAILED:")} ${fontReport.failed.join(", ")}`);
+        }
+      }
+
       // Get composition duration
       const duration = await page.evaluate(() => {
         const win = window as any;
