@@ -12,3 +12,14 @@ export function isDevMode(): boolean {
     return false;
   }
 }
+
+/**
+ * Feature flag — design picker (`hyperframes pick`, skill picker assets).
+ * Enabled when HYPERFRAMES_DESIGN_PICKER is set to "1" / "true" / "on" (case-insensitive),
+ * or whenever running in dev mode so contributors can iterate without setting env vars.
+ */
+export function isDesignPickerEnabled(): boolean {
+  if (isDevMode()) return true;
+  var v = (process.env.HYPERFRAMES_DESIGN_PICKER || "").trim().toLowerCase();
+  return v === "1" || v === "true" || v === "on" || v === "yes";
+}

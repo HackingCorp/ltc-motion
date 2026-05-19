@@ -35,6 +35,11 @@
     "registry/**",
     "examples/**",
     ".github/workflows/fixtures/**",
+    // Picker assets — vendored slide templates (template.html, summary.html,
+    // deck-stage.js shims, styles.css) and the picker shell (design-picker.html).
+    // Loaded at runtime by iframes, not imported. Built/served by skills scripts.
+    "skills/hyperframes/templates/presentations/**",
+    "skills/hyperframes/templates/design-picker.html",
   ],
   "ignoreExports": [
     // CLI command files: every command exports a const `examples` per the
