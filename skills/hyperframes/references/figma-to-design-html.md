@@ -135,12 +135,22 @@ Returns `{ "images": { "node:id": "https://...s3.amazonaws.com/..." } }`. Downlo
 
 **What to export:**
 
-- Default-state buttons (primary, secondary, outline, dark)
-- Tags/badges/pills
-- Section tags and dividers
-- Logo/brand mark
-- Icons (if vector)
-- Illustrations (if vector)
+- Logo/brand mark — the most important asset. Always export as SVG.
+- Illustrations — character art, decorative graphics, scene illustrations. These define the brand's visual personality in video frames. Export as SVG when vector; note dimensions for raster.
+- Icons — line icons, filled icons, emoji sets. Export as SVG for inline use.
+- Graphics & shapes — decorative elements, patterns, dividers, ornaments. Export as SVG.
+- Tags/badges/pills — visual label treatments. Export as SVG.
+
+**Prioritize visual assets over UI components.** A brand's illustrations, icons, and decorative graphics appear directly in video frames. UI components (buttons, inputs, forms) inform the CSS vocabulary but don't appear as-is in video — there's nothing to click.
+
+**Always prefer SVG format.** SVG exports from Figma contain exact shapes, colors, and strokes as vector paths. They can be:
+
+- Inlined directly in composition HTML
+- Scaled to any size without quality loss
+- Color-modified via CSS (fill, stroke attributes)
+- Animated via GSAP (path morphing, drawing, transforms)
+
+For raster-only assets (photographs, complex textures), export as PNG at 2x and note in the DESIGN.html that the asset requires a file reference rather than inline SVG.
 
 ### Step 7: Build slides as component references
 
@@ -148,16 +158,24 @@ The slides in `summary.html` are **component references for the composition agen
 
 **Inline the exported SVGs** directly in the slide HTML. The agent reads the SVG source to extract exact CSS values or uses the SVG as-is.
 
-| Slide | Shows                                              | Source                          |
-| ----- | -------------------------------------------------- | ------------------------------- |
-| 1     | All button variants at video scale                 | Inline SVGs from Step 6         |
-| 2     | Card components with exact padding, radius, border | CSS from Step 4 node properties |
-| 3     | Tags, badges, pills                                | Inline SVGs from Step 6         |
-| 4     | A real layout composition from the Figma           | CSS grid from Step 4            |
-| 5     | Typography in a composed layout (not a specimen)   | Fonts from Step 3               |
-| 6     | Illustrations, icons, logo as inline SVG           | SVG exports from Step 6         |
+| Slide | Shows                                                           | Source                                                  |
+| ----- | --------------------------------------------------------------- | ------------------------------------------------------- |
+| 1     | Hero frame using the brand's illustrations + headline treatment | Inline SVG illustrations from Step 6, fonts from Step 3 |
+| 2     | Feature/product frame with inline SVG graphics as hero imagery  | SVG graphics/shapes from Step 6                         |
+| 3     | Data/stats frame with numbers in the brand's display weight     | Fonts + colors from extraction                          |
+| 4     | Split layout with inline SVG icons + body content               | SVG icons from Step 6, layout from Step 4               |
+| 5     | Quote/testimonial frame                                         | Fonts from Step 3                                       |
+| 6     | Dark closing frame with logo SVG                                | Logo SVG from Step 6                                    |
 
-**The slides ARE the component spec.** The agent doesn't guess what a card looks like — it copies the slide's structure.
+**The slides are VIDEO FRAMES, not component catalogues.** There are no buttons in video — nothing to click. The Figma's visual assets (illustrations, icons, graphics, logo) appear directly in the slides as inline SVGs. The CSS vocabulary (radius, padding, stroke, fill) styles the frame elements. The agent sees a complete video frame and reproduces its structure.
+
+**Asset priority for slides:**
+
+1. Illustrations and character art — these ARE the brand in video
+2. Icons and graphic shapes — decorative elements and data visualization
+3. Logo — appears in hero and closing frames
+4. Color treatment — the palette applied to containers and backgrounds
+5. Typography — headline scale and weight at video size
 
 **Via MCP (if available):** Call `get_design_context` on individual component nodes for full HTML/CSS. Adapt to vanilla HTML.
 
