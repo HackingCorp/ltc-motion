@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>scene-12-intro-kinetic-text</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@700;900&family=Playfair+Display:ital,wght@900&display=swap"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f5f5f7; }
+
+    /* ─── DESIGN TOKENS ─── */
+    #scene-12-intro-kinetic-text {
+      --bg:       #f5f5f7;
+      --ink:      #1d1d1f;
+      --accent-1: #29D200;   /* section A hero word (Playfair italic) */
+      --accent-2: #00C4FF;   /* section B hero word (Inter heavy)     */
+      --grad-a:   #00C4FF;   /* section C gradient sweep stop         */
+      --grad-b:   #29D200;   /* section C gradient sweep stop         */
+
+      position: relative;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Animated gradient backdrop — soft drift behind the type */
+    #scene-12-intro-kinetic-text .bg-grad {
+      position: absolute;
+      inset: -10%;
+      background:
+        radial-gradient(circle at 30% 35%, rgba(41, 210, 0, 0.10) 0%, transparent 45%),
+        radial-gradient(circle at 75% 65%, rgba(0, 196, 255, 0.10) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(245, 245, 247, 1) 0%, rgba(238, 238, 244, 1) 70%);
+      will-change: transform, opacity;
+      pointer-events: none;
+    }
+
+    #scene-12-intro-kinetic-text .canvas {
+      position: absolute; inset: 0;
+    }
+    #scene-12-intro-kinetic-text .reading-zone {
+      position: absolute; inset: 0; overflow: hidden;
+    }
+
+    /* Sections — stacked, centered, hidden via CSS-locked initial state */
+    #scene-12-intro-kinetic-text .section {
+      position: absolute;
+      top: 50%; left: 0; right: 0;
+      transform: translateY(-50%);
+      display: flex; flex-direction: column;
+      align-items: flex-start;
+      opacity: 0;
+      will-change: opacity;
+    }
+    #scene-12-intro-kinetic-text .line {
+      font-family: 'Inter', sans-serif;
+      font-weight: 900;
+      letter-spacing: -0.045em;
+      line-height: 0.88;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+    #scene-12-intro-kinetic-text .w {
+      display: inline-block;
+      opacity: 0;
+      will-change: opacity, transform;
+    }
+
+    /* ─── SECTION A  ·  "Your / story / starts." ─── */
+    #scene-12-intro-kinetic-text .sA-l1 { font-size: 220px; margin-left: 140px; }
+    #scene-12-intro-kinetic-text .sA-l2 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-weight: 900;
+      font-size: 520px;
+      letter-spacing: -0.02em;
+      margin-left: 240px;
+      margin-top: -60px;
+      color: var(--accent-1);
+    }
+    #scene-12-intro-kinetic-text .sA-l3 { font-size: 280px; margin-left: 780px; margin-top: -10px; }
+
+    /* ─── SECTION B  ·  "Now / build / loud." ─── */
+    #scene-12-intro-kinetic-text .sB-l1 { font-size: 220px; margin-left: 160px; }
+    #scene-12-intro-kinetic-text .sB-l2 {
+      font-size: 500px;
+      margin-left: 220px;
+      margin-top: -12px;
+      color: var(--accent-2);
+    }
+    #scene-12-intro-kinetic-text .sB-l3 { font-size: 220px; margin-left: 220px; margin-top: -4px; }
+
+    /* ─── SECTION C  ·  "And / ship / today." ─── */
+    #scene-12-intro-kinetic-text .sC-l1 { font-size: 240px; margin-left: 200px; }
+    #scene-12-intro-kinetic-text .sC-l2 {
+      font-size: 520px;
+      margin-left: 260px;
+      margin-top: -12px;
+    }
+    /* The signature: gradient sweep via background-clip:text on the hero word */
+    #scene-12-intro-kinetic-text .sC-w2 {
+      background: linear-gradient(90deg, var(--grad-a) 0%, var(--grad-b) 50%, var(--grad-a) 100%);
+      background-size: 200% 100%;
+      background-position: 0% 50%;
+      -webkit-background-clip: text;
+              background-clip: text;
+      -webkit-text-fill-color: transparent;
+              color: transparent;
+    }
+    #scene-12-intro-kinetic-text .sC-l3 { font-size: 240px; margin-left: 620px; margin-top: -6px; }
+
+    /* Scene label */
+    #scene-12-intro-kinetic-text .label {
+      position: absolute;
+      left: 48px;
+      bottom: 48px;
+      font-size: 16px;
+      color: #707070;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 500;
+      z-index: 10;
+    }
+    #scene-12-intro-kinetic-text .label .accent { color: #1d1d1f; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div id="scene-12-intro-kinetic-text"
+       data-composition-id="scene-12-intro-kinetic-text"
+       data-start="0"
+       data-duration="7"
+       data-width="1920"
+       data-height="1080"
+       style="width:1920px; height:1080px;">
+
+    <div class="bg-grad"></div>
+
+    <div class="canvas">
+      <div class="reading-zone">
+        <!-- Section A: "Your / story / starts." -->
+        <div class="section" id="sA">
+          <div class="line sA-l1"><span class="w sA-w1">Your</span></div>
+          <div class="line sA-l2"><span class="w sA-w2">story</span></div>
+          <div class="line sA-l3"><span class="w sA-w3">starts.</span></div>
+        </div>
+
+        <!-- Section B: "Now / build / loud." -->
+        <div class="section" id="sB">
+          <div class="line sB-l1"><span class="w sB-w1">Now</span></div>
+          <div class="line sB-l2"><span class="w sB-w2">build</span></div>
+          <div class="line sB-l3"><span class="w sB-w3">loud.</span></div>
+        </div>
+
+        <!-- Section C: "And / ship / today." -->
+        <div class="section" id="sC">
+          <div class="line sC-l1"><span class="w sC-w1">And</span></div>
+          <div class="line sC-l2"><span class="w sC-w2">ship</span></div>
+          <div class="line sC-l3"><span class="w sC-w3">today.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="label">
+      Scene 12 · <span class="accent">Intro Kinetic Text</span> · large-scale word stacks with gradient sweep fills
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var BEAT = 7;
+      window.__timelines = window.__timelines || {};
+
+      var scope = document.getElementById("scene-12-intro-kinetic-text");
+      function q(sel) { return scope.querySelector(sel); }
+
+      // Three sections, each three words, paced across 7s:
+      //   A reveals 0.10–1.30  →  exits 2.10
+      //   B reveals 2.20–3.50  →  exits 4.30
+      //   C reveals 4.40–5.80  →  holds through 7.00 with gradient sweep
+      var sections = [
+        {
+          id: "#sA",
+          words: [
+            { sel: ".sA-w1", t: 0.10 }, // Your
+            { sel: ".sA-w2", t: 0.55 }, // story
+            { sel: ".sA-w3", t: 1.10 }, // starts.
+          ],
+          out: 2.10,
+        },
+        {
+          id: "#sB",
+          words: [
+            { sel: ".sB-w1", t: 2.20 }, // Now
+            { sel: ".sB-w2", t: 2.75 }, // build
+            { sel: ".sB-w3", t: 3.30 }, // loud.
+          ],
+          out: 4.30,
+        },
+        {
+          id: "#sC",
+          words: [
+            { sel: ".sC-w1", t: 4.40 }, // And
+            { sel: ".sC-w2", t: 4.95 }, // ship
+            { sel: ".sC-w3", t: 5.55 }, // today.
+          ],
+          out: 7.00, // hold to end
+        },
+      ];
+
+      var tl = gsap.timeline({ paused: true });
+
+      // === t=0 initial state — lock every section + word at opacity 0,
+      //     with each word offset slightly so the entrance has a small lift.
+      sections.forEach(function (s) {
+        tl.set(q(s.id), { opacity: 0 }, 0);
+        s.words.forEach(function (w) {
+          tl.set(q(w.sel), { opacity: 0, y: 16 }, 0);
+        });
+      });
+
+      // === Continuous bg gradient drift across the full beat — keeps the frame
+      //     alive during inter-section gaps.
+      tl.fromTo(".bg-grad",
+        { x: -20, y: -10, scale: 1.02 },
+        { x: 20, y: 10, scale: 1.0, duration: BEAT, ease: "sine.inOut" },
+        0
+      );
+
+      var WORD_FADE = 0.32;
+      var SECTION_OUT = 0.18;
+
+      sections.forEach(function (s, i) {
+        var sec = q(s.id);
+
+        // Reveal the section container at the first word's time
+        tl.to(sec, { opacity: 1, duration: 0.01 }, s.words[0].t);
+
+        // Fade + lift each word in (variety: power4.out for hero, expo.out for support)
+        s.words.forEach(function (w, wi) {
+          tl.fromTo(q(w.sel),
+            { opacity: 0, y: 16 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: WORD_FADE,
+              ease: wi === 1 ? "power4.out" : "expo.out",
+            },
+            w.t
+          );
+        });
+
+        // Subtle breathing on the hero (middle) word while the section is held —
+        // ensures no element sits unchanged for more than ~1.5s.
+        var heroSel = s.words[1].sel;
+        tl.to(q(heroSel), {
+          y: -6,
+          duration: (s.out - s.words[1].t) - 0.1,
+          ease: "sine.inOut",
+        }, s.words[1].t + WORD_FADE);
+
+        // Cut-out at section end (skip on last section — let C hold to end)
+        if (i < sections.length - 1) {
+          tl.to(sec, {
+            opacity: 0,
+            duration: SECTION_OUT,
+            ease: "power2.in",
+          }, s.out - SECTION_OUT);
+        }
+      });
+
+      // === The signature technique: continuous gradient sweep on "ship".
+      //     background-size:200% 100%; we slide background-position from 0% to -200%
+      //     across ~2.0s so the gradient highlight travels across the word twice.
+      tl.fromTo(q(".sC-w2"),
+        { backgroundPosition: "0% 50%" },
+        { backgroundPosition: "-200% 50%", duration: 2.0, ease: "none" },
+        4.95
+      );
+
+      // === Final-section breathing on the support words while C holds.
+      tl.to(q(".sC-w1"), { y: -4, duration: 1.0, ease: "sine.inOut" }, 5.90);
+      tl.to(q(".sC-w3"), { y: -6, duration: 1.0, ease: "sine.inOut" }, 6.00);
+
+      // Pad timeline to full duration
+      tl.to({}, { duration: BEAT }, 0);
+
+      window.__timelines["scene-12-intro-kinetic-text"] = tl;
+    })();
+  </script>
+</body>
+</html>

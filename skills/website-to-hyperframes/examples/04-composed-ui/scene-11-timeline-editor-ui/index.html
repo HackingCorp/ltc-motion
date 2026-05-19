@@ -1,0 +1,1229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>scene-11-timeline-editor-ui</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #050608; }
+
+    #scene-11-timeline-editor-ui {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 30% 20%, rgba(70,90,140,0.18) 0%, transparent 55%),
+        linear-gradient(180deg, #0a0d12 0%, #060709 100%);
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #d4d4d4;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ==== App window shell ==== */
+    .app-window {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 1760px;
+      height: 940px;
+      background: #1a1d22;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow:
+        0 80px 160px -40px rgba(0, 0, 0, 0.9),
+        0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      will-change: transform, opacity, filter;
+    }
+
+    /* Title bar */
+    .titlebar {
+      flex: 0 0 auto;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px;
+      background: #23272d;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+    }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot.red { background: #ff5f57; }
+    .dot.yellow { background: #ffbd2e; }
+    .dot.green { background: #28c941; }
+    .titlebar-title {
+      flex: 1;
+      text-align: center;
+      font-size: 13px;
+      color: #cccccc;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+    .titlebar-actions {
+      display: flex;
+      gap: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      color: #8a8e96;
+    }
+    .titlebar-actions .pill {
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+
+    /* Main split: editor | preview */
+    .main-split {
+      flex: 1 1 auto;
+      display: flex;
+      min-height: 0;
+    }
+
+    /* === LEFT: Code editor pane === */
+    .editor-pane {
+      width: 1080px;
+      flex: 0 0 auto;
+      background: #1e1e1e;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid rgba(0,0,0,0.5);
+    }
+
+    .tabs {
+      flex: 0 0 auto;
+      height: 38px;
+      display: flex;
+      background: #252526;
+      border-bottom: 1px solid #1e1e1e;
+    }
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      font-size: 13px;
+      color: #969696;
+      border-right: 1px solid #1e1e1e;
+      position: relative;
+    }
+    .tab.active {
+      background: #1e1e1e;
+      color: #ffffff;
+    }
+    .tab.active::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: #4a9eff;
+    }
+    .tab-icon {
+      width: 14px; height: 14px;
+      border-radius: 3px;
+      background: linear-gradient(135deg, #4a9eff 0%, #2f78d0 100%);
+      font-size: 9px;
+      font-weight: 700;
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Code body */
+    .editor-body {
+      flex: 1 1 auto;
+      display: flex;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .gutter {
+      flex: 0 0 auto;
+      width: 56px;
+      padding: 16px 0;
+      background: #1e1e1e;
+      border-right: 1px solid rgba(255, 255, 255, 0.02);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 15px;
+      color: #6e6e6e;
+      text-align: right;
+      user-select: none;
+    }
+    .gutter .ln {
+      height: 30px;
+      line-height: 30px;
+      padding-right: 16px;
+      font-variant-numeric: tabular-nums;
+    }
+    .gutter .ln.active { color: #c6c6c6; }
+
+    .code {
+      flex: 1 1 auto;
+      padding: 16px 0 16px 22px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 16px;
+      line-height: 30px;
+      color: #d4d4d4;
+      position: relative;
+      white-space: pre;
+      overflow: hidden;
+    }
+    .code .line {
+      height: 30px;
+      position: relative;
+      white-space: pre;
+    }
+    .code .line.active::before {
+      content: "";
+      position: absolute;
+      left: -22px;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.04);
+      pointer-events: none;
+    }
+    .code .char {
+      display: inline-block;
+      white-space: pre;
+      opacity: 0;
+      will-change: opacity;
+      vertical-align: top;
+    }
+
+    /* VS Code Dark+ palette */
+    .kw    { color: #569cd6; }
+    .tag   { color: #569cd6; }
+    .attr  { color: #9cdcfe; }
+    .name  { color: #dcdcaa; }
+    .var   { color: #9cdcfe; }
+    .type  { color: #4ec9b0; }
+    .str   { color: #ce9178; }
+    .num   { color: #b5cea8; }
+    .com   { color: #6a9955; font-style: italic; }
+    .punc  { color: #d4d4d4; }
+    .bracket { color: #ffd700; }
+
+    /* Cursor caret */
+    .caret {
+      position: absolute;
+      width: 2px;
+      height: 22px;
+      background: #aeafad;
+      top: 5px;
+      left: 0;
+      will-change: opacity, transform;
+      box-shadow: 0 0 6px rgba(174, 175, 173, 0.4);
+    }
+
+    /* === RIGHT: Preview + render HUD === */
+    .preview-pane {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      background: #161819;
+      min-width: 0;
+    }
+    .preview-header {
+      flex: 0 0 auto;
+      height: 38px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #1f2225;
+      border-bottom: 1px solid rgba(0,0,0,0.4);
+    }
+    .preview-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: #8a8e96;
+    }
+    .resolution-badge {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      color: #aeb4be;
+      padding: 3px 8px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* Canvas area shows mock rendered composition */
+    .canvas-area {
+      flex: 1 1 auto;
+      position: relative;
+      background: #0e1014;
+      overflow: hidden;
+    }
+    .canvas-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 50% 40%, rgba(74,158,255,0.28) 0%, transparent 55%),
+        linear-gradient(160deg, #161a22 0%, #0c0e14 100%);
+    }
+    .mock-headline {
+      position: absolute;
+      left: 50%;
+      top: 38%;
+      transform: translate(-50%, -50%);
+      font-family: "Inter", sans-serif;
+      font-weight: 700;
+      font-size: 56px;
+      letter-spacing: -0.02em;
+      color: #f4f6fa;
+      white-space: nowrap;
+      opacity: 0;
+      will-change: opacity, transform;
+    }
+    .mock-sub {
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%, -50%);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 16px;
+      letter-spacing: 0.04em;
+      color: #8a93a6;
+      text-transform: uppercase;
+      opacity: 0;
+      will-change: opacity;
+    }
+    .mock-glow {
+      position: absolute;
+      left: 50%;
+      top: 45%;
+      width: 420px;
+      height: 420px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(74,158,255,0.5) 0%, transparent 70%);
+      opacity: 0;
+      will-change: opacity, transform;
+      filter: blur(8px);
+    }
+
+    /* Render HUD overlay */
+    .hud {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      padding: 14px 16px;
+      background: rgba(15, 17, 22, 0.78);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      opacity: 0;
+      will-change: opacity, transform;
+      z-index: 5;
+    }
+    .hud-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 12px rgba(74,222,128,0.7);
+      flex: 0 0 auto;
+    }
+    .hud-label {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      font-weight: 600;
+      color: #e8ebf2;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      flex: 0 0 auto;
+    }
+    .hud-divider {
+      width: 1px;
+      height: 14px;
+      background: rgba(255,255,255,0.12);
+      flex: 0 0 auto;
+    }
+    .hud-progress-wrap {
+      flex: 1 1 auto;
+      height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+    .hud-progress {
+      position: absolute;
+      inset: 0 100% 0 0;
+      background: linear-gradient(90deg, #4a9eff 0%, #4ade80 100%);
+      border-radius: 3px;
+      will-change: right;
+    }
+    .hud-pct {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      color: #aeb4be;
+      font-variant-numeric: tabular-nums;
+      width: 40px;
+      text-align: right;
+      flex: 0 0 auto;
+    }
+    .hud-frame {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      color: #aeb4be;
+      font-variant-numeric: tabular-nums;
+      flex: 0 0 auto;
+    }
+
+    /* Render queue panel — bottom of preview */
+    .queue {
+      flex: 0 0 auto;
+      height: 130px;
+      background: #1a1d22;
+      border-top: 1px solid rgba(0,0,0,0.4);
+      padding: 12px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .queue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .queue-title {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: #8a8e96;
+    }
+    .queue-count {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      color: #4ade80;
+    }
+    .queue-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex: 1 1 auto;
+      overflow: hidden;
+    }
+    .queue-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      padding: 5px 8px;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.02);
+      opacity: 0;
+      will-change: opacity, transform;
+    }
+    .queue-item.active {
+      background: rgba(74, 158, 255, 0.1);
+      border: 1px solid rgba(74, 158, 255, 0.3);
+      padding: 4px 7px;
+    }
+    .queue-status {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+    }
+    .queue-status.done { background: #4ade80; }
+    .queue-status.active { background: #fbbf24; box-shadow: 0 0 8px rgba(251,191,36,0.6); }
+    .queue-status.wait { background: #525860; }
+    .queue-name {
+      color: #d4d4d4;
+      flex: 1 1 auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .queue-time {
+      color: #8a8e96;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* === BOTTOM: Timeline scrubber === */
+    .timeline-strip {
+      flex: 0 0 auto;
+      height: 260px;
+      background: #14171b;
+      border-top: 1px solid rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+    }
+    .tl-toolbar {
+      flex: 0 0 auto;
+      height: 36px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid rgba(0,0,0,0.4);
+      background: #1a1d22;
+    }
+    .tl-controls {
+      display: flex;
+      gap: 6px;
+    }
+    .tl-btn {
+      width: 28px; height: 22px;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: #c4cad4;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tl-btn.play {
+      background: #4a9eff;
+      border-color: #4a9eff;
+      color: white;
+      width: 32px;
+    }
+    .tl-time {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 13px;
+      color: #e8ebf2;
+      font-variant-numeric: tabular-nums;
+    }
+    .tl-time .sep { color: #8a8e96; padding: 0 4px; }
+    .tl-zoom {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      color: #8a8e96;
+    }
+    .tl-zoom-bar {
+      width: 80px;
+      height: 4px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+      position: relative;
+    }
+    .tl-zoom-bar::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 60%;
+      background: #8a8e96;
+      border-radius: 2px;
+    }
+
+    .tl-tracks {
+      flex: 1 1 auto;
+      position: relative;
+      padding: 8px 18px 14px;
+      overflow: hidden;
+    }
+    .tl-ruler {
+      position: relative;
+      height: 22px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 6px;
+    }
+    .tl-ruler-label {
+      position: absolute;
+      top: 2px;
+      transform: translateX(-50%);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+      color: #6e7480;
+      letter-spacing: 0.04em;
+    }
+    .tl-ruler-tick {
+      position: absolute;
+      bottom: 0;
+      width: 1px;
+      height: 6px;
+      background: rgba(255,255,255,0.15);
+    }
+    .tl-ruler-tick.major {
+      height: 10px;
+      background: rgba(255,255,255,0.3);
+    }
+
+    .tl-track {
+      position: relative;
+      height: 38px;
+      margin-bottom: 5px;
+      background: rgba(255,255,255,0.015);
+      border-radius: 4px;
+    }
+    .tl-track-label {
+      position: absolute;
+      left: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 56px;
+      text-align: right;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+      color: #6e7480;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .tl-clip {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      border-radius: 5px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.92);
+      letter-spacing: 0.04em;
+      overflow: hidden;
+      white-space: nowrap;
+      opacity: 0;
+      will-change: opacity, transform;
+    }
+    .tl-clip.video1 { background: linear-gradient(135deg, #4a9eff 0%, #2f78d0 100%); }
+    .tl-clip.video2 { background: linear-gradient(135deg, #6b46c1 0%, #4f2da6 100%); }
+    .tl-clip.audio1 { background: linear-gradient(135deg, #4ade80 0%, #2da55f 100%); }
+    .tl-clip.audio2 { background: linear-gradient(135deg, #22c5a5 0%, #178973 100%); }
+    .tl-clip.fx1    { background: linear-gradient(135deg, #f59e0b 0%, #c97d05 100%); }
+
+    /* Waveform pattern overlay inside audio clips */
+    .tl-clip.audio1::before,
+    .tl-clip.audio2::before {
+      content: "";
+      position: absolute;
+      inset: 4px 8px;
+      background-image:
+        linear-gradient(90deg,
+          rgba(255,255,255,0.4) 1px, transparent 1px 4px,
+          rgba(255,255,255,0.55) 4px, transparent 4px 8px,
+          rgba(255,255,255,0.3) 8px, transparent 8px 14px,
+          rgba(255,255,255,0.5) 14px, transparent 14px 20px,
+          rgba(255,255,255,0.35) 20px, transparent 20px 26px);
+      background-size: 26px 100%;
+      background-repeat: repeat-x;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* Playhead */
+    .tl-playhead {
+      position: absolute;
+      top: 0;
+      bottom: 14px;
+      left: 0;
+      width: 2px;
+      background: #ff5f57;
+      box-shadow: 0 0 10px rgba(255,95,87,0.7);
+      z-index: 4;
+      pointer-events: none;
+      will-change: transform;
+    }
+    .tl-playhead-head {
+      position: absolute;
+      top: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-top: 10px solid #ff5f57;
+    }
+
+    /* Status bar at the very bottom */
+    .statusbar {
+      flex: 0 0 auto;
+      height: 26px;
+      padding: 0 18px;
+      background: #0f1115;
+      border-top: 1px solid rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      color: #8a8e96;
+    }
+    .statusbar .blue { color: #4a9eff; }
+    .statusbar .green { color: #4ade80; }
+    .statusbar .right { margin-left: auto; display: flex; gap: 18px; }
+
+    /* Scene label */
+    .scene-label {
+      position: absolute;
+      left: 48px;
+      bottom: 24px;
+      font-size: 14px;
+      color: #6e7480;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 500;
+      z-index: 20;
+    }
+    .scene-label .accent { color: #e8ebf2; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <div id="scene-11-timeline-editor-ui"
+       data-composition-id="scene-11-timeline-editor-ui"
+       data-start="0"
+       data-duration="9"
+       data-width="1920"
+       data-height="1080"
+       style="width:1920px; height:1080px;">
+
+    <div class="app-window" id="app-window">
+
+      <!-- Title bar -->
+      <div class="titlebar">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <span class="titlebar-title">composition.html — frames-studio</span>
+        <div class="titlebar-actions">
+          <span class="pill">FPS 60</span>
+          <span class="pill">1920 × 1080</span>
+        </div>
+      </div>
+
+      <!-- Main split: editor | preview -->
+      <div class="main-split">
+
+        <!-- LEFT: Code editor -->
+        <div class="editor-pane">
+
+          <div class="tabs">
+            <div class="tab active">
+              <span class="tab-icon">HF</span>
+              <span>composition.html</span>
+            </div>
+            <div class="tab">
+              <span class="tab-icon">JS</span>
+              <span>timeline.js</span>
+            </div>
+            <div class="tab">
+              <span class="tab-icon">CS</span>
+              <span>theme.css</span>
+            </div>
+          </div>
+
+          <div class="editor-body">
+            <div class="gutter" id="gutter">
+              <div class="ln" data-ln="1">1</div>
+              <div class="ln" data-ln="2">2</div>
+              <div class="ln" data-ln="3">3</div>
+              <div class="ln" data-ln="4">4</div>
+              <div class="ln" data-ln="5">5</div>
+              <div class="ln" data-ln="6">6</div>
+              <div class="ln" data-ln="7">7</div>
+              <div class="ln" data-ln="8">8</div>
+              <div class="ln" data-ln="9">9</div>
+              <div class="ln" data-ln="10">10</div>
+              <div class="ln" data-ln="11">11</div>
+              <div class="ln" data-ln="12">12</div>
+            </div>
+
+            <div class="code" id="code">
+              <!-- Line 1: comment -->
+              <div class="line" data-line="1" id="line-1"><span class="com"><span class="char">/</span><span class="char">/</span><span class="char"> </span><span class="char">c</span><span class="char">o</span><span class="char">m</span><span class="char">p</span><span class="char">o</span><span class="char">s</span><span class="char">i</span><span class="char">t</span><span class="char">i</span><span class="char">o</span><span class="char">n</span><span class="char">.</span><span class="char">h</span><span class="char">t</span><span class="char">m</span><span class="char">l</span></span></div>
+
+              <!-- Line 2: <composition id="hero" duration={9}> -->
+              <div class="line" data-line="2" id="line-2"><span class="punc"><span class="char">&lt;</span></span><span class="tag"><span class="char">c</span><span class="char">o</span><span class="char">m</span><span class="char">p</span><span class="char">o</span><span class="char">s</span><span class="char">i</span><span class="char">t</span><span class="char">i</span><span class="char">o</span><span class="char">n</span></span><span class="punc"><span class="char"> </span></span><span class="attr"><span class="char">i</span><span class="char">d</span></span><span class="punc"><span class="char">=</span></span><span class="str"><span class="char">"</span><span class="char">h</span><span class="char">e</span><span class="char">r</span><span class="char">o</span><span class="char">"</span></span><span class="punc"><span class="char"> </span></span><span class="attr"><span class="char">d</span><span class="char">u</span><span class="char">r</span><span class="char">a</span><span class="char">t</span><span class="char">i</span><span class="char">o</span><span class="char">n</span></span><span class="punc"><span class="char">=</span></span><span class="bracket"><span class="char">{</span></span><span class="num"><span class="char">9</span></span><span class="bracket"><span class="char">}</span></span><span class="punc"><span class="char">&gt;</span></span></div>
+
+              <!-- Line 3:   <scene id="intro" start={0}> -->
+              <div class="line" data-line="3" id="line-3"><span class="punc"><span class="char"> </span><span class="char"> </span><span class="char">&lt;</span></span><span class="tag"><span class="char">s</span><span class="char">c</span><span class="char">e</span><span class="char">n</span><span class="char">e</span></span><span class="punc"><span class="char"> </span></span><span class="attr"><span class="char">i</span><span class="char">d</span></span><span class="punc"><span class="char">=</span></span><span class="str"><span class="char">"</span><span class="char">i</span><span class="char">n</span><span class="char">t</span><span class="char">r</span><span class="char">o</span><span class="char">"</span></span><span class="punc"><span class="char"> </span></span><span class="attr"><span class="char">s</span><span class="char">t</span><span class="char">a</span><span class="char">r</span><span class="char">t</span></span><span class="punc"><span class="char">=</span></span><span class="bracket"><span class="char">{</span></span><span class="num"><span class="char">0</span></span><span class="bracket"><span class="char">}</span></span><span class="punc"><span class="char">&gt;</span></span></div>
+
+              <!-- Line 4:     <Headline> Render in browser. </Headline> -->
+              <div class="line" data-line="4" id="line-4"><span class="punc"><span class="char"> </span><span class="char"> </span><span class="char"> </span><span class="char"> </span><span class="char">&lt;</span></span><span class="type"><span class="char">H</span><span class="char">e</span><span class="char">a</span><span class="char">d</span><span class="char">l</span><span class="char">i</span><span class="char">n</span><span class="char">e</span></span><span class="punc"><span class="char">&gt;</span></span><span class="str"><span class="char"> </span><span class="char">R</span><span class="char">e</span><span class="char">n</span><span class="char">d</span><span class="char">e</span><span class="char">r</span><span class="char"> </span><span class="char">i</span><span class="char">n</span><span class="char"> </span><span class="char">b</span><span class="char">r</span><span class="char">o</span><span class="char">w</span><span class="char">s</span><span class="char">e</span><span class="char">r</span><span class="char">.</span><span class="char"> </span></span><span class="punc"><span class="char">&lt;</span><span class="char">/</span></span><span class="type"><span class="char">H</span><span class="char">e</span><span class="char">a</span><span class="char">d</span><span class="char">l</span><span class="char">i</span><span class="char">n</span><span class="char">e</span></span><span class="punc"><span class="char">&gt;</span></span></div>
+
+              <!-- Line 5: Audio src bed.mp3 (decorative code text only — split into per-char spans below) -->
+              <div class="line" data-line="5" id="line-5"><span class="punc"><span class="char"> </span><span class="char"> </span><span class="char"> </span><span class="char"> </span><span class="char">&lt;</span></span><span class="type"><span class="char">A</span><span class="char">u</span><span class="char">d</span><span class="char">i</span><span class="char">o</span></span><span class="punc"><span class="char"> </span></span><span class="attr"><span class="char">s</span><span class="char">r</span><span class="char">c</span></span><span class="punc"><span class="char">=</span></span><span class="str"><span class="char">"</span><span class="char">b</span><span class="char">e</span><span class="char">d</span><span class="char">.</span><span class="char">m</span><span class="char">p</span><span class="char">3</span><span class="char">"</span></span><span class="punc"><span class="char"> </span><span class="char">/</span><span class="char">&gt;</span></span></div>
+
+              <!-- Line 6:   </scene> -->
+              <div class="line" data-line="6" id="line-6"><span class="punc"><span class="char"> </span><span class="char"> </span><span class="char">&lt;</span><span class="char">/</span></span><span class="tag"><span class="char">s</span><span class="char">c</span><span class="char">e</span><span class="char">n</span><span class="char">e</span></span><span class="punc"><span class="char">&gt;</span></span></div>
+
+              <!-- Line 7:   <scene id="reveal" start={4.5}> -->
+              <div class="line" data-line="7" id="line-7"><span class="punc"><span class="char"> </span><span class="char"> </span><span class="char">&lt;</span></span><span class="tag"><span class="char">s</span><span class="char">c</span><span class="char">e</span><span class="char">n</span><span class="char">e</span></span><span class="punc"><span class="char"> </span></span><span class="attr"><span class="char">i</span><span class="char">d</span></span><span class="punc"><span class="char">=</span></span><span class="str"><span class="char">"</span><span class="char">r</span><span class="char">e</span><span class="char">v</span><span class="char">e</span><span class="char">a</span><span class="char">l</span><span class="char">"</span></span><span class="punc"><span class="char"> </span></span><span class="attr"><span class="char">s</span><span class="char">t</span><span class="char">a</span><span class="char">r</span><span class="char">t</span></span><span class="punc"><span class="char">=</span></span><span class="bracket"><span class="char">{</span></span><span class="num"><span class="char">4</span><span class="char">.</span><span class="char">5</span></span><span class="bracket"><span class="char">}</span></span><span class="punc"><span class="char">&gt;</span></span></div>
+
+              <!-- Line 8:     <Logo glow /> -->
+              <div class="line" data-line="8" id="line-8"><span class="punc"><span class="char"> </span><span class="char"> </span><span class="char"> </span><span class="char"> </span><span class="char">&lt;</span></span><span class="type"><span class="char">L</span><span class="char">o</span><span class="char">g</span><span class="char">o</span></span><span class="punc"><span class="char"> </span></span><span class="attr"><span class="char">g</span><span class="char">l</span><span class="char">o</span><span class="char">w</span></span><span class="punc"><span class="char"> </span><span class="char">/</span><span class="char">&gt;</span></span></div>
+
+              <!-- Line 9:     <Caption track="vo" /> -->
+              <div class="line" data-line="9" id="line-9"><span class="punc"><span class="char"> </span><span class="char"> </span><span class="char"> </span><span class="char"> </span><span class="char">&lt;</span></span><span class="type"><span class="char">C</span><span class="char">a</span><span class="char">p</span><span class="char">t</span><span class="char">i</span><span class="char">o</span><span class="char">n</span></span><span class="punc"><span class="char"> </span></span><span class="attr"><span class="char">t</span><span class="char">r</span><span class="char">a</span><span class="char">c</span><span class="char">k</span></span><span class="punc"><span class="char">=</span></span><span class="str"><span class="char">"</span><span class="char">v</span><span class="char">o</span><span class="char">"</span></span><span class="punc"><span class="char"> </span><span class="char">/</span><span class="char">&gt;</span></span></div>
+
+              <!-- Line 10:   </scene> -->
+              <div class="line" data-line="10" id="line-10"><span class="punc"><span class="char"> </span><span class="char"> </span><span class="char">&lt;</span><span class="char">/</span></span><span class="tag"><span class="char">s</span><span class="char">c</span><span class="char">e</span><span class="char">n</span><span class="char">e</span></span><span class="punc"><span class="char">&gt;</span></span></div>
+
+              <!-- Line 11: </composition> -->
+              <div class="line" data-line="11" id="line-11"><span class="punc"><span class="char">&lt;</span><span class="char">/</span></span><span class="tag"><span class="char">c</span><span class="char">o</span><span class="char">m</span><span class="char">p</span><span class="char">o</span><span class="char">s</span><span class="char">i</span><span class="char">t</span><span class="char">i</span><span class="char">o</span><span class="char">n</span></span><span class="punc"><span class="char">&gt;</span></span></div>
+
+              <!-- Line 12 blank -->
+              <div class="line" data-line="12" id="line-12"></div>
+
+              <!-- Cursor caret -->
+              <div class="caret" id="caret"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Preview + render HUD + queue -->
+        <div class="preview-pane">
+
+          <div class="preview-header">
+            <span class="preview-label">Preview</span>
+            <span class="resolution-badge" id="res-badge">1920 × 1080 · 60 fps</span>
+          </div>
+
+          <div class="canvas-area" id="canvas">
+            <div class="canvas-bg"></div>
+            <div class="mock-glow" id="mock-glow"></div>
+            <div class="mock-headline" id="mock-headline">Render in browser.</div>
+            <div class="mock-sub" id="mock-sub">Composition · scene 02</div>
+
+            <!-- Render HUD -->
+            <div class="hud" id="hud">
+              <span class="hud-dot"></span>
+              <span class="hud-label" id="hud-label">Rendering</span>
+              <span class="hud-divider"></span>
+              <span class="hud-frame" id="hud-frame">000 / 540</span>
+              <div class="hud-progress-wrap">
+                <div class="hud-progress" id="hud-progress"></div>
+              </div>
+              <span class="hud-pct" id="hud-pct">0%</span>
+            </div>
+          </div>
+
+          <!-- Render queue -->
+          <div class="queue">
+            <div class="queue-header">
+              <span class="queue-title">Render Queue</span>
+              <span class="queue-count" id="queue-count">3 jobs</span>
+            </div>
+            <div class="queue-list">
+              <div class="queue-item" id="q-1">
+                <span class="queue-status done"></span>
+                <span class="queue-name">intro-scene.mp4</span>
+                <span class="queue-time">00:04.5</span>
+              </div>
+              <div class="queue-item active" id="q-2">
+                <span class="queue-status active"></span>
+                <span class="queue-name" id="q-2-name">composition.html · scene 02</span>
+                <span class="queue-time" id="q-2-time">00:00.0</span>
+              </div>
+              <div class="queue-item" id="q-3">
+                <span class="queue-status wait"></span>
+                <span class="queue-name">outro-card.mp4</span>
+                <span class="queue-time">queued</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM: Timeline scrubber -->
+      <div class="timeline-strip">
+        <div class="tl-toolbar">
+          <div class="tl-controls">
+            <span class="tl-btn">⏮</span>
+            <span class="tl-btn play">▶</span>
+            <span class="tl-btn">⏭</span>
+          </div>
+          <div class="tl-time">
+            <span id="tl-cur">00:00.00</span>
+            <span class="sep">/</span>
+            <span>00:09.00</span>
+          </div>
+          <div class="tl-zoom">
+            <span>ZOOM</span>
+            <div class="tl-zoom-bar"></div>
+            <span id="tl-zoom-val">60%</span>
+          </div>
+        </div>
+
+        <div class="tl-tracks" id="tl-tracks">
+          <!-- Ruler -->
+          <div class="tl-ruler" id="tl-ruler">
+            <span class="tl-ruler-label" style="left: 0%;">0:00</span>
+            <span class="tl-ruler-label" style="left: 16.66%;">0:01.5</span>
+            <span class="tl-ruler-label" style="left: 33.33%;">0:03.0</span>
+            <span class="tl-ruler-label" style="left: 50%;">0:04.5</span>
+            <span class="tl-ruler-label" style="left: 66.66%;">0:06.0</span>
+            <span class="tl-ruler-label" style="left: 83.33%;">0:07.5</span>
+            <span class="tl-ruler-label" style="left: 100%;">0:09.0</span>
+            <span class="tl-ruler-tick major" style="left: 0%;"></span>
+            <span class="tl-ruler-tick" style="left: 5.55%;"></span>
+            <span class="tl-ruler-tick" style="left: 11.11%;"></span>
+            <span class="tl-ruler-tick major" style="left: 16.66%;"></span>
+            <span class="tl-ruler-tick" style="left: 22.22%;"></span>
+            <span class="tl-ruler-tick" style="left: 27.77%;"></span>
+            <span class="tl-ruler-tick major" style="left: 33.33%;"></span>
+            <span class="tl-ruler-tick" style="left: 38.88%;"></span>
+            <span class="tl-ruler-tick" style="left: 44.44%;"></span>
+            <span class="tl-ruler-tick major" style="left: 50%;"></span>
+            <span class="tl-ruler-tick" style="left: 55.55%;"></span>
+            <span class="tl-ruler-tick" style="left: 61.11%;"></span>
+            <span class="tl-ruler-tick major" style="left: 66.66%;"></span>
+            <span class="tl-ruler-tick" style="left: 72.22%;"></span>
+            <span class="tl-ruler-tick" style="left: 77.77%;"></span>
+            <span class="tl-ruler-tick major" style="left: 83.33%;"></span>
+            <span class="tl-ruler-tick" style="left: 88.88%;"></span>
+            <span class="tl-ruler-tick" style="left: 94.44%;"></span>
+            <span class="tl-ruler-tick major" style="left: 100%;"></span>
+          </div>
+
+          <!-- Tracks -->
+          <div class="tl-track">
+            <div class="tl-clip video1" id="clip-v1" style="left: 0%; width: 48%;">intro-scene</div>
+            <div class="tl-clip video2" id="clip-v2" style="left: 49%; width: 50%;">reveal-scene</div>
+          </div>
+          <div class="tl-track">
+            <div class="tl-clip fx1" id="clip-fx" style="left: 22%; width: 26%;">⚡ glow-fx</div>
+          </div>
+          <div class="tl-track">
+            <div class="tl-clip audio1" id="clip-a1" style="left: 0%; width: 100%;">bed.mp3</div>
+          </div>
+          <div class="tl-track">
+            <div class="tl-clip audio2" id="clip-a2" style="left: 50%; width: 38%;">vo-reveal.mp3</div>
+          </div>
+
+          <!-- Playhead -->
+          <div class="tl-playhead" id="playhead">
+            <span class="tl-playhead-head"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status bar -->
+      <div class="statusbar">
+        <span class="green">● Live</span>
+        <span>HyperFrames Studio</span>
+        <span class="blue">Ln <span id="status-ln">2</span>, Col 1</span>
+        <div class="right">
+          <span>UTF-8</span>
+          <span>60 fps</span>
+          <span class="blue" id="status-render">Rendering frame <span id="status-frame">0</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="scene-label">
+      Scene 11 · <span class="accent">Timeline Editor UI</span> · code editor + video timeline scrubber + render HUD
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var BEAT = 9;
+      window.__timelines = window.__timelines || {};
+
+      var tl = gsap.timeline({ paused: true });
+
+      // ===== Code character collections =====
+      function chars(n) {
+        return document.querySelectorAll('#line-' + n + ' .char');
+      }
+      var L1 = chars(1), L2 = chars(2), L3 = chars(3), L4 = chars(4),
+          L5 = chars(5), L6 = chars(6), L7 = chars(7), L8 = chars(8),
+          L9 = chars(9), L10 = chars(10), L11 = chars(11);
+
+      // Approximate column width for 16px JetBrains Mono ≈ 9.6
+      var CW = 9.6;
+      // Line top: padding-top 16 + (n-1)*30
+      function lineTop(n) { return 16 + (n - 1) * 30; }
+      function colX(c)    { return 22 + c * CW; }
+
+      // ===== Initial state lockdown at t=0 =====
+      tl.set('#app-window', { y: 30, opacity: 0, filter: 'blur(20px)' }, 0);
+      tl.set('#caret', { x: colX(0), y: lineTop(1), opacity: 1 }, 0);
+      tl.set('#mock-headline', { opacity: 0, y: 20 }, 0);
+      tl.set('#mock-sub', { opacity: 0 }, 0);
+      tl.set('#mock-glow', { opacity: 0, scale: 0.5 }, 0);
+      tl.set('#hud', { opacity: 0, y: -10 }, 0);
+      tl.set('#q-1', { opacity: 0, x: -10 }, 0);
+      tl.set('#q-2', { opacity: 0, x: -10 }, 0);
+      tl.set('#q-3', { opacity: 0, x: -10 }, 0);
+      tl.set('#clip-v1', { opacity: 0, scaleX: 0.6, transformOrigin: '0% 50%' }, 0);
+      tl.set('#clip-v2', { opacity: 0, scaleX: 0.6, transformOrigin: '0% 50%' }, 0);
+      tl.set('#clip-fx', { opacity: 0, scaleX: 0.6, transformOrigin: '0% 50%' }, 0);
+      tl.set('#clip-a1', { opacity: 0, scaleX: 0.6, transformOrigin: '0% 50%' }, 0);
+      tl.set('#clip-a2', { opacity: 0, scaleX: 0.6, transformOrigin: '0% 50%' }, 0);
+      tl.set('#playhead', { x: 0, opacity: 0 }, 0);
+
+      // ============================================================
+      // t=0.0s — App window cinematic entry
+      // ============================================================
+      tl.fromTo('#app-window',
+        { y: 30, opacity: 0, filter: 'blur(20px)' },
+        { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.7, ease: 'expo.out' },
+        0);
+
+      // Subtle camera drift through entire scene (continuous motion)
+      tl.to('#app-window', { y: -8, duration: 8.3, ease: 'none' }, 0.7);
+
+      // ============================================================
+      // CONTINUOUS: caret blink throughout — steps(1) terminal style
+      // ============================================================
+      tl.fromTo('#caret',
+        { opacity: 1 },
+        { opacity: 0.15, duration: 0.45, repeat: 18, yoyo: true, ease: 'steps(1)' },
+        0.3);
+
+      // ============================================================
+      // t=0.5s — Code types in, line by line
+      // ============================================================
+      // Line 1 (comment, 19 chars)
+      tl.to('#line-1', { className: 'line active' }, 0.5);
+      tl.to('.gutter .ln[data-ln="1"]', { className: 'ln active' }, 0.5);
+      tl.to(L1, { opacity: 1, duration: 0.04, stagger: 0.028, ease: 'steps(1)' }, 0.55);
+      tl.to('#caret', { x: colX(L1.length), duration: L1.length * 0.028, ease: 'power1.out' }, 0.55);
+
+      // Line 2 (composition tag, ~38 chars)
+      tl.to('#caret', { x: colX(0), y: lineTop(2), duration: 0.12, ease: 'power4.out' }, 1.10);
+      tl.to('#line-1', { className: 'line' }, 1.10);
+      tl.to('.gutter .ln[data-ln="1"]', { className: 'ln' }, 1.10);
+      tl.to('#line-2', { className: 'line active' }, 1.10);
+      tl.to('.gutter .ln[data-ln="2"]', { className: 'ln active' }, 1.10);
+      tl.set('#status-ln', { textContent: '2' }, 1.10);
+      tl.to(L2, { opacity: 1, duration: 0.04, stagger: 0.022, ease: 'steps(1)' }, 1.20);
+      tl.to('#caret', { x: colX(L2.length), duration: L2.length * 0.022, ease: 'power1.out' }, 1.20);
+
+      // Line 3 (scene intro, ~28 chars)
+      tl.to('#caret', { x: colX(0), y: lineTop(3), duration: 0.12, ease: 'power4.out' }, 2.10);
+      tl.to('#line-2', { className: 'line' }, 2.10);
+      tl.to('.gutter .ln[data-ln="2"]', { className: 'ln' }, 2.10);
+      tl.to('#line-3', { className: 'line active' }, 2.10);
+      tl.to('.gutter .ln[data-ln="3"]', { className: 'ln active' }, 2.10);
+      tl.set('#status-ln', { textContent: '3' }, 2.10);
+      tl.to(L3, { opacity: 1, duration: 0.04, stagger: 0.020, ease: 'steps(1)' }, 2.18);
+      tl.to('#caret', { x: colX(L3.length), duration: L3.length * 0.020, ease: 'power1.out', overwrite: 'auto' }, 2.18);
+
+      // Lines 4-11 all reveal in a tighter cascade (we're past the initial typing showcase)
+      var laterLines = [
+        { id: '#line-4', chars: L4, ln: 4, at: 2.85 },
+        { id: '#line-5', chars: L5, ln: 5, at: 3.05 },
+        { id: '#line-6', chars: L6, ln: 6, at: 3.20 },
+        { id: '#line-7', chars: L7, ln: 7, at: 3.35 },
+        { id: '#line-8', chars: L8, ln: 8, at: 3.55 },
+        { id: '#line-9', chars: L9, ln: 9, at: 3.70 },
+        { id: '#line-10', chars: L10, ln: 10, at: 3.85 },
+        { id: '#line-11', chars: L11, ln: 11, at: 4.00 }
+      ];
+      laterLines.forEach(function (L) {
+        tl.to(L.chars, { opacity: 1, duration: 0.03, stagger: 0.015, ease: 'steps(1)' }, L.at);
+      });
+      // Park the caret at end of line 11 after all code has appeared.
+      tl.to('#caret',
+        { x: colX(L11.length), y: lineTop(11), duration: 0.2, ease: 'power2.out' },
+        4.15);
+      // Active line follows along — final resting active line is 11.
+      tl.to('#line-3', { className: 'line' }, 4.15);
+      tl.to('.gutter .ln[data-ln="3"]', { className: 'ln' }, 4.15);
+      tl.to('#line-11', { className: 'line active' }, 4.15);
+      tl.to('.gutter .ln[data-ln="11"]', { className: 'ln active' }, 4.15);
+      tl.set('#status-ln', { textContent: '11' }, 4.15);
+
+      // ============================================================
+      // t=1.6s — Render queue items fade in (offset right of the code as it types)
+      // ============================================================
+      tl.to('#q-1', { opacity: 1, x: 0, duration: 0.3, ease: 'expo.out' }, 1.60);
+      tl.to('#q-2', { opacity: 1, x: 0, duration: 0.3, ease: 'expo.out' }, 1.75);
+      tl.to('#q-3', { opacity: 1, x: 0, duration: 0.3, ease: 'expo.out' }, 1.90);
+
+      // ============================================================
+      // t=2.6s — Preview canvas content materializes (the "compiled" scene).
+      // Soft glow first, then headline, then sub-label.
+      // ============================================================
+      tl.fromTo('#mock-glow',
+        { opacity: 0, scale: 0.5 },
+        { opacity: 0.85, scale: 1, duration: 0.6, ease: 'expo.out', transformOrigin: '50% 50%' },
+        2.60);
+      tl.fromTo('#mock-headline',
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.5, ease: 'power4.out' },
+        2.85);
+      tl.fromTo('#mock-sub',
+        { opacity: 0 },
+        { opacity: 1, duration: 0.35, ease: 'power1.out' },
+        3.05);
+
+      // Continuous glow breath through the rest of the scene
+      tl.to('#mock-glow', {
+        scale: 1.08,
+        opacity: 0.6,
+        duration: 2.2,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: 1
+      }, 3.50);
+
+      // ============================================================
+      // t=3.6s — Timeline strip clips fade in left-to-right (one per track).
+      // scaleX from 0.6→1 makes them feel like they "snap" into place.
+      // ============================================================
+      tl.to('#clip-v1', { opacity: 1, scaleX: 1, duration: 0.4, ease: 'expo.out' }, 3.60);
+      tl.to('#clip-a1', { opacity: 1, scaleX: 1, duration: 0.4, ease: 'expo.out' }, 3.70);
+      tl.to('#clip-fx', { opacity: 1, scaleX: 1, duration: 0.4, ease: 'expo.out' }, 3.85);
+      tl.to('#clip-v2', { opacity: 1, scaleX: 1, duration: 0.4, ease: 'expo.out' }, 4.00);
+      tl.to('#clip-a2', { opacity: 1, scaleX: 1, duration: 0.4, ease: 'expo.out' }, 4.15);
+
+      // ============================================================
+      // t=4.0s — Render HUD drops down from the top of the canvas.
+      // ============================================================
+      tl.fromTo('#hud',
+        { opacity: 0, y: -12 },
+        { opacity: 1, y: 0, duration: 0.5, ease: 'back.out(1.6)' },
+        4.00);
+
+      // ============================================================
+      // t=4.3s → 8.5s — Playhead scrubs across timeline.
+      // We do NOT animate playhead.x via tl.to — we drive it via gsap.ticker
+      // off tl.time() so it tracks the GSAP timeline naturally and seeks correctly.
+      // We also fade the playhead in here.
+      // ============================================================
+      tl.to('#playhead', { opacity: 1, duration: 0.25, ease: 'power2.out' }, 4.30);
+
+      // ============================================================
+      // Render progress bar: hud-progress fills via "right" inset from 100% → 0%.
+      // Sustained continuous motion 4.3s → 8.5s. We tween a proxy and tl.set the right.
+      // Easier: just tween the inset directly on the bar element.
+      // ============================================================
+      tl.fromTo('#hud-progress',
+        { right: '100%' },
+        { right: '0%', duration: 4.2, ease: 'power1.out' },
+        4.30);
+
+      // ============================================================
+      // Frame counter + percent: discrete tl.set keyframes (seekable).
+      // Range: 0 / 540 → 540 / 540, 0% → 100% from t=4.3 → 8.5s.
+      // Steps every 0.21s ≈ 20 frames per step.
+      // ============================================================
+      var frameTicks = 21; // 20 ticks + final landing
+      for (var i = 0; i <= 20; i++) {
+        var t = 4.30 + (i / 20) * 4.20;
+        var frame = Math.round((i / 20) * 540);
+        var pct = Math.round((i / 20) * 100);
+        var framePadded = String(frame).padStart(3, '0');
+        tl.set('#hud-frame', { textContent: framePadded + ' / 540' }, t);
+        tl.set('#hud-pct',   { textContent: pct + '%' }, t);
+        tl.set('#status-frame', { textContent: String(frame) }, t);
+      }
+
+      // Time label in the timeline toolbar (00:00.00 → 00:09.00).
+      // 18 ticks across 4.5s of "scrubbing" (the playhead arc).
+      // We start counting from 00:00.00 at t=4.3 and march toward 00:09.00 at t=8.5.
+      for (var j = 0; j <= 18; j++) {
+        var tj = 4.30 + (j / 18) * 4.20;
+        var secs = (j / 18) * 9.0;
+        var whole = Math.floor(secs);
+        var frac = Math.round((secs - whole) * 100);
+        var label = '00:' + String(whole).padStart(2, '0') + '.' + String(frac).padStart(2, '0');
+        tl.set('#tl-cur', { textContent: label }, tj);
+      }
+
+      // Queue item 2 elapsed time: 00:00.0 → 00:04.5 across the render window.
+      for (var k = 0; k <= 18; k++) {
+        var tk = 4.30 + (k / 18) * 4.20;
+        var s = (k / 18) * 4.5;
+        var whole2 = Math.floor(s);
+        var dec = Math.round((s - whole2) * 10);
+        tl.set('#q-2-time', { textContent: '00:0' + whole2 + '.' + dec }, tk);
+      }
+
+      // ============================================================
+      // CONTINUOUS HOLD MOTION 5.0s → 9.0s — nothing sits still.
+      // Mock headline subtle drift, queue item active pulse, hud dot breath.
+      // ============================================================
+      tl.to('#mock-headline', {
+        y: -6,
+        duration: 3.5,
+        ease: 'sine.inOut'
+      }, 5.0);
+
+      tl.to('#q-2', {
+        backgroundColor: 'rgba(74, 158, 255, 0.18)',
+        duration: 0.6,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: 4
+      }, 5.0);
+
+      // HUD dot subtle pulse — continuous attention beacon
+      tl.to('.hud-dot', {
+        scale: 1.3,
+        duration: 0.5,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: 7,
+        transformOrigin: '50% 50%'
+      }, 4.2);
+
+      // ============================================================
+      // FINISH: at t=8.5s mark the queue item 2 done (status flips green).
+      // ============================================================
+      tl.to('#q-2 .queue-status', {
+        backgroundColor: '#4ade80',
+        boxShadow: '0 0 8px rgba(74,222,128,0.6)',
+        duration: 0.3,
+        ease: 'expo.out'
+      }, 8.50);
+      tl.set('#hud-label', { textContent: 'Complete' }, 8.50);
+
+      // ============================================================
+      // PLAYHEAD DRIVER — gsap.ticker reads tl.time() each frame and updates x.
+      // This works under seek() (snapshot CLI uses seeks), unlike tl.to onUpdate.
+      // We compute the playhead's parent (.tl-tracks) inner width at runtime.
+      // Range: x=0 at t=4.30 → x = max at t=8.50.
+      // ============================================================
+      var playheadEl = document.getElementById('playhead');
+      var tracksEl = document.getElementById('tl-tracks');
+      var SCRUB_START = 4.30;
+      var SCRUB_END   = 8.50;
+
+      gsap.ticker.add(function () {
+        if (!playheadEl || !tracksEl) return;
+        var t = tl.time();
+        // Compute the available track width at runtime — tracks padding 8/14 etc are accounted for by clientWidth.
+        var w = tracksEl.clientWidth - 36; // 18px left + 18px right padding
+        if (w < 0) w = 0;
+        var x = 0;
+        if (t <= SCRUB_START) {
+          x = 0;
+        } else if (t >= SCRUB_END) {
+          x = w;
+        } else {
+          var p = (t - SCRUB_START) / (SCRUB_END - SCRUB_START);
+          x = p * w;
+        }
+        // Offset by the tracks' inner padding-left (18px) so playhead aligns with clip starts.
+        playheadEl.style.transform = 'translateX(' + (x + 18) + 'px)';
+      });
+
+      window.__timelines['scene-11-timeline-editor-ui'] = tl;
+    })();
+  </script>
+</body>
+</html>

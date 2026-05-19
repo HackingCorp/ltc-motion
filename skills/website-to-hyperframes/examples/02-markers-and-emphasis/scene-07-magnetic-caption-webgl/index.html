@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>scene-07-magnetic-caption-webgl</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&display=swap"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #050510; }
+
+    [data-composition-id="scene-07-magnetic-caption-webgl"] {
+      width: 1920px;
+      height: 1080px;
+      position: relative;
+      overflow: hidden;
+      /* Static dark gradient replaces the original a-roll video. Cooler
+         indigo→black radial gives the WebGL distortion a clean stage
+         without competing with the displaced caption colors. */
+      background:
+        radial-gradient(ellipse at 50% 45%, #1a1a3a 0%, #0a0a1e 55%, #050510 100%);
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      color: #f7fbff;
+    }
+
+    /* Ambient grain — slow drift through the beat for continuous-motion. */
+    [data-composition-id="scene-07-magnetic-caption-webgl"] .ambient-grain {
+      position: absolute;
+      inset: -40px;
+      background:
+        radial-gradient(circle at 22% 30%, rgba(112, 199, 237, 0.10) 0%, transparent 38%),
+        radial-gradient(circle at 78% 70%, rgba(180, 120, 240, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 50% 92%, rgba(112, 199, 237, 0.05) 0%, transparent 32%);
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+
+    /* GL canvas — receives the warped caption + chromatic aberration. */
+    [data-composition-id="scene-07-magnetic-caption-webgl"] #gl-captions {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      display: block;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* Eyebrow — small contextual label above the caption phrase. */
+    [data-composition-id="scene-07-magnetic-caption-webgl"] .eyebrow {
+      position: absolute;
+      left: 50%;
+      top: 38%;
+      transform: translateX(-50%);
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: 0.34em;
+      text-transform: uppercase;
+      color: rgba(112, 199, 237, 0.78);
+      z-index: 6;
+      opacity: 0;
+    }
+
+    /* Soft cursor halo — the "magnet" visualization. Sits under the
+       caption so the viewer sees what's pulling the distortion. */
+    [data-composition-id="scene-07-magnetic-caption-webgl"] .cursor-halo {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 280px;
+      height: 280px;
+      margin-left: -140px;
+      margin-top: -140px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, rgba(112, 199, 237, 0.38) 0%, rgba(112, 199, 237, 0.10) 40%, transparent 70%);
+      mix-blend-mode: screen;
+      filter: blur(2px);
+      pointer-events: none;
+      opacity: 0;
+      z-index: 4;
+    }
+
+    [data-composition-id="scene-07-magnetic-caption-webgl"] .scene-label {
+      position: absolute;
+      left: 48px;
+      bottom: 48px;
+      font-size: 16px;
+      color: #707088;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 500;
+      z-index: 100;
+    }
+    [data-composition-id="scene-07-magnetic-caption-webgl"] .scene-label .accent {
+      color: #f5f5f5;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div
+    id="scene-07-magnetic-caption-webgl"
+    data-composition-id="scene-07-magnetic-caption-webgl"
+    data-start="0"
+    data-duration="5.5"
+    data-width="1920"
+    data-height="1080"
+    style="width: 1920px; height: 1080px;"
+  >
+    <div class="ambient-grain"></div>
+
+    <div class="eyebrow" id="eyebrow">Real-time GPU distortion</div>
+
+    <!-- Cursor halo — visual marker of the magnetic center. -->
+    <div class="cursor-halo" id="cursor-halo"></div>
+
+    <!-- WebGL canvas — displaces the caption texture under a cursor field.
+         Falls back to a 2D canvas drawing if WebGL is unavailable. -->
+    <canvas id="gl-captions" width="1920" height="1080"></canvas>
+
+    <div class="scene-label">
+      Scene 07 · <span class="accent">Magnetic Caption WebGL</span> · GLSL distortion follows cursor over text
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var BEAT = 5.5;
+      window.__timelines = window.__timelines || {};
+
+      var root = document.querySelector('[data-composition-id="scene-07-magnetic-caption-webgl"]');
+      var canvas = root.querySelector("#gl-captions");
+      var eyebrow = root.querySelector("#eyebrow");
+      var halo = root.querySelector("#cursor-halo");
+
+      var W = 1920;
+      var H = 1080;
+
+      // === Phrase plan ============================================
+      // Three short caption phrases play across the beat. Each gets its
+      // own magnetic sweep — the "cursor" tracks left→right along the
+      // active phrase, warping it under the displacement shader.
+      var PHRASES = [
+        { text: "THIS WARPS.",            start: 0.40, end: 2.00 },
+        { text: "WATCH CLOSELY.",         start: 2.20, end: 3.70 },
+        { text: "REAL-TIME GPU.",         start: 3.85, end: 5.30 },
+      ];
+
+      // === Build the caption texture (Canvas 2D) ==================
+      // Each phrase gets its own offscreen canvas that we upload to a
+      // WebGL texture when the phrase becomes active. This avoids the
+      // experimental texElementImage2D / layoutsubtree API used by the
+      // source composition and works in headless Chrome.
+      function buildPhraseCanvas(text) {
+        var c = document.createElement("canvas");
+        c.width = W;
+        c.height = H;
+        var ctx = c.getContext("2d");
+        ctx.clearRect(0, 0, W, H);
+        // Font sized to feel like a hero caption.
+        ctx.font = "900 168px Inter, system-ui, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "#f7fbff";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.65)";
+        ctx.shadowBlur = 24;
+        ctx.shadowOffsetY = 12;
+        ctx.fillText(text, W * 0.5, H * 0.58);
+        // Second pass — clean overlay without shadow for sharper edges.
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.fillStyle = "rgba(247, 251, 255, 0.95)";
+        ctx.fillText(text, W * 0.5, H * 0.58);
+        return c;
+      }
+
+      // Measure the rendered text bounds inside the canvas so the
+      // cursor can sweep exactly across the visible glyphs. Returns
+      // normalized [0..1] left/right in canvas-space.
+      function measurePhrase(text) {
+        var c = document.createElement("canvas");
+        c.width = 32;
+        c.height = 32;
+        var ctx = c.getContext("2d");
+        ctx.font = "900 168px Inter, system-ui, sans-serif";
+        var m = ctx.measureText(text);
+        var w = m.width;
+        var leftPx = W * 0.5 - w * 0.5;
+        var rightPx = W * 0.5 + w * 0.5;
+        return {
+          left: Math.max(0.04, leftPx / W - 0.04),
+          right: Math.min(0.96, rightPx / W + 0.04),
+          y: 0.58,
+        };
+      }
+
+      PHRASES.forEach(function (p) {
+        p.canvas = buildPhraseCanvas(p.text);
+        var bounds = measurePhrase(p.text);
+        p.left = bounds.left;
+        p.right = bounds.right;
+        p.y = bounds.y;
+      });
+
+      // === Shared GSAP timeline ===================================
+      var tl = gsap.timeline({ paused: true });
+
+      // Cursor state — driven by the timeline, sampled each frame.
+      // mouseX / mouseY in normalized [0..1] coords (origin top-left).
+      // strength scales the displacement magnitude.
+      var S = {
+        mouseX: 0.5,
+        mouseY: 0.58,
+        strength: 0,
+        activeIdx: -1,
+      };
+
+      // Try WebGL first.
+      var gl = canvas.getContext("webgl", { alpha: true, premultipliedAlpha: false, preserveDrawingBuffer: true })
+            || canvas.getContext("experimental-webgl", { alpha: true, premultipliedAlpha: false, preserveDrawingBuffer: true });
+
+      var usingWebGL = !!gl;
+
+      // Pre-render fallback context if we'll need it.
+      var ctx2d = usingWebGL ? null : canvas.getContext("2d");
+
+      // ---------- WebGL path -------------------------------------
+      var prog, vao, captionTex, U;
+      if (usingWebGL) {
+        var VS = [
+          "attribute vec2 a_pos;",
+          "varying vec2 v_uv;",
+          "void main() {",
+          "  v_uv = vec2(a_pos.x * 0.5 + 0.5, 0.5 - a_pos.y * 0.5);",
+          "  gl_Position = vec4(a_pos, 0.0, 1.0);",
+          "}",
+        ].join("\n");
+
+        // Magnetic distortion shader — adapted from the source comp,
+        // simplified to operate on a single caption texture (no
+        // underlying video layer). Cursor field pulls UVs toward the
+        // pointer; chromatic aberration separates the three channels
+        // along the cursor->pixel direction.
+        var FS = [
+          "precision highp float;",
+          "varying vec2 v_uv;",
+          "uniform sampler2D u_caption;",
+          "uniform vec2 u_mouse;",
+          "uniform vec2 u_resolution;",
+          "uniform float u_strength;",
+          "",
+          "void main() {",
+          "  vec2 uv = v_uv;",
+          "  float aspect = u_resolution.x / u_resolution.y;",
+          "  vec2 delta = u_mouse - uv;",
+          "  vec2 aspectDelta = delta * vec2(aspect, 1.0);",
+          "  float dist = length(aspectDelta);",
+          "  float field = exp(-dist * dist * 9.0);",
+          "  float chromaField = exp(-dist * dist * 10.5);",
+          "  float pull = field * 0.040 * u_strength;",
+          "  vec2 displaced = clamp(uv + delta * pull, vec2(0.0), vec2(1.0));",
+          "  vec2 dir = normalize(delta + vec2(0.0001));",
+          "  float aberration = chromaField * 0.012 * u_strength;",
+          "  vec4 redSample   = texture2D(u_caption, displaced + dir * aberration);",
+          "  vec4 greenSample = texture2D(u_caption, displaced);",
+          "  vec4 blueSample  = texture2D(u_caption, displaced - dir * aberration);",
+          "  float captionAlpha = max(max(redSample.a, greenSample.a), blueSample.a);",
+          "  vec3 captionRgb = vec3(redSample.r, greenSample.g, blueSample.b);",
+          "  vec3 cyan = vec3(0.18, 0.78, 1.0) * chromaField * 0.22 * u_strength;",
+          "  vec3 outRgb = captionRgb + cyan * captionAlpha;",
+          "  gl_FragColor = vec4(outRgb, captionAlpha);",
+          "}",
+        ].join("\n");
+
+        function compile(type, src) {
+          var sh = gl.createShader(type);
+          gl.shaderSource(sh, src);
+          gl.compileShader(sh);
+          return sh;
+        }
+        prog = gl.createProgram();
+        gl.attachShader(prog, compile(gl.VERTEX_SHADER, VS));
+        gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+        gl.linkProgram(prog);
+        gl.useProgram(prog);
+
+        // Fullscreen quad
+        var buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+        var aPos = gl.getAttribLocation(prog, "a_pos");
+        gl.enableVertexAttribArray(aPos);
+        gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+        // Caption texture — replaced each frame with the active phrase.
+        captionTex = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, captionTex);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+          new Uint8Array([0, 0, 0, 0]));
+
+        U = {
+          u_caption: gl.getUniformLocation(prog, "u_caption"),
+          u_mouse: gl.getUniformLocation(prog, "u_mouse"),
+          u_resolution: gl.getUniformLocation(prog, "u_resolution"),
+          u_strength: gl.getUniformLocation(prog, "u_strength"),
+        };
+
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      }
+
+      // Find which phrase (if any) is active at time t.
+      function activeAt(t) {
+        for (var i = 0; i < PHRASES.length; i++) {
+          if (t >= PHRASES[i].start && t <= PHRASES[i].end) return i;
+        }
+        return -1;
+      }
+
+      // Strength envelope: ramp up at phrase entry, sustain, soft tail.
+      function envelopeAt(t, p) {
+        var dur = p.end - p.start;
+        var local = (t - p.start) / dur;
+        if (local < 0 || local > 1) return 0;
+        // Smooth in (0..0.18), sustain, smooth out (0.85..1.0)
+        var inRamp = Math.min(1, local / 0.18);
+        var outRamp = Math.min(1, (1 - local) / 0.15);
+        var env = Math.min(inRamp, outRamp);
+        // Slight wobble during sustain for extra "magnetic" feel.
+        var wobble = 0.94 + 0.06 * Math.sin(local * Math.PI * 4);
+        return env * wobble;
+      }
+
+      // Cursor sweep: left → right across the phrase glyph bounds.
+      function cursorAt(t, p) {
+        var dur = p.end - p.start;
+        var local = (t - p.start) / dur;
+        local = Math.max(0, Math.min(1, local));
+        // Ease the sweep (sine in-out) so the cursor lingers near the
+        // edges and accelerates through the middle — feels "drawn"
+        // rather than mechanical.
+        var k = 0.5 - 0.5 * Math.cos(local * Math.PI);
+        var x = p.left + (p.right - p.left) * k;
+        return { x: x, y: p.y };
+      }
+
+      // ---------- Render functions -------------------------------
+      function uploadPhrase(idx) {
+        if (!usingWebGL) return;
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, captionTex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, PHRASES[idx].canvas);
+      }
+
+      function renderGL() {
+        gl.viewport(0, 0, W, H);
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.useProgram(prog);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, captionTex);
+        gl.uniform1i(U.u_caption, 0);
+        gl.uniform2f(U.u_mouse, S.mouseX, S.mouseY);
+        gl.uniform2f(U.u_resolution, W, H);
+        gl.uniform1f(U.u_strength, S.strength);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      }
+
+      // Canvas 2D fallback: draw the caption directly + a fake radial
+      // "warp" tint where the cursor sits. Approximates the magnetic
+      // visual when WebGL is unavailable (e.g. some headless contexts).
+      function renderFallback() {
+        ctx2d.clearRect(0, 0, W, H);
+        if (S.activeIdx < 0 || S.strength <= 0.001) return;
+        var p = PHRASES[S.activeIdx];
+        ctx2d.drawImage(p.canvas, 0, 0, W, H);
+        // Cursor warp tint
+        var cx = S.mouseX * W;
+        var cy = S.mouseY * H;
+        var grd = ctx2d.createRadialGradient(cx, cy, 20, cx, cy, 320);
+        grd.addColorStop(0, "rgba(112, 199, 237, " + (0.35 * S.strength) + ")");
+        grd.addColorStop(1, "rgba(112, 199, 237, 0)");
+        ctx2d.fillStyle = grd;
+        ctx2d.fillRect(0, 0, W, H);
+      }
+
+      function renderAtTime(t) {
+        var idx = activeAt(t);
+        if (idx !== S.activeIdx) {
+          S.activeIdx = idx;
+          if (idx >= 0) uploadPhrase(idx);
+        }
+        if (idx < 0) {
+          S.strength = 0;
+          if (usingWebGL) {
+            gl.viewport(0, 0, W, H);
+            gl.clearColor(0, 0, 0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+          } else {
+            ctx2d.clearRect(0, 0, W, H);
+          }
+          gsap.set(halo, { opacity: 0 });
+          return;
+        }
+        var p = PHRASES[idx];
+        var c = cursorAt(t, p);
+        var env = envelopeAt(t, p);
+        S.mouseX = c.x;
+        S.mouseY = c.y;
+        S.strength = env;
+
+        // Sync the halo div to the cursor (CSS px = composition px).
+        gsap.set(halo, {
+          x: c.x * W,
+          y: c.y * H,
+          opacity: 0.85 * env,
+          scale: 0.9 + 0.25 * env,
+        });
+
+        if (usingWebGL) renderGL();
+        else renderFallback();
+      }
+
+      // === Timeline events ========================================
+      // Eyebrow rides above the captions for the full beat with a
+      // gentle in/out fade.
+      tl.set(eyebrow, { opacity: 0, y: -8 }, 0);
+      tl.fromTo(eyebrow,
+        { opacity: 0, y: -8 },
+        { opacity: 1, y: 0, duration: 0.55, ease: "expo.out" },
+        0.20);
+      tl.to(eyebrow,
+        { y: -3, duration: 4.6, ease: "sine.inOut" },
+        0.40);
+      tl.to(eyebrow,
+        { opacity: 0, duration: 0.40, ease: "power2.in" },
+        5.05);
+
+      // Ambient grain — slow drift across the beat.
+      tl.fromTo(".ambient-grain",
+        { x: 0, y: 0, opacity: 1 },
+        { x: -22, y: -8, opacity: 0.92, duration: 5.2, ease: "sine.inOut" },
+        0.10);
+
+      // The canvas + halo are driven by the ticker (below); we still
+      // include a "duration pad" tween so the master timeline has the
+      // correct length regardless of when the active phrase ends.
+      tl.to({}, { duration: BEAT }, 0);
+
+      window.__timelines["scene-07-magnetic-caption-webgl"] = tl;
+
+      // === Drive WebGL/Canvas render from gsap.ticker reading tl.time().
+      // Required for snapshot/render — the seek path doesn't fire onUpdate
+      // callbacks reliably on paused timelines, but the ticker tick after
+      // a seek does pick up the new tl.time() and repaints.
+      var lastT = -1;
+      gsap.ticker.add(function () {
+        var t = tl.time();
+        if (t !== lastT) {
+          lastT = t;
+          renderAtTime(t);
+        }
+      });
+
+      // Prime frame 0.
+      renderAtTime(0);
+    })();
+  </script>
+</body>
+</html>
