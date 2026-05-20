@@ -9,6 +9,7 @@ This is the quality gate. Before the user sees anything, YOU verify that the vid
 Score each item 1–5. If any item scores below 3, fix it before continuing.
 
 ```
+[ ] verify-beats exits 0                  → paste the summary line ("✓ N/N beats passed")
 [ ] Lint: zero errors                     → paste the lint output (not "lint passed")
 [ ] Snapshot taken, N frames confirmed    → state the exact frame count
 [ ] descriptions.md read in full          → quote the WORST frame Gemini described
@@ -17,6 +18,8 @@ Score each item 1–5. If any item scores below 3, fix it before continuing.
 [ ] Audio duration matches video ±0.5s    → paste both numbers
 [ ] Critic sub-agent run                  → paste its single biggest quality gap finding
 ```
+
+The first item is the new structural gate: `npx hyperframes verify-beats <project-dir>` must exit 0. This catches the failure mode where sub-agents claim "done" without doing the work — it re-checks every beat's verification artifact (lint, snapshots taken, brand colors used, captured assets referenced, frame observations, concept alignment) against the actual files on disk. If a sub-agent lied about using `#FF6363` and the file uses `#000000`, the verifier catches it. Re-dispatch failing beats before continuing.
 
 **Why this matters:** The natural tendency is to look at a contact sheet, see that content is present, and declare it done. That is not verification — that is pattern-matching to a completion signal. Verification means running each check and reporting the raw result. "Frame 7 at 14.2s shows the logo in the top-left against a dark blue background, text is centered" is evidence. "The video looks great" is not.
 

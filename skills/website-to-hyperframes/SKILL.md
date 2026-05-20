@@ -50,15 +50,34 @@ You're not making _a video_. You're making something that **stops scrollers** in
 
 **The screenshot trap:** if the user's prompt pulls you toward using a product screenshot of an interface (kanban, chat, dashboard, terminal, etc.) as the primary visual of any beat — STOP. Build that UI from divs/SVG/CSS instead. Every prior eval round showed agents defaulting to "screenshot + Ken Burns + voiceover" regardless of what the prompt asked for, never reaching for HTML-in-canvas, SVG path drawing, counter animations, kinetic typography, or any of HyperFrames' powerful capabilities. Don't be that agent.
 
+**This is a VIDEO, not a webpage rebuilt in divs.** Composing from divs is the right _medium_ (no screenshots) — but the WRONG outcome is to build a webpage-style layout and animate it 2 pixels. Videos use cinematic grammar: framing, depth, camera movement, scale, atmosphere. A kanban in a video is not "a kanban board centered in the frame at 80% scale with cards breathing 1px" — it's a SHOT: extreme close-up on a card sliding home, then the camera pulls back to reveal the full board, ambient particles + glow + depth give it weight. The composed divs are the subject; the cinematography is what makes it feel like film.
+
+**Specific anti-patterns to refuse, every time:**
+
+- **macOS window chrome** (traffic-light dots, address bars, browser tabs, breadcrumbs) unless the beat IS about the window/browser as the subject
+- **Centered layout with chrome around it** — sidebar + header + content area + footer — that's a screenshot reproduced in CSS, not a shot
+- **"Breathing" micro-animations** (y: ±1–2px, scale: 1.01) — invisible at 1080p/4K video scale, useless as motion, a sign the sub-agent ran out of ideas
+- **Page-level navigation** — sidebars, headers, footers, breadcrumbs, "back" arrows unless the beat is specifically demonstrating navigation
+- **"Settled" beats** where nothing moves except a counter pulse — every beat must have continuous, _visible_ motion across the entire duration
+
+**Video grammar to USE in every beat:**
+
+- **Frame the beat as a SHOT** — close-up / medium / wide / over-the-shoulder / Dutch angle. Pick deliberately, not "centered."
+- **Camera motion is a primary element** — dolly in, push, parallax pan, orbit, pull-back. The camera moves THROUGH the composition; the composition doesn't sit still in front of the camera.
+- **Scale as energy** — enter at 1.4× and settle to 1.0; extreme close-up that pulls back to wide; the subject grows or shrinks through the beat
+- **Depth layers** — ambient background atmosphere, focal midground subject, accent foreground element — each moving at different parallax speed
+- **Light as choreography** — glow tracks the subject, key moments lit with bloom, transitions happen through light shifts
+- **Real motion magnitudes** — 30–100px movements, 0→1 opacity reveals, 0.7→1.0 scale changes — values that READ at video scale. Tiny micro-movements feel like a still image with twitches.
+
 ---
 
-## Step 0: Capture
+## Step 0: Capture & Understand the Brand
 
 **Read:** [references/step-0-capture.md](references/step-0-capture.md)
 
-Run the capture, read ALL extracted data (screenshots, tokens, design styles, text, assets, animations), write a site summary.
+Capture the site, then read the extracted data to understand the **brand and product** — what it does, who it's for, what voice it speaks in, what mood it lives in. The captured assets are a brand toolkit for later, not the building blocks the video is made from.
 
-**Gate:** Site summary printed. Capture data fully read and summarized.
+**Gate:** Site summary printed — strategy-first (what the product does, who it's for, brand voice) before the asset / color / font inventory.
 
 ---
 
@@ -74,13 +93,13 @@ Write DESIGN.md — a brand cheat sheet covering the visual identity: colors, ty
 
 ---
 
-## Step 2: Creative Brief
+## Step 2: Strategy & Messaging
 
 **Read:** [references/step-2-brief.md](references/step-2-brief.md), [references/visual-vocabulary.md](references/visual-vocabulary.md), [references/capabilities.md](references/capabilities.md) (scan the Table of Contents — deep-dive sections only as needed)
 
-Parse what the user already told you in their prompt. Most prompts already specify video type, style, and what to show. Only ask about things genuinely missing — don't re-ask what they said.
+Align with the user on **what the video must communicate** before talking visuals or assets. Parse the user's prompt — they probably already gave you the video type and style. Ask only what's missing: the ONE thing this video must say, the narrative arc, and the audience.
 
-**Gate:** You know the video type, duration, style, and format — either from the user's prompt or by deciding yourself.
+**Gate:** Video type, duration, format, and — critically — the message and narrative arc are locked. Without those, Step 3 can't write a concept-first storyboard.
 
 ---
 
@@ -88,7 +107,7 @@ Parse what the user already told you in their prompt. Most prompts already speci
 
 **Read:** [references/step-3-storyboard.md](references/step-3-storyboard.md)
 
-Write the storyboard (concept-first beats, asset assignments, transitions, depth layers), then the narration script to match — both live in this step because they're coupled. Present both to the user with a beat-by-beat summary. Iterate until they approve.
+Write the storyboard concept-first: message → narrative arc → beats that serve the arc → techniques per beat → brand accents pass at the end. Then write the narration script to match. Present both to the user with a beat-by-beat summary. Iterate until they approve.
 
 **Gate:** `STORYBOARD.md` + `SCRIPT.md` exist AND the user has approved the plan.
 
@@ -98,7 +117,7 @@ Write the storyboard (concept-first beats, asset assignments, transitions, depth
 
 **Read:** [references/step-4-vo.md](references/step-4-vo.md)
 
-If the Creative Brief says no narration — ask about background music, then skip to Step 5. Otherwise: ask the user which TTS provider (HeyGen TTS, ElevenLabs, or Kokoro), generate audio, transcribe, map timestamps to beats. Then ask about captions.
+If Step 2 said no narration — ask about background music, then skip to Step 5. Otherwise: ask the user which TTS provider (HeyGen TTS, ElevenLabs, or Kokoro), generate audio, transcribe, map timestamps to beats. Then ask about captions.
 
 **Gate:** Either (a) no narration was requested and storyboard has manual beat timings, or (b) `narration.wav` + `transcript.json` exist and beat timings updated with real durations.
 
@@ -109,9 +128,9 @@ If the Creative Brief says no narration — ask about background music, then ski
 **Read:** The `hyperframes` skill (load it — every rule matters)
 **Read:** [references/step-5-build.md](references/step-5-build.md)
 
-Build index.html and compositions following the architecture and pacing chosen in the storyboard (Step 3). See step-5 for code patterns for both architectures (stacked beats vs HyperShader sub-compositions).
+Build index.html and compositions following the architecture and pacing chosen in the storyboard (Step 3). Each sub-agent writes a `compositions/beat-N-verify.json` artifact (see [beat-builder-guide.md](references/beat-builder-guide.md)) declaring what they built. **The main agent does NOT trust sub-agents' chat reports** — it runs `npx hyperframes verify-beats <project-dir>` which cross-checks every claim against the composition HTML and snapshot files on disk.
 
-**Gate:** Every composition self-reviewed. Frames are full, elements readable, concept clear.
+**Gate:** `npx hyperframes verify-beats <project-dir>` exits 0. Every beat passes structural and brand-floor checks. If it fails, re-dispatch the failing beats with the verifier output quoted in the prompt — do not advance to Step 6 until the verifier passes.
 
 ---
 
@@ -151,19 +170,19 @@ Beat count is not in this table intentionally — it should come from the storyb
 
 ### User Interaction Points
 
-| Step                         | What to ask                                  | Why                                                                             |
-| ---------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------- |
-| Step 2 (Brief)               | Video type, style, specific requests, format | Creative direction sets everything. Wrong direction = wasted build time.        |
-| Step 3 (Storyboard + Script) | Beat-by-beat approval, script review         | Cheapest place to iterate. 30s to change a beat, 5min to rebuild a composition. |
-| Step 4 (VO)                  | TTS provider choice, API key if needed       | Voice quality makes or breaks the video. User may have provider preferences.    |
+| Step                         | What to ask                                                 | Why                                                                                    |
+| ---------------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Step 2 (Strategy)            | Message, narrative arc, audience, video type, style, format | The story is what every downstream choice flows from. Without it, beats are arbitrary. |
+| Step 3 (Storyboard + Script) | Beat-by-beat approval, script review                        | Cheapest place to iterate. 30s to change a beat, 5min to rebuild a composition.        |
+| Step 4 (VO)                  | TTS provider choice, API key if needed                      | Voice quality makes or breaks the video. User may have provider preferences.           |
 
 ### Reference Files
 
 | File                                                                               | When to read                                                                                                                                   |
 | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| [step-0-capture.md](references/step-0-capture.md)                                  | Step 0 — capture, read extracted data, write site summary                                                                                      |
-| [step-1-design.md](references/step-1-design.md)                                    | Step 1 — write DESIGN.md brand cheat sheet (9 sections, 200-400 lines)                                                                         |
-| [step-2-brief.md](references/step-2-brief.md)                                      | Step 2 — creative brief conversation with user                                                                                                 |
+| [step-0-capture.md](references/step-0-capture.md)                                  | Step 0 — capture, understand the brand and product, write strategy-first site summary                                                          |
+| [step-1-design.md](references/step-1-design.md)                                    | Step 1 — write DESIGN.md brand cheat sheet (6 sections, 250-350 lines)                                                                         |
+| [step-2-brief.md](references/step-2-brief.md)                                      | Step 2 — align on message, narrative arc, audience with user                                                                                   |
 | [capabilities.md](references/capabilities.md)                                      | Steps 2 & 5 — full inventory of what HyperFrames can do (24 sections). Scan the TOC during the brief, deep-dive specific sections during build |
 | [visual-vocabulary.md](references/visual-vocabulary.md)                            | Step 2 & 3 — translate subjective terms to concrete techniques. Composable building blocks, not rigid presets                                  |
 | [step-3-storyboard.md](references/step-3-storyboard.md)                            | Step 3 — storyboard + script (combined) with user review gate                                                                                  |

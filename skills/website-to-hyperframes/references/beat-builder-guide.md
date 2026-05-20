@@ -103,21 +103,118 @@ npx tsx packages/cli/src/cli.ts snapshot . --frames 3
 
 **If anything is wrong:** fix, re-snapshot, re-check. You are done ONLY when every frame matches the spec.
 
-## Step 5: Report back
+## Step 5: Write the verification artifact
 
-Tell the main agent:
+**You don't "report back" with a chat message. You write a file.** The main agent will run `npx hyperframes verify-beats` against your output; if the file is missing, malformed, or the claims inside don't match what's actually in your composition HTML, the build fails and a sub-agent is re-dispatched. There is no way to fake this — the verifier reads the actual files.
 
-1. **File:** path to saved composition
-2. **Lint:** pass/fail + error count
-3. **What each snapshot frame shows** — be specific: "Frame 1 at 0.5s: dark bg, blue glow center, headline 'Everything App' in white Inter 120px, subtitle fading in below." Not "looks good."
-4. **Issues found and fixed** during snapshot review
-5. **Issues you couldn't fix** (if any)
+Write `compositions/beat-N-name-verify.json` (matching your composition filename + `-verify.json`) with this exact shape:
+
+```json
+{
+  "beat": 3,
+  "composition_file": "compositions/beat-3-kanban.html",
+  "lint": {
+    "exit": 0,
+    "errors": 0,
+    "warnings": 12
+  },
+  "snapshots_taken_at_seconds": [0.2, 1.5, 3.8, 5.0],
+  "snapshot_files": [
+    "snapshots/beat-3/frame-00-at-0.2s.png",
+    "snapshots/beat-3/frame-01-at-1.5s.png",
+    "snapshots/beat-3/frame-02-at-3.8s.png",
+    "snapshots/beat-3/frame-03-at-5.0s.png"
+  ],
+  "frame_observations": [
+    {
+      "t": 0.2,
+      "describes": "Dark canvas (#07080A) with grain overlay. No cards yet — opening empty state."
+    },
+    {
+      "t": 1.5,
+      "describes": "Three kanban columns visible, 4 cards each. First active card highlighted in Raycast red (#FF6363). Counter chip on In-Progress reads '3'."
+    },
+    {
+      "t": 3.8,
+      "describes": "All 12 cards settled. Brand logo SVG appears top-left at 60×60. Narration sync moment: 'crush your sprint' lands."
+    },
+    {
+      "t": 5.0,
+      "describes": "Hold frame — cards breathe with y±2px parallax. Logo still visible. Ready for transition."
+    }
+  ],
+  "brand_check": {
+    "primary_bg_hex_used": "#07080A",
+    "primary_bg_hex_design_md": "#07080A",
+    "matches_bg": true,
+    "accent_hex_used": "#FF6363",
+    "accent_hex_design_md": "#FF6363",
+    "matches_accent": true,
+    "headline_min_font_px": 96,
+    "captured_assets_referenced": ["capture/assets/raycast-logo.svg"],
+    "no_assets_reason": null
+  },
+  "concept_alignment": "Serves the 'Problem → Solution' arc — chaotic backlog organizes itself, narration lands the value prop on the settle. Brand mark stamps identity without being the content."
+}
+```
+
+### Field requirements (the verifier checks every one of these)
+
+- **`lint.exit`** — must be `0`. Run `npx hyperframes lint .` from the project root and record the exit code. Fix all errors before writing this number.
+- **`snapshots_taken_at_seconds`** — at least 3 timestamps spread across the beat's duration (entrance, hold, near-exit minimum).
+- **`snapshot_files`** — actual PNG paths. The verifier checks each file exists on disk. If you list a path that doesn't exist, the beat fails.
+- **`frame_observations`** — at least 3 entries, each describing concrete visible content at that timestamp. Generic statements like "looks good" or "content visible" will fail the verifier's length check (need ≥20 chars per observation). Quote the headline text, name the colors, describe the layout.
+- **`brand_check.primary_bg_hex_used`** — must literally appear in the composition HTML (the verifier greps for it). If you claim `#07080A` but the file uses `#000000`, the beat fails.
+- **`brand_check.matches_bg`** — `true` if your `primary_bg_hex_used` equals what DESIGN.md says for this brand. `false` if you intentionally deviated (note why in `concept_alignment`).
+- **`brand_check.accent_hex_used`** — same rule as bg. Same grep check.
+- **`brand_check.headline_min_font_px`** — must be ≥80. Smaller headlines fail readability at video scale.
+- **`brand_check.captured_assets_referenced`** — list every `capture/assets/<filename>` path you actually used in the composition. The verifier greps the HTML for each. Don't list paths you didn't use — that's lying and the verifier catches it.
+- **`brand_check.no_assets_reason`** — required ONLY if `captured_assets_referenced` is empty. Explain why (e.g., "opener is pure kinetic typography; brand logo lands in closer beat"). Most beats need 0-1 accent, but if every beat across the video has zero, the brand-floor check will flag the video.
+- **`concept_alignment`** — one substantive sentence (≥30 chars) describing how this beat serves the storyboard's message and arc. Not "shows the kanban" — _why_ this beat exists in _this_ video.
+
+### Why this exists
+
+Earlier sessions had sub-agents reply "0 errors, looks good" without reading the HTML they wrote. Videos shipped with mismatched brand colors, missing logos, headlines too small to read, and beats that didn't serve the storyboard. The verifier exists because chat-message reports cannot be trusted. Producing the JSON forces you to actually open the composition, run lint, look at the snapshots, and check DESIGN.md.
+
+If you find yourself wanting to write `"describes": "looks good"` — stop. Open the snapshot PNG, see what's visible, write that.
 
 ---
 
 ## Continuous motion — the most important rule
 
-A beat is a SCENE, not a single entrance animation. Your GSAP timeline should have events spread across the ENTIRE beat duration — not just entrance tweens in the first 1-2 seconds followed by nothing. If an element is on screen, it should be doing something: drifting, breathing, parallaxing, revealing new details, transforming. Nothing sits unchanged for more than ~2 seconds. After elements enter, add continuous hold motion: Ken Burns drift on images, subtle y/scale breathing on text, parallax layers moving at different speeds, secondary elements appearing mid-beat.
+A beat is a SHOT in a film, not a webpage with entrance animations. Your GSAP timeline should have events spread across the ENTIRE beat duration — not just entrance tweens in the first 1-2 seconds followed by nothing. If an element is on screen, it should be doing something. After elements enter, add continuous hold motion: camera dolly, parallax layers moving at different speeds, secondary elements appearing mid-beat, real depth shifts.
+
+## You are building a SHOT, not a webpage
+
+The storyboard tells you the shot framing (close-up / medium / wide / etc.) and the camera move. Implement them. **If your composition looks like a webpage centered in the canvas with elements that "breathe" by 1-2px, you misread the beat.** Re-read it.
+
+**Specific patterns to refuse:**
+
+- ❌ **macOS / browser window chrome** as a frame around the content — traffic-light dots (`.red`, `.yellow`, `.green` circles), URL bars, browser tabs, breadcrumbs — UNLESS the storyboard explicitly says the chrome is the subject of the shot. If you build a window with chrome around a UI, you've built a screenshot equivalent in CSS, defeating the entire purpose of composing from divs.
+- ❌ **Sidebars + headers + footers** (the standard webpage layout) — these are page navigation, not video subjects. The beat is about _the kanban moment_, not _the kanban app_.
+- ❌ **Centered card / panel / window with 60–120px margin on all sides** — that's a webpage layout. Videos use the full frame with intentional negative space.
+- ❌ **"Hold with breathing"** implemented as `y: ±1–2px` or `scale: 1.01` — invisible at 1920×1080+ scale. If continuous motion is required, use camera dolly (scale 1.0 → 1.05), parallax pan (x/y ±30–80px), or progressive reveals.
+- ❌ **Hover-state simulations** — videos have no hover. If the brand uses hover effects, show the BEFORE and AFTER as discrete frames in the timeline.
+- ❌ **Counter pulses + dot pulses + tiny scale wobbles** as the only motion during the hold — these are "I ran out of ideas" filler.
+
+**Required motion magnitudes** (anything smaller is invisible at video scale):
+
+| Motion type     | Minimum magnitude                           |
+| --------------- | ------------------------------------------- |
+| Translate (y/x) | 30px (entrance) / 8px (drift during hold)   |
+| Scale           | 0.05 change (1.0 → 1.05 or larger)          |
+| Opacity         | full 0 → 1 or vice versa for reveals        |
+| Rotate          | 4° minimum to read (Dutch angles, ticks)    |
+| Camera dolly    | scale 1.0 → 1.06 minimum over beat duration |
+
+**Required cinematography per beat** (the storyboard should give you these; if it doesn't, escalate):
+
+- A **shot type** (close-up / medium / wide / over-the-shoulder / Dutch)
+- A **camera move** (dolly in/out, push, parallax pan, orbit, rack focus)
+- A **depth strategy** (what's foreground / midground / background)
+- A **purpose** (what specific feeling or noticing the shot delivers)
+
+If any are missing from the beat spec, the beat is under-defined. Don't fill the gap with "centered layout + breathing" — re-read the spec, and if it's genuinely missing, ask the main agent.
 
 ## Rules
 

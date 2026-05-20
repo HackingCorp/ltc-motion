@@ -101,6 +101,8 @@ If the storyboard says "fast" pacing: use the stacked-beats pattern below. Do no
 
 **Stacked-beats pattern (fast pacing):**
 
+Each beat is a composed scene — composed from divs, SVG, canvas, and CSS. Never a full-bleed screenshot. Each beat's structure (cards, panels, layered text, SVG-drawn mark, etc.) comes from the storyboard's Composition + Accents spec.
+
 ```html
 <div
   data-composition-id="video"
@@ -110,16 +112,39 @@ If the storyboard says "fast" pacing: use the stacked-beats pattern below. Do no
   data-duration="TOTAL"
   style="position:relative;width:1920px;height:1080px;"
 >
+  <!-- Beat 1: kinetic-typography hook (composed from per-word spans) -->
   <div class="beat" id="b01" style="opacity:1;">
-    <!-- first beat visible by default -->
-    <div class="mega">Opening statement</div>
+    <div class="mega">
+      <span class="w">Stop</span>
+      <span class="w">context-switching.</span>
+    </div>
   </div>
+
+  <!-- Beat 2: composed kanban — 3 columns of cards-as-divs, NOT a screenshot -->
   <div class="beat" id="b02">
-    <img src="capture/assets/hero-image.jpg" style="width:100%;height:100%;object-fit:cover" />
+    <div class="kanban">
+      <div class="col">
+        <div class="card">Triage tickets</div>
+        <div class="card">Review PR</div>
+      </div>
+      <div class="col">
+        <div class="card active">Design spec</div>
+      </div>
+      <div class="col">
+        <div class="card">Ship v2.1</div>
+      </div>
+    </div>
   </div>
-  <!-- more beats... -->
+
+  <!-- Beat 3: SVG logo draw — composed, not an <img> -->
+  <div class="beat" id="b03">
+    <svg viewBox="0 0 200 200"><path class="mark" d="..." /></svg>
+  </div>
+  <!-- more beats — each a composed scene with its own visual world -->
 </div>
 ```
+
+If you ever find yourself writing `<img src="capture/assets/...">` as a beat's primary visual, stop. That's the slideshow pattern this skill exists to break. Build the UI element from divs and CSS using the brand colors from DESIGN.md. The only legitimate `<img>` uses are: (a) the brand logo when it's purely raster, (b) a hero illustration layered as ambient depth behind composed content, (c) a gradient/texture image as a background wash. Never a product UI screenshot as the load-bearing visual.
 
 ```css
 .beat {
@@ -154,7 +179,7 @@ Each beat gets its own visual world — different background, different color, d
 
 If the storyboard says "slow" or "cinematic": build each beat as a sub-composition. Use long crossfades (0.8–1.2s `duration` with no `shader` key = CSS crossfade). Inside each beat, use continuous subtle motion — nothing is static:
 
-- Ken Burns drift on screenshots: `tl.fromTo(img, {scale:1.05, x:20}, {scale:1, x:-20, duration: BEAT, ease:"none"})`
+- Slow camera drift on the composed scene root: `tl.fromTo(scene, {scale:1.05, x:20}, {scale:1, x:-20, duration: BEAT, ease:"none"})` (Ken-Burns style, but on your composed elements — not on a screenshot)
 - Parallax text layers: `tl.fromTo(text, {y:30}, {y:-30, duration: BEAT, ease:"power1.inOut"})`
 - 1–2s breathing room before text enters (don't animate everything at t=0)
 - Soft easing: `expo.out` for entrances, `power1.inOut` for drifts
@@ -251,10 +276,10 @@ Full working `index.html` pattern — every field matters:
 
 **Brand font @font-face:** If the storyboard's BRAND VALUES lists a brand-specific font with a path in `capture/assets/fonts/`, add the `@font-face` block at the top of each composition that uses it — sub-agents won't do this unless you tell them explicitly. Paste the exact `@font-face` declaration in the sub-agent prompt's BRAND VALUES section. Without this, every composition falls back to `system-ui` and the brand typeface never loads.
 
-**⚠ ASSET PATHS — most common sub-agent mistake (5+ agents per run):** All asset paths in compositions must be relative to the **PROJECT ROOT**, not to the composition file. `compositions/beat-N.html` lives one directory deep, but paths must be written as if from the root.
+**⚠ ASSET PATHS — most common sub-agent mistake (5+ agents per run):** When a composition references a captured accent (logo, gradient layer, hero illustration), the path must be relative to the **PROJECT ROOT**, not to the composition file. `compositions/beat-N.html` lives one directory deep, but paths must be written as if from the root.
 
-- ✅ `capture/assets/hero.png`
-- ❌ `../capture/assets/hero.png`
+- ✅ `capture/assets/logo.svg`
+- ❌ `../capture/assets/logo.svg`
 
 The Studio preview server rewrites base URLs to the project root — `../` paths that seem to work locally will 404 in preview and in renders. Add this verbatim to every sub-agent prompt's RULES section.
 
@@ -268,15 +293,25 @@ The Studio preview server rewrites base URLs to the project root — `../` paths
 
 In either case, use the template. Do not skip it and build from memory.
 
-Each sub-agent reads [beat-builder-guide.md](beat-builder-guide.md) — it has everything: rules, easing, file references, validation commands, and the report-back protocol. **Do not try to paste all rules into the prompt yourself.** Instead, tell the sub-agent to read the guide file. You paste only the beat-specific context: the storyboard sections, brand values, and asset paths.
+Each sub-agent reads [beat-builder-guide.md](beat-builder-guide.md) — it has everything: rules, easing, file references, validation commands, and the **required verification artifact spec**. **Do not try to paste all rules into the prompt yourself.** Instead, tell the sub-agent to read the guide file. You paste only the beat-specific context: the storyboard sections, brand values, and asset paths.
 
 ```
 Build the composition for Beat N. Save to compositions/beat-N-name.html.
 
-FIRST: Read skills/website-to-hyperframes/references/beat-builder-guide.md
-It has your full workflow, all rules, easing vocabulary, file references,
-and the report-back protocol. Follow its 5-step workflow exactly:
-build → lint (`npx hyperframes lint .`) → snapshot (`npx tsx packages/cli/src/cli.ts snapshot . --frames 3`) → view contact sheet → fix issues → report back with specific frame descriptions.
+FIRST: Read skills/website-to-hyperframes/references/beat-builder-guide.md end to end.
+It has your full workflow, all rules, easing vocabulary, file references, and the
+VERIFICATION ARTIFACT SPEC. Follow its workflow exactly:
+  build → lint (`npx hyperframes lint .`)
+        → snapshot (`npx tsx packages/cli/src/cli.ts snapshot . --frames 3`)
+        → view contact sheet AND read snapshots/descriptions.md
+        → fix issues
+        → write compositions/beat-N-name-verify.json (REQUIRED — see beat-builder-guide.md §5 for exact schema)
+
+The main agent runs `hyperframes verify-beats` after your work. It cross-checks
+your verify.json claims against the actual composition HTML and snapshot files
+on disk. You CANNOT pass verification by claiming things you didn't do — the
+CLI greps the HTML for every hex color, every asset path you listed, and checks
+every snapshot file exists. Do the work; write the truth.
 
 ═══ PREVIOUS BEAT (Beat N-1) ═══
 [paste the FULL previous beat section from STORYBOARD.md]
@@ -350,4 +385,33 @@ For every `.html` file in `compositions/`, confirm that `index.html` has a `data
 
 **Captions stub rule:** Never create a `compositions/captions.html` with an empty transcript (`const script = [];`). If the VO/transcript step was skipped or failed, do not create the captions composition at all. An empty captions file that returns immediately is worse than no captions file — it silently does nothing and wastes a track slot.
 
-Once all compositions are built and all `compositions/` files are wired into `index.html`, move to Step 6 (Validate & Deliver) for lint, validate, snapshots, and visual review.
+## 5. Run verify-beats — REQUIRED gate before Step 6
+
+**Do not declare Step 5 complete on sub-agents' word.** Run the verifier:
+
+```bash
+npx hyperframes verify-beats <project-dir>
+```
+
+This reads each `compositions/beat-N-verify.json` (which sub-agents wrote per the beat-builder-guide.md verification artifact spec) and **cross-checks every claim against the actual composition HTML and snapshot files on disk.** It catches:
+
+- Missing verify.json files (sub-agent skipped the verification step entirely)
+- `lint.exit !== 0` (lint errors hidden)
+- Fewer than 3 frame observations (sub-agent didn't actually look at the snapshots)
+- Snapshot PNG paths that don't exist on disk (lied about taking snapshots)
+- Brand colors claimed but absent from the composition HTML (lied about using them)
+- Asset paths claimed but absent from the composition HTML (lied about using them)
+- Headlines under 80px (unreadable at video scale)
+- Missing or empty `concept_alignment` (no reason the beat exists in this video)
+- Brand-floor violations: first or last beat doesn't reference the brand logo
+
+**If verify-beats exits non-zero, do NOT proceed to Step 6.** For each failing beat:
+
+1. Read the specific failure from the verifier output
+2. Re-dispatch a sub-agent for that beat with the failure quoted in the prompt
+3. The sub-agent must rebuild OR rewrite the verify.json (after actually doing the work it claimed)
+4. Re-run `npx hyperframes verify-beats` until exit code is 0
+
+This is the gate. Earlier sessions had sub-agents reply "looks good" and the main agent trusted them — that's why videos shipped with mismatched colors and missing logos. The verifier removes that trust path. There is no way for a sub-agent to fake the verify.json because the CLI reads the actual files it would have to write.
+
+Once `npx hyperframes verify-beats` exits 0, move to Step 6 (Validate & Deliver) for lint, validate, snapshots, and visual review.

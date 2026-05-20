@@ -1,10 +1,30 @@
 # Step 3: Storyboard + Script
 
-## First decision: PACING
+Marketing videos are made concept-first. **The order is: message → narrative arc → beats that serve the arc → which techniques bring each beat to life → which brand accents decorate it.** Captured assets enter LAST — they're a brand toolkit you reach for where they serve the concept, not the starting material you build from. If you find yourself opening `asset-descriptions.md` to decide what beats to write, stop and go back to the message.
 
-Decide pacing BEFORE anything else. This determines beat count, beat duration, and architecture — everything flows from it.
+## First decision: CONCEPT
 
-Read the user's prompt and the style direction from Step 2. Map to one of these:
+Before pacing, before beats, before anything else — write the concept block at the top of `STORYBOARD.md`. Carry forward what was decided in Step 2's brief:
+
+```markdown
+**Message:** [the ONE thing this video must communicate — one sentence]
+**Arc:** [Problem→Solution / Reveal / Demonstration / Vibe / Comparison — and a one-sentence shape of how it unfolds]
+**Audience:** [who's watching, where they're watching — TikTok scrollers, LinkedIn viewers, embedded on landing page]
+**Brand voice:** [confident / playful / clinical / urgent / premium — pulled from DESIGN.md]
+**Why this matters now:** [GTM context if relevant — launch, feature ship, brand reposition, ongoing demo]
+```
+
+If any of those rows are blank, the storyboard cannot land. Go back to the brief — don't substitute "show the kanban" for a message.
+
+**The single-sentence test:** _"What makes this video different from a generic [video type] for any [industry] brand?"_ If you can't answer it from the rows above, the concept isn't sharp enough. Sharpen it before writing pacing or beats.
+
+---
+
+## Second decision: PACING
+
+With the concept locked, pick the pacing that serves it. This determines beat count, beat duration, and architecture — every downstream choice flows from here.
+
+Read the message and arc from the concept block above plus the style direction from Step 2's brief. Map to one of these:
 
 | User says                                                   | Pacing       | Beat count | Beat duration | Architecture                                               |
 | ----------------------------------------------------------- | ------------ | ---------- | ------------- | ---------------------------------------------------------- |
@@ -36,19 +56,11 @@ Beat 3: composed kanban (4 cards-as-divs per column) + counter chip on In-Progre
 
 ---
 
-**Before writing beats, answer this in one sentence:**
-
-> "What makes this video different from a generic [video type] for any [industry] brand?"
-
-If you can't answer it, you haven't thought enough.
-
----
-
 **Re-read these files before writing:**
 
 - **DESIGN.md** — your color palette, font rules, components, Do's/Don'ts. Every visual must be grounded in this brand identity. If it says "white backgrounds with purple accent" — plan light scenes, not dark moody ones.
 - **[visual-vocabulary.md](visual-vocabulary.md)** — translate the user's style direction into concrete dimension values (pacing, density, transitions, mood, motion, audio). Note any per-beat overrides the user requested.
-- **Asset discovery — use the contact sheets.** View `capture/assets/contact-sheet-*.jpg` and `capture/assets/svgs/contact-sheet-*.jpg`. Each grid cell is labeled with the filename. This is how you browse what's available without opening 50 individual files. When you find an asset you want to use, note the filename from the label and reference it as `capture/assets/<filename>`. If an asset looks promising but you need to check resolution or detail, THEN open the individual file. Also read `capture/extracted/asset-descriptions.md` for one-line summaries. **Understand what each asset IS before using it.** Product screenshots (dashboards, UI, features) show what the product does — strongest visuals. Decorative assets (abstract gradients, illustrations) can work as backgrounds or atmospheric elements, but don't make them THE beat content — a gradient filling a frame says nothing. Every asset should serve the beat's concept. **Never use contact sheets or scroll screenshots in the video** — contact sheets have grid labels and headers baked in, scroll screenshots are raw browser captures. Both are for AI to BROWSE and understand the site, not to place in compositions.
+- **Asset discovery — use the contact sheets.** View `capture/assets/contact-sheet-*.jpg` and `capture/assets/svgs/contact-sheet-*.jpg`. Each grid cell is labeled with the filename. This is how you browse what's available without opening 50 individual files. When you find an asset that earns its place as a brand accent, note the filename from the label and reference it as `capture/assets/<filename>`. If an asset looks promising but you need to check resolution or detail, THEN open the individual file. Also read `capture/extracted/asset-descriptions.md` for one-line summaries. **Understand what each asset IS before using it.** Product screenshots show what the product does — useful for understanding the brand, but **compose the UI from divs/CSS in your beats rather than pasting the screenshot** (see Per-Beat Direction below). The strongest captured assets for video accents are usually the brand logo (SVG), the hero illustration, and gradient/texture backgrounds. **Never use contact sheets or scroll screenshots in the video** — contact sheets have grid labels and headers baked in, scroll screenshots are raw browser captures. Both are for AI to BROWSE and understand the site, not to place in compositions.
 - **[techniques.md](../../hyperframes/references/techniques.md)** — 20 visual techniques with code patterns. Pick for beats, these are starting points to adapt, not templates to copy.
 - **[text-effects.md](../../hyperframes/references/text-effects.md)** — 24 named text animation effects bundled in the repo. Read the catalog now and assign a specific effect ID to every headline, label, and copy element in every beat — not generic "fades in" descriptions.
 
@@ -97,7 +109,7 @@ Apple keynote register — economy of words, silence between sentences is a feat
 
 **Global guardrails** — read [video-composition.md](../../hyperframes/references/video-composition.md) first. It defines the medium rules: density, color presence, scale, frame composition, and how design.md is brand truth not layout spec. Then apply these capture-specific additions:
 
-- Use as many captured assets as the creative vision allows. The assets exist — use them generously.
+- Captured assets are accents on composed beats, not the beats themselves — see Asset Audit below for which assets earn a place (typically 2-4 across the whole video).
 - Use different techniques from techniques.md — not across the whole video, per beat. Don't default to basic fade/scale/opacity — mix in SVG path drawing, HTML-in-canvas, shaders, scrolling effects or movement effect, CSS 3D transforms, typing effects, counter animations, canvas procedural art. Each beat should feel like its own visual world. Use as many as makes sense for the storyboard.
 
 **Underscore/music direction** (if applicable):
@@ -175,32 +187,65 @@ Do NOT hand-code a Three.js device scene from scratch. The registry block handle
 
 ---
 
-## Asset Audit (decoration only — composed beats carry the visual)
+## Per-Beat Direction
 
-Audit captured assets to pick **the ones that will decorate your composed beats** — the brand logo for opener and closer, a hero illustration as a depth layer behind composed UI, a gradient image as an ambient wash, the brand wordmark stamped onto a composed product UI. **The composed builds carry the visual story; the assets garnish them.** Aim for 2-4 accent assets total across the whole video — accent count, not content count. The brand mark almost always earns a place; everything else has to justify itself.
+Each beat is a SHOT, not a layout. Write what the CAMERA does and what the FRAME reveals — not "what's positioned where on the page."
 
-Print this table — but the "Role" column should always read as "accent / decoration / brand inflection," never as "primary visual for this beat":
+### A beat is a shot — pick the framing before writing CSS
 
-| Asset                          | Type     | Use it as       | Role                                                                            |
-| ------------------------------ | -------- | --------------- | ------------------------------------------------------------------------------- |
-| stripe-logo.svg                | SVG      | Beat 1 + Beat N | Brand mark (opener stroke-draw, closer hold)                                    |
-| wave-fallback-desktop.png      | Gradient | Beat 3 bg layer | Ambient depth wash behind composed dashboard                                    |
-| datavizstatic3x.png            | Data viz | SKIP            | Compose the stats from divs + counter animations instead                        |
-| enterprise-accordion-hertz.png | Photo    | SKIP            | Compose the customer-story UI from divs with the brand's testimonial card style |
-| icon-3.svg                     | Icon     | SKIP            | Decorative, too small to matter                                                 |
+Every beat header should declare its shot type in the first line. **Shot types:**
 
-Mark assets `SKIP` when a composed equivalent (dashboards, kanban, chat, terminal, file tree, calendar, pricing cards, etc.) does a better job — that's the strong default for product UI. Use the brand's _real_ data (project names, real metrics, real product copy) — not the placeholder labels a screenshot would have.
+| Shot                  | Use for                                                                                  | What the frame contains                                               |
+| --------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| **Extreme close-up**  | a single card / number / character / cursor / button as the entire subject               | one element fills 60–90% of frame, everything else blurred or absent  |
+| **Close-up**          | a small UI region (a single column, a card stack, a chart, a code block)                 | the subject fills 40–60% of frame with depth-layered context behind   |
+| **Medium**            | a section of UI — kanban with 3 columns, chat with 3 messages, dashboard with 2-3 panels | the subject fills 60–80% of frame, edges of nearby UI bleed in        |
+| **Wide**              | full UI assembly visible — only when the WHOLE thing is the point                        | full UI at 70–90% scale with deliberate negative space                |
+| **Over-the-shoulder** | viewer "behind" the user — cursor / hands / device foreground, UI midground              | foreground element bottom 1/3, UI fills upper 2/3 with parallax depth |
+| **Dutch angle**       | tension, urgency, "something's off"                                                      | the frame is tilted 4–8°, content composed to feel unstable           |
 
-**Composed bar:**
+**The "wide shot" trap:** _Every_ beat at wide framing looks like a screenshot in CSS. Most product-demo videos should be 60% close-up + close-up + 20% medium + 10% wide + 10% extreme close-up. Wide is the rare establishing shot, not the default.
 
-- Every beat's primary visual is composed from divs / SVG / CSS / GSAP at build time, not pasted from a screenshot
-- Accents are layered on top — the brand mark, gradient washes, hero illustrations — to give the composed beat this brand's inflection
-- Every beat must feel alive in every frame (continuous motion — see Per-Beat Direction below)
-- Every beat must justify its place in the bigger picture (full video)
+### Camera motion is the subject, not the elements
+
+In website thinking: elements animate in, then sit still while the user reads. In video thinking: the camera moves THROUGH the scene. The composition shifts.
+
+Every beat needs at least one camera-style move. Pick from:
+
+- **Dolly in** — composition scales 1.0 → 1.08 over the beat duration, slight x/y drift
+- **Dolly out / pull-back** — composition scales 1.15 → 1.0, revealing more context
+- **Push** — fast scale-up (1.0 → 1.05, ~0.5s power3.out) on a key moment
+- **Parallax pan** — background drifts opposite to foreground at different speeds
+- **Orbit** — the subject rotates in 3D, or the camera circles it
+- **Rack focus** — blur shifts from one element to another (background blurs as foreground sharpens)
+
+If a beat has NO camera-style move and elements only animate inward at the start, it will read as a webpage with entrance animations. That's not a video beat.
+
+### Forbidden patterns (the video-as-webpage failures)
+
+These appear in nearly every iteration where sub-agents revert to website thinking. Refuse to write any beat that includes:
+
+- ❌ **macOS / browser window chrome** as a frame around the content — traffic-light dots, URL bars, browser tabs, breadcrumbs — UNLESS the beat IS specifically about that chrome (e.g., "the macOS window itself is the subject of the shot")
+- ❌ **Sidebars, navigation rails, page headers, page footers** unless the beat demonstrates navigation as its concept
+- ❌ **"Centered card / panel / window with 60–120px margin on all sides"** — that's the standard webpage layout; videos use the full frame and meaningful negative space
+- ❌ **"Hold with breathing" micro-animations** where elements move y: ±1–2px or scale 1.01 — invisible at video resolution; this is sub-agents pretending the beat has motion when it doesn't
+- ❌ **Settled holds longer than 1.5s** with no continuous camera or compositional change — fix by adding camera dolly, depth-layer parallax, or new sub-elements entering mid-beat
+- ❌ **Hover-state demonstrations** — videos have no hover; if the brand has a hover effect to communicate, find a way to show the BEFORE and AFTER as discrete frames, not a hover simulation
+- ❌ **Tooltips and modal cards "for context"** that explain what something is — videos communicate through visual language, not popup hint text
+
+### Required for every beat (the floor for video grammar)
+
+Every beat must specify, in its visual description:
+
+1. **Shot type** (one of the six above)
+2. **Camera move** (which one, when it starts, how long it lasts)
+3. **Depth strategy** (what's in foreground / midground / background, how they parallax)
+4. **Motion magnitudes** that read at video scale (30px+ y/x movements, scale changes ≥0.05, opacity transitions ≥0.5)
+5. **The shot's purpose** — what specifically is the viewer supposed to feel or notice in this 3–5 seconds?
 
 ---
 
-## Per-Beat Direction
+### Existing beat-level fields (below) layer on top of the shot grammar above
 
 Each beat is a WORLD, not a layout. Write what the viewer EXPERIENCES before you write CSS specs.
 
@@ -251,7 +296,7 @@ Which narration line plays over this beat (Also keep in mind the whole narration
 
 What the viewer sees — described cinematically, not as CSS specs. Use camera language and production motion designer vocabulary (pan, zoom, drift, settle, and more of those words). Think in layers — what's supposed to happen in the foreground, midground, background simultaneously?
 
-**For the rare beat where a captured asset is the primary visual** (e.g., a homepage-reveal beat where the literal site IS the subject, or a customer-photo beat where the photo is the content): specify which asset, how much of the frame it fills (%), and where text/labels go relative to its safe zones. Don't blindly center text over busy product UI. **These beats should be the exception, not the rule** — if every beat's primary visual is a captured asset, you've defaulted to the slideshow pattern the library exists to break.
+**For the rare beat where a captured asset is the primary visual** (e.g., a homepage-reveal beat where the literal site IS the subject, or a customer-photo beat where the photo is the content): specify which asset, how much of the frame it fills (%), and where text/labels go relative to its safe zones. Don't blindly center text over busy product UI. **These beats should be the exception, not the rule** — if every beat's primary visual is a captured asset, you've defaulted to the slideshow pattern this workflow exists to break.
 
 ### Composition + Accents
 
@@ -297,6 +342,44 @@ A beat is a SCENE with internal life, not a single entrance followed by a static
 If your animation sequence only has events in the first 2 seconds and the beat lasts longer, the rest is dead air. Plan moments across the full duration. Nothing should sit unchanged for more than ~2 seconds — if an element is on screen, give it continuous motion (drift, breathe, pulse, parallax).
 
 Describe the feel precisely: "snappy overshoot bounce settling into place" → back.out; "slow heavy drift" → power1.inOut. Vague adjectives are useless.
+
+---
+
+## Brand Accents Pass (LAST creative decision — happens after beats are written)
+
+Your beats are now conceptually defined. Each one has a composed visual that carries it. **Now**, do a single pass to decide which captured assets — if any — earn an accent role on which beat.
+
+This is the LAST creative pass before file-tree time. It comes here intentionally: assets decorate concept-defined beats; they do not seed them. If you find yourself wanting to add a beat _because_ an asset would look cool, the asset is doing the storyboarding — go back and rewrite that beat from the message instead.
+
+### The brand-inflection floor (REQUIRED minimums)
+
+Two hard rules — `verify-beats` checks them at Step 5, and the deliverable fails the brand-floor check if they're missing:
+
+1. **The brand mark (logo / wordmark SVG) MUST appear in the opener AND the closer beat.** A brand video that doesn't show the brand mark in the first and last frame is failing its job. The only exception is when STORYBOARD.md explicitly overrides this with a written reason (e.g., "opener is pure kinetic typography to delay brand reveal until beat 3 for narrative tension"). If you override, write the reason in that beat's Composition + Accents section so the verifier sees it.
+
+2. **The site's signature visual MUST appear somewhere in the video.** Every captured site has one: the gradient wave, the hero illustration, the distinctive product UI mark, the wordmark animation, the color combination, the hero photograph. It's whatever a viewer who knows the brand would point at and say "that's them." Find it during Step 0; place it as an accent in at least one beat.
+
+These are floors, not ceilings. Beyond them, aim for 2-4 brand accents total across the whole video, not per beat. Most beats need 0-1. Everything beyond the floor has to justify itself against the question: _"Does this asset make the beat MORE this brand, or is it filler?"_
+
+Print this table once your beats are written:
+
+| Asset                          | Type     | Where (beat #)  | Role                                                                            |
+| ------------------------------ | -------- | --------------- | ------------------------------------------------------------------------------- |
+| stripe-logo.svg                | SVG      | Beat 1 + Beat N | Brand mark (opener stroke-draw, closer hold)                                    |
+| wave-fallback-desktop.png      | Gradient | Beat 3 bg layer | Ambient depth wash behind composed dashboard                                    |
+| datavizstatic3x.png            | Data viz | SKIP            | Compose the stats from divs + counter animations instead                        |
+| enterprise-accordion-hertz.png | Photo    | SKIP            | Compose the customer-story UI from divs with the brand's testimonial card style |
+| icon-3.svg                     | Icon     | SKIP            | Decorative, too small to matter                                                 |
+
+Mark assets `SKIP` when a composed equivalent (dashboards, kanban, chat, terminal, file tree, calendar, pricing cards, etc.) does a better job — that's the strong default for product UI. Use the brand's _real_ data (project names, real metrics, real product copy) in composed beats — never the placeholder labels a screenshot would have.
+
+**Update each beat's Composition + Accents section** based on what this pass produced. Most beats stay accent-free. The few that earn one get a single line under "Accents" with the file, position, opacity, and motion.
+
+**The bar:**
+
+- Every beat's primary visual stays composed from divs / SVG / CSS / GSAP at build time
+- Accents are a thin layer of brand inflection on top — never the carrier
+- A beat with no obvious accent need stays accent-free. The composed visual is enough.
 
 ---
 
@@ -396,7 +479,7 @@ The script and storyboard are one step. Every beat already has a VO cue — the 
 
 The script serves the storyboard — write words that fit the visual plan, not the other way around. Reference real product features, real stats, and real components from `capture/extracted/visible-text.txt`. Use exact numbers.
 
-**Script length depends on the creative direction, not a formula.** A cinematic video with dramatic pauses and visual-only moments might have 40 words across 30 seconds. A rapid feature showcase might pack 100 words into 30 seconds. The storyboard's pacing and style (from Step 2's Creative Brief) determine how much narration vs. silence the video needs. Some beats are narrated; some are pure visual. Let the creative plan drive the word count, not the other way around.
+**Script length depends on the creative direction, not a formula.** A cinematic video with dramatic pauses and visual-only moments might have 40 words across 30 seconds. A rapid feature showcase might pack 100 words into 30 seconds. The storyboard's pacing and style (from Step 2's brief) determine how much narration vs. silence the video needs. Some beats are narrated; some are pure visual. Let the creative plan drive the word count, not the other way around.
 
 The key constraint: don't pad with dead silence where nothing is happening. If a beat has no narration, something visual must be carrying the viewer's attention. Empty frames = lost viewers.
 
@@ -438,7 +521,7 @@ Summarize the plan clearly. Don't dump the full STORYBOARD.md — give the user 
 
 - **"Looks good" / approval** → proceed to Step 4 (VO)
 - **Specific feedback** ("make beat 3 longer", "change the opening to be faster", "I don't want the typing effect") → update STORYBOARD.md and SCRIPT.md, re-present
-- **Major direction change** ("actually I want it more playful, not cinematic") → revisit the creative brief dimensions, rewrite storyboard
+- **Major direction change** ("actually I want it more playful, not cinematic") → revisit Step 2's brief dimensions, rewrite storyboard
 - **Iterate until the user is satisfied.** This is the cheapest place to make changes — changing a storyboard beat costs 30 seconds. Changing a built composition costs 5 minutes.
 
 ### Gate

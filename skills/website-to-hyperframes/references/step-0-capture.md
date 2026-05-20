@@ -1,4 +1,6 @@
-# Step 0: Capture & Understand
+# Step 0: Capture & Understand the Brand
+
+You're capturing the site **to understand a brand and a product** — not to inventory building blocks. Reading the assets tells you what the product is, who it's for, what voice the brand speaks in, and what mood it lives in. That understanding is the strategic foundation for the video; the assets themselves are decoration the storyboard will reach for late, only where they serve the concept. **The video is not a recombination of the captured assets.**
 
 ## Run the capture
 
@@ -45,6 +47,8 @@ Read every file below. After each one, **write a 3-4 sentence summary** of what 
 
 5. **`capture/extracted/asset-descriptions.md`** — One-line-per-file summary of all downloaded assets. Note which assets are most visually striking or useful for video.
 
+6. **`capture/extracted/fonts-manifest.json`** — Each downloaded font identified by its real family name (read from the binary's OpenType `name` table, so hashed Next.js/Webpack filenames are resolved automatically). Lists per-family aggregates with weights, variable-font axes, and file counts. Read this in Step 1 instead of guessing fonts from filenames. If the manifest's `unidentified[]` is empty, every captured font has a known identity. Skip the file if it doesn't exist (older captures).
+
 ### Required to check and read IF they exist
 
 6. **`capture/extracted/animations.json`** — See for yourself if the site uses scroll-triggered animations, marquees, canvas/WebGL, or named CSS animations. Just good to know.
@@ -75,11 +79,17 @@ After reading `tokens.json` and `design-styles.json` here, **summarize the key v
 
 ## Gate
 
-Print your site summary before proceeding to Step 1 (DESIGN.md):
+Print your site summary before proceeding to Step 1. The summary is **strategy-first, not asset-first**:
 
 - **Site:** [name]
+- **What the product does:** [one sentence — the product's actual job, what problem it solves]
+- **Who it's for:** [audience — developers, designers, ops teams, consumers, enterprise, etc.]
+- **Core value prop:** [the one promise the homepage makes — what the brand is selling, in their own words if visible-text supports it]
+- **Brand voice:** [one phrase — confident/playful/clinical/premium/urgent/etc., grounded in the copy you read]
+- **Visual identity:** [one sentence — dominant mood, e.g. "dark cinematic with single saturated accent" or "white-and-color clean consumer"]
 - **Colors:** [top 3-5 HEX values with roles]
 - **Fonts:** [font families]
 - **Sections:** [count] sections, [count] headings, [count] CTAs
-- **Key assets:** [3-5 most useful assets for video]
-- **Vibe:** [one sentence describing the visual identity]
+- **Notable captured assets:** [3-5 assets worth remembering as potential brand accents — typically logo, hero illustration, gradient, brand mark. Note these are candidates, not assignments. Most won't make it into the final video.]
+
+The first 5 bullets are the strategic frame — they tell you what video to make. The last 4 are the brand toolkit you'll inflect that video with.

@@ -1,8 +1,8 @@
-# Step 2: Creative Brief
+# Step 2: Strategy & Messaging
 
 **First, scan the Table of Contents in [capabilities.md](capabilities.md)** — the 24-row TOC tells you everything HyperFrames can do. You need this to tell users what's possible. Deep-dive specific sections only if a beat needs them.
 
-You've captured the site, read all the data, written DESIGN.md. Now you know what you're working with — the brand's colors, assets, animations, typography. Before making any creative decisions, **ask the user what they want.**
+You've captured the site and you now understand the brand — what the product does, who it's for, what voice it speaks in, what mood it lives in. Before any creative decisions, **align with the user on the story this video must tell.** Captured assets exist as a brand toolkit you'll reach for late in Step 3; they are not what the conversation in this step is about.
 
 **Parse the user's prompt first.** Read what they already told you — video type, style, specific requests, duration. Only ask about things they DIDN'T specify. If they said "product demo, show me the kanban board and chat, moderate pace" — that's most of the brief already. Don't ask "what type of video?" when they literally said "product demo."
 
@@ -46,42 +46,38 @@ Instead, ask them across the six axes from [visual-vocabulary.md](visual-vocabul
 
 Their answers modify the brand-derived baseline you built in Step 1. Don't override the brand with their words — let the brand and their direction converge. See [visual-vocabulary.md](visual-vocabulary.md) for how to handle conflicts.
 
-### Question 3: What do you SPECIFICALLY want to see?
+### Question 3: What's the ONE thing this video must communicate?
 
-This is the open-ended question, but guide the user toward specificity. Frame the options around **composed beats with brand inflection** — not around "what asset gets used where." The video's load-bearing visuals will be composed from scratch (kanban from divs, dashboards from layered panels, transitions from shaders); the captured assets are accents that decorate those composed beats with this brand's identity.
+This is the strategy question. Every effective marketing video has a single core message — the one idea that has to land. Every beat serves that idea, or it doesn't belong. Get the user to articulate this BEFORE talking about visuals, assets, or specific scenes.
 
 Frame it like this:
 
-> "Now that I've analyzed your site, here's what I have to work with:
+> "From your site, here's the brand frame I'm working from:
 >
-> - **Brand inflection** — [2-3 sentences on what makes this brand's visual language distinctive: dominant colors, font character, mood]
-> - **What I can compose** — every product UI, transition, counter, sparkline, and effect can be built from scratch with HyperFrames (kanban, chat, dashboard, terminal, code editor, shader transitions, particle fields, 3D scenes, audio-viz, etc.). Browse the [capabilities table](capabilities.md) for the full menu.
-> - **Brand accents available** — [1-2 most distinctive captured assets that earn a place: SVG logo for stroke-draw opener, hero illustration for a depth layer, gradient image for ambient wash]
-> - **Anything genuinely worth using as content** (rare) — [If the capture has something truly unique that can't be composed: a custom Lottie, real product video, a one-of-a-kind illustration — name it]
+> - **What the product does:** [one sentence from the site summary — not features, the actual job]
+> - **Audience:** [who it's for, derived from copy and visual tone]
+> - **Brand voice:** [confident / playful / clinical / urgent / premium — what tone the brand speaks in]
 >
-> Based on this, the most interesting beats I could compose for you:
+> Before we plan visuals, two questions to anchor the story:
 >
-> - [Compose-first example grounded in the brand — e.g., "Build the kanban board from cards-as-divs in your brand palette, with the captured logo stamped top-left and your hero gradient washing the background as ambient depth."]
-> - [Another — e.g., "Open with your SVG logo drawing itself stroke-by-stroke over a shader bloom that recreates your site's hero gradient — composed motion, brand colors woven in."]
-> - [Another — e.g., "Six product feature panels composed from scratch — kanban, dashboard, terminal, file tree, calendar, chat — each in your palette, with your wordmark stamped on each as identity."]
+> 1. **What's the ONE thing this video must communicate?** If a viewer remembers only one sentence after watching, what should it be? (the value prop, a launch announcement, a specific feature claim, a brand feeling, a problem-solution pair, etc.)
+> 2. **What's the narrative shape?** Possible arcs: _Problem → Solution_ (most demos), _Reveal_ (launches, teasers), _Demonstration_ (feature showcase, walkthroughs), _Vibe piece_ (brand reels — feeling over information), _Comparison_ (vs. competitor / before-after). Pick or describe your own.
 >
-> Beyond what's in the capture, I can also create additional assets — 3D models, custom shaders, illustrations, stock footage — if anything would make the video go further. The goal is something that stops scrollers and feels alive in every frame, not something that crossfades through screenshots. Read [capabilities.md](capabilities.md) for the full picture of what's possible.
->
-> Do you have any specific moments, beats, or effects you want to see? To help you think about it, here are a few directions that would work for your specific brand:
->
-> [Generate 2–3 example direction prompts grounded in _this_ brand's identity. Each should describe a **composed beat** that weaves in the brand inflection (color / font / accent asset). Model the _specificity_ — name the composed reference + the brand accent that decorates it.
->
-> Good compose-first examples have the form: "[Compose X UI/element from divs/SVG] in [this brand's palette/font], with [captured accent] [decorating it in this specific way]."
->
-> Bad examples — what NOT to write here:
->
-> - "I want the hero screenshot to come in on a rotating MacBook" (asset-primary thinking — instead: "Compose the dashboard from divs and animate it inside a 3D MacBook")
-> - "Show the pricing tiers flying in one by one" (vague — instead: "Compose 3 pricing tier cards from divs with hover-style elevation, staggered entrance, brand purple on the Pro tier, counter-up on the price")
-> - "Start with the logo drawing itself" (might be valid as an accent on a composed opener, but it can't be the whole opener — what else is happening?)]
->
-> You don't need a complete vision — even one or two specific moments helps me build something you'll love. Or say 'surprise me' and I'll make the creative calls based on your brand."
+> Either give me your own answers, or say 'surprise me' and I'll make the call based on the brand and what you said in Question 1 ([video type])."
 
-**Important:** The directions you propose must lead with **composed beats**, with captured assets as accents. If you find yourself describing "the [asset] flying in" or "the [screenshot] mapped onto [thing]" — flip it. Lead with what gets composed and built, mention the brand accent as decoration second. Generic capability lists feel like a sales pitch; asset-primary lists feel like a slideshow.
+Once those answers exist, **then** sketch the composed-beat directions — but ground each one in the message and arc, not in the asset list:
+
+> "Given [the message] and [the arc], here's how I'd shape it:
+>
+> - [Compose-first sketch grounded in the answer to Q1, e.g., "Open with the problem stated as kinetic typography — 'You waste 4 hours a week on context switches.' Cut to a composed kanban board where cards animate from chaos into organization. Close on the brand mark + tagline."]
+> - [Alternative sketch with a different arc, e.g., "Reveal arc: dark canvas → particles converging → product wordmark drawn stroke-by-stroke as the first feature lands. No problem statement — pure announcement energy."]
+> - [If user wants demo: "Three composed UI panels — kanban, AI chat, command palette — each in your palette with the brand logo stamped top-left. Narration walks through each. Closer holds the wordmark."]
+>
+> Brand accents I could layer in: [list 1-3 captured assets that *might* earn a place: the SVG logo for opener/closer, a hero illustration as a depth layer in one scene, a gradient image as an ambient bg wash. Note these are candidates, not assignments — most beats won't need any.]"
+
+**Important:** Lead every direction with **what the beat communicates and what it's composed of** — never with "the [asset] does X." If your first instinct is "the dashboard screenshot flies in," flip it: "Compose the dashboard from divs and animate it inside a 3D MacBook." If your first instinct is "the hero illustration centers the opener," flip it: "Open with kinetic typography of the value prop; the hero illustration can wash behind it as ambient depth."
+
+The captured assets are a brand toolkit you reach for late, where they serve the concept — never the starting point.
 
 Present options:
 
@@ -138,13 +134,15 @@ Note these per-beat overrides — they go into the storyboard.
 
 ### "Let me see options"
 
-Propose 2–3 brief creative directions (3–4 sentences each) with different vibes. Example:
+Propose 2–3 brief creative directions (3–4 sentences each) with different **narrative arcs** — what story the video tells, not what assets it shows. Each option leads with the message and the arc; visuals are composed scenes that serve them.
 
-> **Option A — Cinematic Launch:** something like dark atmosphere, slow dramatic reveal of the dashboard on a 3D MacBook. Shader transitions between scenes. Bass impacts on key moments. Premium, Apple-keynote energy. or something similar
+> **Option A — Problem → Solution (cinematic, narrated):** Open with the problem stated as kinetic typography over a dark canvas with a single accent glow. Cut to a composed kanban board where chaotic cards animate into organized columns as narration lands the value prop. Closer: brand mark drawn stroke-by-stroke on a shader bloom of the brand gradient. Apple-keynote register. ~25s with full VO.
 >
-> **Option B — Fast Social Ad:** something like rapid feature showcase — screenshots flying in one after another, bold typography, vibrant accent colors. hook in 2-3 seconds. Instagram-ready.
+> **Option B — Reveal arc (announcement, music-led):** Cold open: particles converging in darkness, no copy. The product wordmark draws itself across the frame as the first beat lands. Three composed feature panels each unveiled by a hard cut — kinetic typography labels, brand color washes, no screenshots. Closes on the mark + tagline + macOS hint. ~15s, music-driven, minimal narration.
 >
-> **Option C — Clean Product Tour:** something like professional walkthrough of key features. Screenshots at full-bleed with smooth transitions. Narrated, moderate pace. LinkedIn/website embed ready. or some conceptual visuals (not screenshots) or something similar
+> **Option C — Demonstration (narrated walkthrough):** Three composed UI scenes — kanban from cards-as-divs, AI chat with typewriter narration sync, command palette with character-typed search — each in the brand palette with the captured logo stamped top-left as identity. CSS crossfades between. Narration walks each one. ~35s, full VO.
+
+Each option states: the arc, the composed visuals carrying it, where (if anywhere) a captured asset shows up as an accent. **Never** an option whose primary content is "the screenshot of X" — if you find yourself writing one, flip it: name what gets composed, then where the brand accent lands on top.
 
 Let the user pick one or combine elements.
 
@@ -152,13 +150,16 @@ Let the user pick one or combine elements.
 
 ## Gate
 
-Extract these from the user's prompt — most are already there:
+Lock all of these before moving to Step 3. The first three are the strategic frame Step 3 builds the storyboard from — without them, the storyboard cannot land.
 
-1. **Video type** — infer from prompt ("product demo", "promo", "launch video", etc.)
-2. **Duration** — infer from type if not stated (demo: 30-45s, social: 15-20s, teaser: 15-25s)
-3. **Style direction** — map their words to visual-vocabulary dimensions
-4. **Specific requests** — any scenes/effects they mentioned
-5. **Narration** — stated or infer (if they said "no narration" or "just visuals", respect it)
-6. **Format** — landscape unless they specified otherwise
+1. **Message** — the ONE thing this video must communicate, in a single sentence. (Required. Step 3 fails without this.)
+2. **Narrative arc** — Problem→Solution / Reveal / Demonstration / Vibe / Comparison / custom. (Required.)
+3. **Audience** — who's watching, where they're watching. (Required.)
+4. **Video type** — social ad / product demo / launch teaser / brand reel / feature announcement / etc. Infer from prompt.
+5. **Duration** — infer from type if not stated (demo: 30-45s, social: 15-20s, teaser: 15-25s).
+6. **Style direction** — map their words to visual-vocabulary dimensions.
+7. **Specific requests** — any scenes/effects/beats they explicitly asked for.
+8. **Narration** — yes / no / minimal.
+9. **Format** — landscape unless specified otherwise.
 
-**Do not ask the user to confirm what they already said.** If the prompt was "make a product demo for huly.io, show the kanban board, dark cinematic feel, full narration" — you already have type (demo), style (dark cinematic), specific requests (kanban board), and narration (full). Proceed to Step 3.
+**Do not ask the user to confirm what they already said.** If the prompt was "make a product demo for huly.io, show the kanban board, dark cinematic feel, full narration" — you already have type (demo), style (dark cinematic), specific requests (kanban board), and narration (full). Still need to derive or ask: the **message** ("the everything app for teams that hate context switches"), the **arc** (Demonstration), and the **audience** (small teams / fast-moving orgs). Proceed to Step 3 only when all 9 are locked.

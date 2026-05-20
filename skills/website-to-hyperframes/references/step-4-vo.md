@@ -1,6 +1,6 @@
 # Step 4: VO, Timing + Captions
 
-## If the Creative Brief says "no narration"
+## If Step 2 said "no narration"
 
 Skip the TTS sections below. The storyboard already has beat durations planned based on pacing and rhythm — those become `data-start` and `data-duration` values directly in Step 5.
 

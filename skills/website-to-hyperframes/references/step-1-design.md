@@ -4,23 +4,31 @@ DESIGN.md is a **brand-truth cheat sheet** — colors and fonts you'll **weave i
 
 DESIGN.md is the brand inflection sub-agents layer on top of every composed beat: which color is "primary," which font is "headlines," what tone the brand carries — the load-bearing knobs they flip while building. The beats themselves are composed from divs/SVG/CSS at build time; DESIGN.md tells them in which colors and which fonts.
 
-**Target length: 60–120 lines.** Sub-agents read the Quick Reference and the Iteration Guide; everything else is over-investment.
+**Target length: 250–350 lines.** Sub-agents in Step 5 compose UIs from scratch (divs/SVG/CSS) using your DESIGN.md as the spec — the more precise the component CSS values you encode here, the more brand-faithful the composed beats will look. Going under 200 lines tends to produce generic-looking dark-cinematic videos because sub-agents have no brand component DNA to compose with.
 
 **User preferences always override brand rules.** If the user says "make it bright even though the site is dark" or "use serif fonts even though the brand is sans" — follow the user. DESIGN.md describes the captured website. The video might deliberately break that.
 
 You read `tokens.json` and `design-styles.json` in Step 0. If you remember the values, use them; if not, re-read. Don't guess.
 
-**Font availability check — do this before writing anything else.** Check `capture/assets/fonts/` and cross-reference with what the site uses:
+**Font availability check — do this before writing anything else.** Read `capture/extracted/fonts-manifest.json`. The capture pipeline reads the OpenType `name` table embedded in every downloaded font file, so even hash-renamed Next.js/Webpack fonts are identified by their real family name (Inter, JetBrains Mono, Geist Mono, etc.). No guessing required.
 
-- Hashed filenames (`f266e704...woff`) = Google Fonts subsets → auto-resolve, no `@font-face` needed
-- Recognizable filenames (`BrandSans-Bold.woff2`) = brand fonts. **Check the weight** — if the site uses 700/Bold but only Light/Thin was captured, the bold doesn't exist. Note this explicitly: "GT Walsheim — only Light (300) captured; for Bold use Inter 700 fallback."
-- Commercial fonts (GT Walsheim, Söhne, Graphik, Canela) are NEVER captured — they're on brand CDNs. Flag explicitly: "Söhne not in capture; use Inter 600 as substitute."
+The manifest gives you two views:
 
-Sub-agents try to use the fonts you list. If you claim "Charlie Display 700" and the file doesn't exist, they silently fall back to system-ui. Be honest about what's available.
+- `families[]` — one entry per distinct family with the weights captured, whether it's a variable font, and the files belonging to it
+- `files[]` — one entry per downloaded font with family, subfamily, weight, style, and any variation axes
+
+**How to use it:**
+
+- For each family you'll reference in DESIGN.md, name it by what's in `families[].family` (e.g. "Inter", not "f266e704 hashed font"). The hashed filenames are the `@font-face src` paths — they stay as-is on disk; only the display name comes from the manifest.
+- If a family has `variable: true` and `variationAxes` includes `"wght"`, you can use any weight 100-900 via `font-variation-settings: 'wght' <value>` even if only one static weight appears in the captured files. Note this in DESIGN.md so sub-agents know they have the full weight range available.
+- If the manifest's `unidentified[]` is non-empty, those files failed name-table extraction (rare — heavily subset fonts that strip metadata). Flag them as `unknown` in DESIGN.md and suggest a fallback rather than guessing.
+- Commercial fonts hosted on brand CDNs (GT Walsheim, Söhne, Graphik, Canela) won't be in the manifest because they aren't downloaded. Detect this by checking what the site uses (from `design-styles.json`) against what's in the manifest — anything used but missing is a CDN-hosted font. Flag explicitly: "Söhne not in capture; use Inter 600 as substitute."
+
+Sub-agents try to use the fonts you list. The manifest tells you exactly what's available — there's no excuse for claiming "Charlie Display 700" when no such file exists.
 
 ---
 
-## The 3 sections to write
+## The 6 sections to write
 
 ### `## 1. Visual Theme (one paragraph)`
 
@@ -79,7 +87,159 @@ That's the whole typography section. If sub-agents need exact line-heights or le
 
 ---
 
-### `## 3. Iteration Guide` (the load-bearing section)
+### `## 3. Component Stylings` (the build-step's spec sheet)
+
+This is the section sub-agents consult most when composing UIs from divs in Step 5. **Without exact per-component CSS, sub-agents fall back to generic "dark bg + glow + centered text" patterns regardless of brand** — which is why every video starts looking the same. Encode the brand's actual component DNA here.
+
+Target **6-12 distinct components**. Document what the site actually uses; skip categories the brand doesn't have. For each component, name it descriptively ("Stripe Primary Button" not "Button 1") and provide exact CSS-level properties: background, text color, padding, border-radius, border, font size/weight, height, box-shadow, and any hover/active/disabled states.
+
+#### Buttons (always required)
+
+Cover every variant the site uses — typically Primary, Secondary/Ghost, and Icon. **Example:**
+
+```markdown
+#### Primary Button (Stripe Purple)
+
+- **Background:** `#533AFD`
+- **Text color:** `#FFFFFF`
+- **Font:** sohne-var 16px / 400
+- **Padding:** `15.5px 24px 16.5px 24px`
+- **Border radius:** `4px`
+- **Border:** none
+- **Height:** `48px` (with padding)
+- **Box shadow:** none
+- **Hover:** background `#4329E8`, opacity `0.95`
+- **Active:** background `#3720D4`, scale `0.98`
+- **Disabled:** background `#C9C3F0`, cursor `not-allowed`
+
+#### Secondary Button (outline)
+
+- **Background:** `#FFFFFF`
+- **Text color:** `#533AFD`
+- **Border:** `1px solid #533AFD`
+- **Padding / radius / font:** same as Primary
+- **Hover:** background `#F3F0FF`, border `#4329E8`
+
+#### Ghost Button (text-only link)
+
+- **Background:** transparent
+- **Text color:** `#533AFD`
+- **Font:** sohne-var 14px / 400
+- **Padding:** `12px 0`
+- **Hover:** background `rgba(83, 58, 253, 0.08)`, optional underline
+```
+
+#### Cards & Containers (always required if the site uses any)
+
+Document each distinct card type — Standard, Feature Highlight, Glass, Pricing, Testimonial — whatever this brand actually uses. **Example:**
+
+```markdown
+#### Standard Card
+
+- **Background:** `#FFFFFF`
+- **Border:** `1px solid #D4DEE9`
+- **Border radius:** `5px`
+- **Padding:** `32px`
+- **Box shadow:** `0 1px 2px rgba(0, 0, 0, 0.04)` (default), `0 4px 12px rgba(0, 0, 0, 0.08)` (hover)
+- **Hover:** border `#B8CCDB`
+
+#### Feature Highlight Card (gradient backdrop)
+
+- **Background:** linear-gradient(180deg, rgba(83, 58, 253, 0.05) 0%, rgba(255, 97, 24, 0.03) 100%)
+- **Border:** `1px solid #E5EDF5`
+- **Padding:** `36px`
+- **Box shadow:** none
+```
+
+#### Distinctive components (anything else the brand actually shows)
+
+Logo marquees, testimonial carousels, pricing tables, gradient overlays, glassmorphism panels, bento grids, code blocks, terminal UIs, dashboard mockups — name and document anything visually distinctive. Sub-agents will reach for these specs when the storyboard calls for "compose the X UI."
+
+```markdown
+#### Glass Container (frosted overlay)
+
+- **Background:** `rgba(255, 255, 255, 0.9)`
+- **Border:** `1px solid rgba(255, 255, 255, 0.2)`
+- **Backdrop filter:** `blur(8px)`
+- **Use:** floating chat widgets, modal overlays, hero callouts only — the only place transparent fills appear in the system
+```
+
+**The rule:** if a sub-agent in Step 5 has to invent CSS values for a component this brand actually uses, you under-documented this section. The values should be lookup-able, not guessable.
+
+---
+
+### `## 4. Spacing & Layout`
+
+The brand's rhythm. Three sub-sections, kept tight.
+
+#### Spacing scale
+
+Identify the **base unit** (typically `4px` or `8px`) and the full scale with usage context. **Example:**
+
+```markdown
+**Base unit:** `4px`
+
+| Token | Value   | Used for                                                  |
+| ----- | ------- | --------------------------------------------------------- |
+| xs    | `4px`   | Inline icon gaps, tight badge padding                     |
+| sm    | `8px`   | Button-group gaps, small component padding                |
+| md    | `16px`  | Card padding, form-field gaps, standard component spacing |
+| lg    | `32px`  | Section vertical spacing, large card padding              |
+| xl    | `60px`  | Major section separation                                  |
+| 2xl   | `100px` | Page-level rhythm, hero section padding                   |
+
+Never use odd values (`13px`, `17px`) — the system only uses multiples of 4.
+```
+
+#### Border-radius scale
+
+Every radius the site uses, with what uses it.
+
+```markdown
+- `0px`: Form labels, technical UI markers
+- `4px`: Primary buttons, inputs, small badges
+- `8px`: Standard cards, dropdowns
+- `12px`: Feature cards, larger callouts
+- `40px`: Icon buttons (square pill)
+- `9999px`: Pill-shaped CTAs, status chips
+```
+
+#### Whitespace philosophy (one paragraph)
+
+How does this brand use whitespace — generous and architectural? Tight and information-dense? Section gaps in the 60–100px range, or 20–40px? Document the brand's actual rhythm.
+
+```markdown
+Generous whitespace as confidence. Section gaps are always `60–100px`. Content never touches viewport edges — minimum `40px` horizontal padding on mobile, `80–160px` on desktop. The brand uses negative space as active design, not emptiness.
+```
+
+---
+
+### `## 5. Depth & Elevation`
+
+Document the brand's shadow philosophy and the actual shadow values used.
+
+#### Shadow table
+
+```markdown
+| Level        | Value                            | Used for                                        |
+| ------------ | -------------------------------- | ----------------------------------------------- |
+| Flat (0)     | none                             | Default — most surfaces, inputs, body text      |
+| Raised (1)   | `0 2px 8px rgba(0, 0, 0, 0.1)`   | Cards on white, hovered surfaces, floating CTAs |
+| Elevated (2) | `0 4px 12px rgba(0, 0, 0, 0.15)` | Dropdown menus, popovers                        |
+| Floating (3) | `0 8px 24px rgba(0, 0, 0, 0.2)`  | Modals, important overlays                      |
+```
+
+#### Shadow philosophy (one paragraph)
+
+How does this brand use shadows? Sparingly with soft falloff, or dramatically with hard edges? Are they present by default or only on hover? On dark backgrounds, do shadows invert to glow effects?
+
+```markdown
+Shadows are minimal — used only to signal interactivity (hover) or layering (modals). All shadows are soft-edged (blur ≥ 8px). On dark backgrounds, shadows convert to subtle glow (`0 0 24px rgba(255, 99, 99, 0.15)` using the brand's accent color). Hard shadows do not exist in this system.
+```
+
+---
+
+### `## 6. Iteration Guide` (the load-bearing section)
 
 5–10 numbered rules that encode the most important brand decisions. Each rule is a **single actionable sentence stating what to do, with the specific values from this site.** These are the "if in doubt, do this" rules sub-agents consult while composing beats.
 
@@ -122,7 +282,7 @@ If your draft has a rule like "all interactive elements require visible focus st
 - Use **exact values** from `capture/extracted/tokens.json`. Cross-reference with screenshots when needed.
 - Name colors and components descriptively — "Stripe Purple" not "Accent 1."
 - When you can't extract exact values, estimate from visual inspection and note it.
-- Target **60–120 lines total.** This is a cheat sheet, not a system audit. Length is not virtue.
+- Target **250–350 lines total.** Component CSS specs and the brand's spacing/depth values are load-bearing — sub-agents need them to compose UIs faithfully. Going much over 350 lines means you're over-investing in prose; going much under 200 means you've under-documented the component DNA and sub-agents will fall back to generic patterns.
 - No "Assets" section — `capture/extracted/asset-descriptions.md` is the asset index.
 - No "Motion" section — the storyboard specifies motion per-beat.
 - No "Components" section beyond what fits in Quick Reference — sub-agents compose UIs at build time from divs/SVG/CSS using the brand colors and fonts from this doc, not from CSS specs encoded here.

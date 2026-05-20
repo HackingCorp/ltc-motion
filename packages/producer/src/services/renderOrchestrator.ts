@@ -3483,7 +3483,8 @@ export async function executeRenderJob(
               // linear, wiping out the bottom portion of dark video content.
               // SDR compositions use 16-bit-expanded sRGB, which matches the
               // shader design space.
-              const transitionFn: TransitionFn = TRANSITIONS[activeTransition.shader] ?? crossfade;
+              const transitionFn: TransitionFn =
+                TRANSITIONS[activeTransition.shader ?? ""] ?? crossfade;
               transitionFn(transBufferA, transBufferB, transOutput, width, height, progress);
               addHdrTiming(hdrPerf, "transitionCompositeMs", transitionTimingStart);
 
