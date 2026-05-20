@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1920, height=1080" />
+  <title>fadeglow-music-video-v4</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+</head>
+<body>
+  <div id="root" data-composition-id="root"
+       data-start="0" data-duration="41.56" data-width="1920" data-height="1080">
+
+    <div id="el-b1" data-composition-id="beat-01-html-baby"
+         data-composition-src="compositions/beat-01-html-baby.html"
+         data-start="0" data-duration="4.84" data-track-index="1" style="z-index: 2"></div>
+
+    <div id="el-b2" data-composition-id="beat-02-bum-viz"
+         data-composition-src="compositions/beat-02-bum-viz.html"
+         data-start="4.82" data-duration="9.74" data-track-index="1" style="z-index: 2"></div>
+
+    <div id="el-b3" data-composition-id="beat-03-crt-thesis"
+         data-composition-src="compositions/beat-03-crt-thesis.html"
+         data-start="14.58" data-duration="6.28" data-track-index="1" style="z-index: 2"></div>
+
+    <div id="el-b4" data-composition-id="beat-04-every-fade"
+         data-composition-src="compositions/beat-04-every-fade.html"
+         data-start="20.86" data-duration="4.96" data-track-index="1" style="z-index: 2"></div>
+
+    <div id="el-b5" data-composition-id="beat-05-template"
+         data-composition-src="compositions/beat-05-template.html"
+         data-start="25.82" data-duration="4.60" data-track-index="1" style="z-index: 2"></div>
+
+    <div id="el-b6" data-composition-id="beat-06-change"
+         data-composition-src="compositions/beat-06-change.html"
+         data-start="30.42" data-duration="3.38" data-track-index="1" style="z-index: 2"></div>
+
+    <div id="el-b7" data-composition-id="beat-07-red"
+         data-composition-src="compositions/beat-07-red.html"
+         data-start="33.81" data-duration="2.11" data-track-index="1" style="z-index: 2"></div>
+
+    <div id="el-b8" data-composition-id="beat-08-div-timeline"
+         data-composition-src="compositions/beat-08-div-timeline.html"
+         data-start="35.92" data-duration="5.64" data-track-index="1" style="z-index: 2"></div>
+
+    <audio id="el-music"
+           data-start="0" data-duration="41.56" data-track-index="0"
+           data-volume="1"
+           src="assets/bgmusic.mp3" style="z-index: 1"></audio>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["root"] = gsap.timeline({ paused: true });
+    </script>
+  </div>
+</body>
+</html>

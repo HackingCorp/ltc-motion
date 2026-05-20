@@ -1,0 +1,1525 @@
+<template id="dashboard-template">
+  <div data-composition-id="dashboard" data-width="1920" data-height="1080">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0b0d12;
+        --panel: #14161d;
+        --panel-2: #1c1f28;
+        --ink: #e7eaf0;
+        --ink-soft: #c5cad6;
+        --muted: #6b7383;
+        --line: rgba(255,255,255,0.06);
+        --line-2: rgba(255,255,255,0.10);
+
+        --pink: #f0a3c8;
+        --rose: #ef6b8d;
+        --amber: #f0b35a;
+        --blue: #67a5e8;
+        --cyan: #7fd1d9;
+        --teal: #65c7b6;
+        --green: #7fc278;
+        --violet: #9d8be5;
+        --purple: #b07de8;
+        --red: #e76f6f;
+
+        --font-display: "Space Grotesk", sans-serif;
+        --font-data: "JetBrains Mono", monospace;
+      }
+
+      * { margin:0; padding:0; box-sizing:border-box; }
+      html, body {
+        width:1920px; height:1080px;
+        overflow:hidden;
+        background:var(--bg);
+        color:var(--ink);
+        font-family:var(--font-display);
+      }
+
+      .scene {
+        position:absolute; top:0; left:0;
+        width:1920px; height:1080px;
+        background:var(--bg);
+        overflow:hidden;
+      }
+
+      /* ================ TOP RAIL ================ */
+      .toprail {
+        position:absolute; left:0; right:0; top:0;
+        height:48px;
+        display:flex; justify-content:center; align-items:center;
+        gap:14px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+        z-index:5;
+      }
+      .pill {
+        display:inline-flex; align-items:center; gap:8px;
+        padding:6px 14px;
+        border-radius:999px;
+        background:var(--panel);
+        border:1px solid var(--line);
+        font-family:var(--font-data);
+        font-size:12px;
+        color:var(--ink-soft);
+      }
+      .pill.green { color:var(--green); }
+      .pill .dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+      .pill.active { background:rgba(127,209,217,0.10); color:var(--cyan); border-color:rgba(127,209,217,0.25); }
+
+      /* ================ GRID ================ */
+      .grid {
+        position:absolute; left:0; right:0; top:60px; bottom:0;
+        padding:0 32px 28px 32px;
+        display:grid;
+        grid-template-columns: 320px 1fr 1fr 1fr;
+        gap:28px;
+      }
+      .col { display:flex; flex-direction:column; gap:20px; min-width:0; }
+
+      .card {
+        background:var(--panel);
+        border:1px solid var(--line);
+        border-radius:14px;
+        padding:18px;
+        position:relative;
+      }
+      .card.tight { padding:14px 18px; }
+      .card-head {
+        display:flex; align-items:center; justify-content:space-between;
+        margin-bottom:14px;
+      }
+      .card-title {
+        display:flex; align-items:center; gap:10px;
+        font-family:var(--font-data);
+        font-size:13px;
+        letter-spacing:0.06em;
+        color:var(--ink-soft);
+      }
+      .card-title .ico {
+        width:18px; height:18px;
+        display:inline-flex; align-items:center; justify-content:center;
+        color:var(--ink-soft);
+      }
+      .card-title .accent-line {
+        width:80px; height:1px;
+        background:linear-gradient(90deg, var(--rose), transparent);
+        margin-left:8px;
+      }
+      .card-actions { display:flex; gap:10px; color:var(--muted); }
+      .card-actions svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.6; }
+
+      /* ====== Alarm card ====== */
+      .alarm {
+        background: linear-gradient(180deg, #1a1d27, #14161d);
+        border-radius:12px;
+        padding:18px 20px;
+        text-align:center;
+      }
+      .alarm-shield {
+        width:54px; height:54px;
+        margin:6px auto 12px;
+        border-radius:50%;
+        background:rgba(255,255,255,0.04);
+        display:flex; align-items:center; justify-content:center;
+      }
+      .alarm-shield svg { width:22px; height:22px; stroke:#9ca3af; fill:none; stroke-width:1.6; }
+      .alarm-floor { font-size:22px; font-weight:600; letter-spacing:-0.01em; }
+      .alarm-status { font-size:13px; color:var(--muted); margin-top:2px; }
+      .alarm-btn {
+        display:inline-flex; align-items:center; gap:8px;
+        margin-top:14px;
+        padding:8px 18px;
+        border-radius:999px;
+        background:rgba(231,111,111,0.12);
+        color:var(--red);
+        font-family:var(--font-data);
+        font-size:12px;
+        letter-spacing:0.04em;
+      }
+      .alarm-btn .dot { width:6px; height:6px; border-radius:50%; background:var(--red); }
+
+      .patio-row {
+        margin-top:14px;
+        display:flex; align-items:center; gap:10px;
+        padding:10px 14px;
+        border-radius:14px;
+        background:linear-gradient(90deg, rgba(240,163,200,0.18), rgba(240,163,200,0.04));
+        border:1px solid rgba(240,163,200,0.25);
+        position:relative;
+      }
+      .patio-icon {
+        width:28px; height:28px;
+        border-radius:50%;
+        background:rgba(0,0,0,0.4);
+        display:flex; align-items:center; justify-content:center;
+      }
+      .patio-icon svg { width:14px; height:14px; stroke:#fff; fill:none; stroke-width:1.8; }
+      .patio-name { font-size:14px; font-weight:600; }
+      .patio-state { font-size:11px; color:#fff9; }
+
+      /* ====== Batteries ====== */
+      .batt-row {
+        display:flex; align-items:center; gap:12px;
+        padding:8px 0;
+      }
+      .batt-row + .batt-row { border-top:1px solid var(--line); }
+      .batt-icon {
+        width:22px; height:22px;
+        position:relative; flex-shrink:0;
+      }
+      .batt-icon .shell {
+        width:18px; height:10px;
+        border:1.4px solid var(--ink-soft);
+        border-radius:2px;
+        position:absolute; top:6px; left:0;
+      }
+      .batt-icon .tip {
+        width:2px; height:5px;
+        background:var(--ink-soft);
+        position:absolute; top:8.5px; left:18px;
+        border-radius:0 1.5px 1.5px 0;
+      }
+      .batt-icon .fill {
+        position:absolute; top:8px; left:1.5px;
+        height:6px; width:0; max-width:14.5px;
+        background:var(--green);
+        border-radius:1px;
+      }
+      .batt-info { flex:1; min-width:0; }
+      .batt-name { font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .batt-time { font-size:11px; color:var(--muted); font-family:var(--font-data); }
+      .batt-pct { font-size:13px; font-family:var(--font-data); color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+
+      /* ====== Misc gauges ====== */
+      .misc-grid {
+        display:grid; grid-template-columns:1fr 1fr; gap:14px;
+      }
+      .gauge-card {
+        background:var(--panel);
+        border:1px solid var(--line);
+        border-radius:14px;
+        padding:14px;
+        display:flex; flex-direction:column; align-items:center;
+      }
+      .gauge-card .label { font-size:11px; color:var(--muted); font-family:var(--font-data); margin-top:8px; letter-spacing:0.04em; }
+
+      /* ====== Climate ====== */
+      .clim-hero {
+        display:grid; grid-template-columns: 130px 1fr;
+        gap:18px; align-items:center;
+        padding-bottom:14px;
+        border-bottom:1px solid var(--line);
+      }
+      .sun {
+        position:relative;
+        width:120px; height:120px;
+      }
+      .sun-core {
+        position:absolute; left:50%; top:50%;
+        width:46px; height:46px;
+        margin:-23px 0 0 -23px;
+        border-radius:50%;
+        background:radial-gradient(circle, #ffd47a 0%, #f0a04a 100%);
+        box-shadow:0 0 30px rgba(240,160,74,0.5);
+      }
+      .sun-rays {
+        position:absolute; inset:0;
+        animation:none;
+      }
+      .sun-ray {
+        position:absolute; left:50%; top:50%;
+        width:3px; height:14px;
+        margin-left:-1.5px;
+        margin-top:-7px;
+        background:#f0b35a;
+        border-radius:2px;
+      }
+      .clock-row {
+        display:flex; align-items:baseline; gap:10px;
+      }
+      .clock-h, .clock-m {
+        font-family:var(--font-display);
+        font-weight:700;
+        font-size:54px;
+        letter-spacing:-0.03em;
+        line-height:1;
+        font-variant-numeric:tabular-nums;
+      }
+      .clock-colon {
+        font-size:48px; font-weight:600; color:var(--muted);
+      }
+      .clock-meta { font-size:13px; color:var(--muted); margin-top:6px; font-family:var(--font-data); }
+
+      .day-rows { padding-top:14px; display:flex; flex-direction:column; gap:8px; }
+      .day-row {
+        display:grid; grid-template-columns: 32px 16px 36px 1fr 36px;
+        gap:10px; align-items:center;
+        font-size:12px;
+      }
+      .day-row .day { color:var(--ink-soft); font-family:var(--font-data); }
+      .day-row .ico { color:var(--muted); font-size:11px; }
+      .day-row .lo, .day-row .hi { font-family:var(--font-data); font-variant-numeric:tabular-nums; color:var(--ink-soft); }
+      .day-row .hi { text-align:right; }
+      .day-bar {
+        height:8px; border-radius:999px;
+        background:linear-gradient(90deg, #67a5e8 0%, #7fd1d9 25%, #fae08a 55%, #f59e7a 80%, #e76f6f 100%);
+        position:relative;
+      }
+      .day-bar .knob {
+        position:absolute; top:50%;
+        width:11px; height:11px; border-radius:50%;
+        background:#fff;
+        border:2px solid #14161d;
+        transform:translate(-50%,-50%);
+        box-shadow:0 0 0 1px rgba(255,255,255,0.2);
+      }
+
+      /* Thermostat row */
+      .thermo {
+        display:flex; align-items:center; gap:10px;
+        padding:10px 12px;
+        background:#0f1118;
+        border:1px solid var(--line);
+        border-radius:10px;
+        margin-top:14px;
+      }
+      .thermo-tag {
+        display:flex; align-items:center; gap:6px;
+        font-size:12px;
+        color:var(--ink-soft);
+        font-family:var(--font-data);
+      }
+      .thermo-tag .ico { width:14px; height:14px; border-radius:3px; background:var(--blue); }
+      .thermo .sp { flex:1; }
+      .thermo-val {
+        background:rgba(231,111,111,0.12);
+        color:var(--red);
+        font-family:var(--font-data);
+        font-size:13px;
+        padding:4px 10px;
+        border-radius:6px;
+        display:inline-flex; align-items:center; gap:6px;
+      }
+      .thermo-val .arrow { font-size:9px; opacity:0.7; }
+      .thermo-set {
+        display:flex; align-items:center; gap:8px;
+        font-family:var(--font-data); font-size:13px;
+      }
+      .thermo-set .pm {
+        width:22px; height:22px; border-radius:50%;
+        background:#0f1118; border:1px solid var(--line);
+        display:flex; align-items:center; justify-content:center;
+        color:var(--ink-soft);
+      }
+
+      /* Sensor wave block */
+      .sensor-block {
+        margin-top:14px;
+      }
+      .sensor-stats {
+        display:flex; gap:18px; padding:0 4px 8px;
+      }
+      .sensor-stat { display:flex; align-items:center; gap:8px; }
+      .sensor-stat .pip {
+        width:8px; height:8px; border-radius:50%;
+      }
+      .sensor-stat .v {
+        font-family:var(--font-data); font-size:14px; font-variant-numeric:tabular-nums;
+      }
+      .sensor-stat .lbl { font-size:11px; color:var(--muted); }
+      .sensor-row { display:flex; gap:18px; align-items:flex-end; }
+      .sensor-label-mini { font-size:12px; color:var(--ink-soft); margin-top:8px; margin-bottom:2px; font-family:var(--font-data); letter-spacing:0.04em; }
+      .sensor-num { font-family:var(--font-data); font-size:12px; color:var(--muted); }
+      .sensor-svg { width:100%; height:60px; display:block; }
+
+      /* Media */
+      .media-bar {
+        display:flex; align-items:center; gap:12px;
+        padding:10px 14px;
+        background:#0f1118;
+        border:1px solid var(--line);
+        border-radius:10px;
+        margin-top:6px;
+      }
+      .media-bar + .media-bar { margin-top:8px; }
+      .media-icon {
+        width:26px; height:26px; border-radius:50%;
+        background:var(--panel-2);
+        display:flex; align-items:center; justify-content:center;
+        color:var(--ink-soft);
+      }
+      .media-icon svg { width:12px; height:12px; }
+      .media-name { font-size:13px; flex:1; }
+      .media-controls { display:flex; gap:8px; align-items:center; color:var(--muted); }
+      .media-controls .play {
+        width:28px; height:28px; border-radius:50%;
+        background:var(--cyan);
+        color:#0b0d12;
+        display:flex; align-items:center; justify-content:center;
+      }
+      .media-controls .play svg { width:10px; height:10px; fill:currentColor; stroke:none; }
+      .eq {
+        display:inline-flex; gap:2px; align-items:flex-end; height:14px;
+      }
+      .eq .bar {
+        width:2px; background:var(--cyan); border-radius:1px;
+      }
+
+      /* ====== Power ====== */
+      .pow-bars-wrap {
+        position:relative;
+        height:160px;
+        margin-top:8px;
+      }
+      .pow-axis-y {
+        position:absolute; left:0; top:0; bottom:18px;
+        width:30px;
+        display:flex; flex-direction:column; justify-content:space-between;
+        font-family:var(--font-data); font-size:10px; color:var(--muted); text-align:right;
+      }
+      .pow-bars-svg {
+        position:absolute; left:34px; right:0; top:0; bottom:18px;
+        width:auto;
+      }
+      .pow-axis-x {
+        position:absolute; left:34px; right:0; bottom:0;
+        display:flex; justify-content:space-between;
+        font-family:var(--font-data); font-size:10px; color:var(--muted);
+      }
+
+      /* Sankey */
+      .sankey {
+        margin-top:14px;
+        padding-top:14px;
+        border-top:1px solid var(--line);
+      }
+      .sankey-svg { width:100%; height:170px; display:block; }
+
+      /* Solar */
+      .solar { margin-top:8px; }
+      .solar-head { display:flex; align-items:center; justify-content:space-between; padding:10px 0 4px; }
+      .solar-title { font-family:var(--font-data); font-size:12px; color:var(--ink-soft); letter-spacing:0.04em; }
+      .solar-pct { font-family:var(--font-data); font-size:18px; font-weight:600; }
+      .solar-svg { width:100%; height:90px; display:block; }
+      .solar-legend { display:flex; gap:16px; font-family:var(--font-data); font-size:11px; color:var(--muted); margin-top:6px; }
+      .solar-legend .pip { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px; vertical-align:middle; }
+
+      .pie-wrap {
+        margin-top:8px;
+        display:flex; justify-content:center;
+      }
+      .pie-svg { width:160px; height:160px; }
+
+      /* ====== Tesla ====== */
+      .car-status {
+        display:grid; grid-template-columns:repeat(4,1fr); gap:8px;
+        font-family:var(--font-data); font-size:11px;
+        margin-bottom:10px;
+      }
+      .car-status .item {
+        display:flex; align-items:center; gap:6px;
+        color:var(--muted);
+        white-space:nowrap;
+      }
+      .car-status .item .pip { width:8px; height:8px; border-radius:50%; background:var(--green); }
+      .car-status .item.locked .pip { background:var(--amber); }
+      .car-status .item.off .pip { background:var(--muted); }
+      .car-battery {
+        display:flex; align-items:center; gap:10px;
+        margin-bottom:6px;
+        font-family:var(--font-data); font-size:11px;
+        color:var(--muted);
+      }
+      .car-battery .pct { color:var(--ink); font-size:13px; font-weight:600; }
+      .car-range {
+        display:flex; align-items:center; gap:10px;
+        margin-bottom:14px;
+        font-family:var(--font-data); font-size:11px;
+        color:var(--muted);
+      }
+      .range-bar {
+        flex:1; height:6px;
+        background:var(--panel-2);
+        border-radius:999px;
+        overflow:hidden;
+      }
+      .range-fill {
+        height:100%; width:0;
+        background:linear-gradient(90deg, var(--red), #ff8a4a);
+      }
+      .car-img-wrap {
+        height:140px;
+        display:flex; align-items:center; justify-content:center;
+        position:relative;
+        overflow:hidden;
+      }
+      .tesla {
+        width:280px; height:120px;
+        position:relative;
+        z-index:2;
+      }
+      .tesla .shadow {
+        position:absolute; bottom:6px; left:10%; right:10%;
+        height:8px; background:radial-gradient(ellipse at center, rgba(0,0,0,0.6), transparent 70%);
+        filter:blur(2px);
+      }
+      /* minimalistic road */
+      .road {
+        position:absolute;
+        left:-10%; right:-10%;
+        bottom:18px;
+        height:2px;
+        background:#1f2330;
+        z-index:1;
+      }
+      .road-dashes {
+        position:absolute;
+        left:-20%; right:-20%;
+        bottom:11px;
+        height:2px;
+        background-image:linear-gradient(90deg, rgba(127,209,217,0.55) 0 24px, transparent 24px 56px);
+        background-size:56px 2px;
+        background-repeat:repeat-x;
+        z-index:1;
+        will-change:background-position;
+      }
+      .road-glow {
+        position:absolute;
+        left:0; right:0;
+        bottom:0;
+        height:34px;
+        background:radial-gradient(ellipse at 50% 100%, rgba(127,209,217,0.10), transparent 70%);
+        z-index:0;
+        pointer-events:none;
+      }
+
+      .map-card {
+        margin-top:6px;
+        position:relative;
+        height:180px;
+        border-radius:12px;
+        background:#0f1118;
+        border:1px solid var(--line);
+        overflow:hidden;
+      }
+      .map-svg { width:100%; height:100%; display:block; }
+      .map-pin {
+        position:absolute;
+        width:10px; height:10px;
+        border-radius:50%;
+        background:var(--cyan);
+        box-shadow:0 0 0 4px rgba(127,209,217,0.25);
+        transform:translate(-50%,-50%);
+      }
+
+      .tires { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+      .tire {
+        background:#0f1118; border:1px solid var(--line);
+        border-radius:999px;
+        padding:8px 14px;
+        display:flex; align-items:center; gap:10px;
+      }
+      .tire-dot {
+        width:10px; height:10px; border-radius:50%;
+        background:var(--green);
+        box-shadow:0 0 0 3px rgba(127,194,120,0.2);
+      }
+      .tire-name { flex:1; font-size:12px; color:var(--ink-soft); }
+      .tire-val { font-family:var(--font-data); font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
+
+      .deg-row { display:grid; grid-template-columns:140px 1fr; gap:14px; align-items:center; margin-top:14px; }
+      .deg-gauge { width:140px; height:80px; position:relative; }
+      .deg-svg { width:100%; height:100%; display:block; }
+      .deg-val { position:absolute; left:50%; bottom:0; transform:translateX(-50%); font-family:var(--font-data); font-size:18px; font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums; }
+      .deg-stats { display:flex; flex-direction:column; gap:6px; font-family:var(--font-data); font-size:11px; color:var(--muted); }
+      .deg-stats .row { display:flex; justify-content:space-between; }
+      .deg-stats .row .v { color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+
+      .charging-stats { margin-top:10px; }
+      .cs-row {
+        display:flex; justify-content:space-between; align-items:center;
+        padding:8px 0;
+        font-family:var(--font-data); font-size:12px;
+      }
+      .cs-row + .cs-row { border-top:1px solid var(--line); }
+      .cs-row .lbl { color:var(--muted); }
+      .cs-row .val { color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums; }
+
+      .ambient {
+        position:absolute; pointer-events:none;
+        border-radius:50%;
+        filter:blur(80px);
+        opacity:0;
+      }
+      .ambient.a { width:600px; height:600px; left:-200px; top:200px; background:#7d3a5e; }
+      .ambient.b { width:500px; height:500px; right:-150px; top:0; background:#3a4d7d; }
+      .ambient.c { width:500px; height:500px; left:30%; bottom:-200px; background:#3a7d6e; }
+
+      .grain {
+        position:absolute; inset:0;
+        pointer-events:none;
+        z-index:50;
+        opacity:0.07;
+        background-image:
+          radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1.2px),
+          radial-gradient(rgba(0,0,0,0.18) 1px, transparent 1.2px);
+        background-size: 3px 3px, 5px 5px;
+        mix-blend-mode:overlay;
+      }
+
+      /* Cursor sweep highlight that travels across the screen on assemble */
+      .sweep {
+        position:absolute; top:0; bottom:0;
+        left:-300px; width:300px;
+        background:linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+        z-index:6; pointer-events:none;
+      }
+    </style>
+
+      <div class="scene clip" id="s1" data-start="0" data-duration="6" data-track-index="0">
+
+        <div class="ambient a" id="amb-a"></div>
+        <div class="ambient b" id="amb-b"></div>
+        <div class="ambient c" id="amb-c"></div>
+
+        <!-- TOP RAIL -->
+        <div class="toprail" id="toprail">
+          <div class="pill" data-toppill><span class="dot"></span> 661 MB</div>
+          <div class="pill" data-toppill>22</div>
+          <div class="pill active" data-toppill><span class="dot"></span> in 7 days</div>
+          <div class="pill active" data-toppill><span class="dot"></span> in 14 days</div>
+        </div>
+
+        <div class="grid">
+          <!-- ============ COL 1 ============ -->
+          <div class="col" id="col1">
+            <!-- Current state -->
+            <div class="card" data-panel id="p-state">
+              <div class="card-head">
+                <div class="card-title"><span class="ico">⌂</span> current-state <span class="accent-line"></span></div>
+                <div class="card-actions"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></div>
+              </div>
+              <div class="alarm" id="alarm">
+                <div class="alarm-shield"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6l8-3z"/></svg></div>
+                <div class="alarm-floor">First Floor</div>
+                <div class="alarm-status">Disarmed</div>
+                <div class="alarm-btn" id="alarm-btn"><span class="dot"></span> ARM NIGHT</div>
+              </div>
+              <div class="patio-row" id="patio">
+                <div class="patio-icon"><svg viewBox="0 0 24 24"><path d="M3 12h18M5 12V8a3 3 0 013-3h8a3 3 0 013 3v4M7 12v6h2v-3h6v3h2v-6"/></svg></div>
+                <div>
+                  <div class="patio-name">Patio</div>
+                  <div class="patio-state">Open</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Batteries -->
+            <div class="card" data-panel id="p-batt">
+              <div class="card-head">
+                <div class="card-title"><span class="ico">▮</span> batteries <span class="accent-line"></span></div>
+              </div>
+              <div id="batt-list">
+                <div class="batt-row" data-batt data-pct="51">
+                  <div class="batt-icon"><div class="shell"></div><div class="tip"></div><div class="fill"></div></div>
+                  <div class="batt-info"><div class="batt-name">Jungle btn ZB</div><div class="batt-time">2 days ago</div></div>
+                  <div class="batt-pct">0 %</div>
+                </div>
+                <div class="batt-row" data-batt data-pct="57">
+                  <div class="batt-icon"><div class="shell"></div><div class="tip"></div><div class="fill"></div></div>
+                  <div class="batt-info"><div class="batt-name">Galaxy Tab S5e</div><div class="batt-time">2 minutes ago</div></div>
+                  <div class="batt-pct">0 %</div>
+                </div>
+                <div class="batt-row" data-batt data-pct="58">
+                  <div class="batt-icon"><div class="shell"></div><div class="tip"></div><div class="fill"></div></div>
+                  <div class="batt-info"><div class="batt-name">Ikea Blind ZB</div><div class="batt-time">16 hours ago</div></div>
+                  <div class="batt-pct">0 %</div>
+                </div>
+                <div class="batt-row" data-batt data-pct="69">
+                  <div class="batt-icon"><div class="shell"></div><div class="tip"></div><div class="fill"></div></div>
+                  <div class="batt-info"><div class="batt-name">Cactus window ZB</div><div class="batt-time">2 days ago</div></div>
+                  <div class="batt-pct">0 %</div>
+                </div>
+                <div class="batt-row" data-batt data-pct="70">
+                  <div class="batt-icon"><div class="shell"></div><div class="tip"></div><div class="fill"></div></div>
+                  <div class="batt-info"><div class="batt-name">Sump pump ZB</div><div class="batt-time">6 hours ago</div></div>
+                  <div class="batt-pct">0 %</div>
+                </div>
+                <div class="batt-row" data-batt data-pct="72">
+                  <div class="batt-icon"><div class="shell"></div><div class="tip"></div><div class="fill"></div></div>
+                  <div class="batt-info"><div class="batt-name">Fish tank ZB</div><div class="batt-time">2 days ago</div></div>
+                  <div class="batt-pct">0 %</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Misc gauges -->
+            <div class="card tight" data-panel id="p-misc">
+              <div class="card-head">
+                <div class="card-title"><span class="ico">▮</span> misc <span class="accent-line"></span></div>
+              </div>
+              <div class="misc-grid">
+                <div class="gauge-card">
+                  <svg width="100" height="60" viewBox="0 0 100 60">
+                    <path d="M 10 55 A 40 40 0 0 1 90 55" stroke="#272a35" stroke-width="8" fill="none" stroke-linecap="round"/>
+                    <path id="coffee-arc" d="M 10 55 A 40 40 0 0 1 90 55" stroke="#67a5e8" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="126" stroke-dashoffset="126"/>
+                    <text x="50" y="48" text-anchor="middle" font-family="Space Grotesk" font-size="16" font-weight="600" fill="#e7eaf0">half</text>
+                    <text x="50" y="62" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#6b7383" id="coffee-pct">0 %</text>
+                  </svg>
+                  <div class="label">Coffee Machine</div>
+                </div>
+                <div class="gauge-card">
+                  <svg width="100" height="60" viewBox="0 0 100 60">
+                    <text x="50" y="20" text-anchor="middle" font-family="Space Grotesk" font-size="11" fill="#c5cad6">Sump pump</text>
+                    <text x="50" y="33" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#6b7383">idle</text>
+                    <g id="sump-bars" transform="translate(20,40)">
+                      <rect x="0"  y="0" width="2" height="14" fill="#7fc278" rx="1"/>
+                      <rect x="5"  y="2" width="2" height="12" fill="#7fc278" rx="1"/>
+                      <rect x="10" y="4" width="2" height="10" fill="#7fc278" rx="1"/>
+                      <rect x="15" y="2" width="2" height="12" fill="#7fc278" rx="1"/>
+                      <rect x="20" y="0" width="2" height="14" fill="#7fc278" rx="1"/>
+                      <rect x="25" y="3" width="2" height="11" fill="#7fc278" rx="1"/>
+                      <rect x="30" y="5" width="2" height="9" fill="#7fc278" rx="1"/>
+                      <rect x="35" y="2" width="2" height="12" fill="#7fc278" rx="1"/>
+                      <rect x="40" y="4" width="2" height="10" fill="#7fc278" rx="1"/>
+                      <rect x="45" y="0" width="2" height="14" fill="#7fc278" rx="1"/>
+                      <rect x="50" y="2" width="2" height="12" fill="#7fc278" rx="1"/>
+                      <rect x="55" y="4" width="2" height="10" fill="#7fc278" rx="1"/>
+                    </g>
+                  </svg>
+                  <div class="label">Water</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ COL 2: CLIMATE ============ -->
+          <div class="col" id="col2">
+            <div class="card" data-panel id="p-climate" style="display:flex; flex-direction:column; gap:0;">
+              <div class="card-head">
+                <div class="card-title"><span class="ico">☼</span> climate <span class="accent-line"></span></div>
+                <div class="card-actions"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-8 8M10 20H4v-6M4 20l8-8"/></svg></div>
+              </div>
+
+              <div class="clim-hero">
+                <div class="sun" id="sun">
+                  <div class="sun-rays" id="sun-rays">
+                    <div class="sun-ray" style="transform:rotate(0deg) translateY(-42px)"></div>
+                    <div class="sun-ray" style="transform:rotate(45deg) translateY(-42px)"></div>
+                    <div class="sun-ray" style="transform:rotate(90deg) translateY(-42px)"></div>
+                    <div class="sun-ray" style="transform:rotate(135deg) translateY(-42px)"></div>
+                    <div class="sun-ray" style="transform:rotate(180deg) translateY(-42px)"></div>
+                    <div class="sun-ray" style="transform:rotate(225deg) translateY(-42px)"></div>
+                    <div class="sun-ray" style="transform:rotate(270deg) translateY(-42px)"></div>
+                    <div class="sun-ray" style="transform:rotate(315deg) translateY(-42px)"></div>
+                  </div>
+                  <div class="sun-core"></div>
+                </div>
+                <div>
+                  <div class="clock-row">
+                    <div class="clock-h" id="clock-h">00</div>
+                    <div class="clock-colon">:</div>
+                    <div class="clock-m" id="clock-m">00</div>
+                  </div>
+                  <div class="clock-meta">Sunny, 48°F &nbsp;·&nbsp; Thu, 04-17-2025</div>
+                </div>
+              </div>
+
+              <div class="day-rows" id="day-rows">
+                <div class="day-row" data-day><div class="day">Thu</div><div class="ico">☁</div><div class="lo">33°</div><div class="day-bar"><div class="knob" style="left:48%"></div></div><div class="hi">71°</div></div>
+                <div class="day-row" data-day><div class="day">Fri</div><div class="ico">☀</div><div class="lo">30°</div><div class="day-bar"><div class="knob" style="left:33%"></div></div><div class="hi">37°</div></div>
+                <div class="day-row" data-day><div class="day">Sat</div><div class="ico">☁</div><div class="lo">31°</div><div class="day-bar"><div class="knob" style="left:38%"></div></div><div class="hi">45°</div></div>
+                <div class="day-row" data-day><div class="day">Sun</div><div class="ico">☀</div><div class="lo">39°</div><div class="day-bar"><div class="knob" style="left:50%"></div></div><div class="hi">60°</div></div>
+                <div class="day-row" data-day><div class="day">Mon</div><div class="ico">☁</div><div class="lo">43°</div><div class="day-bar"><div class="knob" style="left:55%"></div></div><div class="hi">69°</div></div>
+              </div>
+
+              <div class="thermo" id="thermo">
+                <div class="thermo-tag"><span class="ico"></span> Thermostat</div>
+                <div class="thermo-val">🔥 65.0</div>
+                <div class="thermo-set"><span class="pm">−</span><span id="thermo-set">65.0</span><span class="pm">+</span></div>
+              </div>
+
+              <div class="sensor-block">
+                <div class="sensor-stats">
+                  <div class="sensor-stat"><span class="pip" style="background:var(--cyan)"></span><span class="v" id="t-in">0°F</span><span class="lbl">Inside</span></div>
+                  <div class="sensor-stat"><span class="pip" style="background:var(--green)"></span><span class="v" id="t-out">0°F</span><span class="lbl">Outside</span></div>
+                </div>
+                <div class="sensor-label-mini">Temp</div>
+                <div class="sensor-num" id="t-now">0.0</div>
+                <svg class="sensor-svg" viewBox="0 0 360 60" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="tempGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7fd1d9" stop-opacity="0.4"/><stop offset="100%" stop-color="#7fd1d9" stop-opacity="0"/></linearGradient>
+                    <linearGradient id="tempGrad2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7fc278" stop-opacity="0.35"/><stop offset="100%" stop-color="#7fc278" stop-opacity="0"/></linearGradient>
+                  </defs>
+                  <path id="temp-area" d="M 0 40 C 20 35 40 50 60 38 C 80 26 100 28 120 36 C 140 44 160 32 180 28 C 200 24 220 36 240 42 C 260 48 280 30 300 24 C 320 18 340 30 360 28 L 360 60 L 0 60 Z" fill="url(#tempGrad)"/>
+                  <path id="temp-area2" d="M 0 50 C 20 46 40 36 60 30 C 80 24 100 36 120 42 C 140 48 160 40 180 30 C 200 22 220 28 240 34 C 260 42 280 30 300 32 C 320 34 340 28 360 24 L 360 60 L 0 60 Z" fill="url(#tempGrad2)"/>
+                  <path id="temp-line" d="M 0 40 C 20 35 40 50 60 38 C 80 26 100 28 120 36 C 140 44 160 32 180 28 C 200 24 220 36 240 42 C 260 48 280 30 300 24 C 320 18 340 30 360 28" stroke="#7fd1d9" stroke-width="1.6" fill="none" stroke-dasharray="600" stroke-dashoffset="600"/>
+                  <path id="temp-line2" d="M 0 50 C 20 46 40 36 60 30 C 80 24 100 36 120 42 C 140 48 160 40 180 30 C 200 22 220 28 240 34 C 260 42 280 30 300 32 C 320 34 340 28 360 24" stroke="#7fc278" stroke-width="1.4" fill="none" stroke-dasharray="600" stroke-dashoffset="600"/>
+                </svg>
+              </div>
+
+              <div class="sensor-block" style="margin-top:10px;">
+                <div class="sensor-stats">
+                  <div class="sensor-stat"><span class="pip" style="background:var(--rose)"></span><span class="v" id="h-in">0%</span><span class="lbl">Inside</span></div>
+                  <div class="sensor-stat"><span class="pip" style="background:var(--blue)"></span><span class="v" id="h-out">0%</span><span class="lbl">Outside</span></div>
+                </div>
+                <div class="sensor-label-mini">Humidity</div>
+                <div class="sensor-num" id="h-now">0%</div>
+                <svg class="sensor-svg" viewBox="0 0 360 60" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="humGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#9d8be5" stop-opacity="0.4"/><stop offset="100%" stop-color="#9d8be5" stop-opacity="0"/></linearGradient>
+                  </defs>
+                  <path id="hum-area" d="M 0 50 C 30 50 50 30 70 26 C 90 22 110 40 130 44 C 150 48 170 36 200 22 C 230 10 250 28 280 32 C 310 36 330 28 360 26 L 360 60 L 0 60 Z" fill="url(#humGrad)"/>
+                  <path id="hum-line" d="M 0 50 C 30 50 50 30 70 26 C 90 22 110 40 130 44 C 150 48 170 36 200 22 C 230 10 250 28 280 32 C 310 36 330 28 360 26" stroke="#9d8be5" stroke-width="1.6" fill="none" stroke-dasharray="600" stroke-dashoffset="600"/>
+                </svg>
+              </div>
+
+              <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line);">
+                <div class="card-title" style="margin-bottom:10px;"><span class="ico">♪</span> media <span class="accent-line"></span></div>
+                <div class="media-bar" id="media-1">
+                  <div class="media-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8 2 5 5 5 9v3l-2 4h18l-2-4V9c0-4-3-7-7-7z" stroke="none"/></svg></div>
+                  <div class="media-name">Apple TV</div>
+                  <div class="media-controls">
+                    <span class="eq" id="eq1"><span class="bar" style="height:6px"></span><span class="bar" style="height:10px"></span><span class="bar" style="height:14px"></span><span class="bar" style="height:8px"></span></span>
+                    <div class="play"><svg viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9"/></svg></div>
+                  </div>
+                </div>
+                <div class="media-bar" id="media-2">
+                  <div class="media-icon">▶</div>
+                  <div class="media-name" style="color:var(--muted)">Sonos · Off</div>
+                  <div class="media-controls">
+                    <div class="play" style="background:var(--panel-2); color:var(--muted)"><svg viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9"/></svg></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ COL 3: POWER ============ -->
+          <div class="col" id="col3">
+            <div class="card" data-panel id="p-power">
+              <div class="card-head">
+                <div class="card-title"><span class="ico">⚡</span> power <span class="accent-line"></span></div>
+                <div style="font-family:var(--font-data); font-size:12px; color:var(--ink-soft);"><span style="color:var(--amber);">⚡</span> 2.151 W</div>
+              </div>
+
+              <!-- Bar chart -->
+              <div class="pow-bars-wrap">
+                <div class="pow-axis-y">
+                  <span>1.5 kWh</span><span>1</span><span>0.5</span><span>0</span><span>0.5</span><span>1</span><span>1.5</span>
+                </div>
+                <svg class="pow-bars-svg" id="pow-bars" viewBox="0 0 360 142" preserveAspectRatio="none">
+                  <line x1="0" y1="71" x2="360" y2="71" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                </svg>
+                <div class="pow-axis-x">
+                  <span>Apr 17</span><span>4:00 AM</span><span>8:00 AM</span><span>4:00 PM</span><span>8:00 PM</span>
+                </div>
+              </div>
+
+              <!-- Sankey -->
+              <div class="sankey">
+                <svg class="sankey-svg" id="sankey" viewBox="0 0 360 170" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="sk1" x1="0" x2="1"><stop offset="0%" stop-color="#9d8be5"/><stop offset="100%" stop-color="#9d8be5" stop-opacity="0.5"/></linearGradient>
+                    <linearGradient id="sk2" x1="0" x2="1"><stop offset="0%" stop-color="#67a5e8"/><stop offset="100%" stop-color="#67a5e8" stop-opacity="0.5"/></linearGradient>
+                    <linearGradient id="sk3" x1="0" x2="1"><stop offset="0%" stop-color="#7fd1d9"/><stop offset="100%" stop-color="#7fd1d9" stop-opacity="0.5"/></linearGradient>
+                    <linearGradient id="sk4" x1="0" x2="1"><stop offset="0%" stop-color="#7fc278"/><stop offset="100%" stop-color="#7fc278" stop-opacity="0.5"/></linearGradient>
+                    <linearGradient id="sk5" x1="0" x2="1"><stop offset="0%" stop-color="#f0b35a"/><stop offset="100%" stop-color="#f0b35a" stop-opacity="0.5"/></linearGradient>
+                    <linearGradient id="sk6" x1="0" x2="1"><stop offset="0%" stop-color="#ef6b8d"/><stop offset="100%" stop-color="#ef6b8d" stop-opacity="0.5"/></linearGradient>
+                    <linearGradient id="sk7" x1="0" x2="1"><stop offset="0%" stop-color="#b07de8"/><stop offset="100%" stop-color="#b07de8" stop-opacity="0.5"/></linearGradient>
+                  </defs>
+                  <!-- aggregate trunk on left -->
+                  <rect class="sk-trunk" x="20" y="20" width="14" height="130" fill="url(#sk1)" rx="2"/>
+                  <!-- ribbons -->
+                  <g class="sk-ribbons">
+                    <path class="sk-rib" d="M 34 22 C 100 22 120 22 200 22 L 200 38 C 120 38 100 38 34 38 Z" fill="url(#sk1)"/>
+                    <path class="sk-rib" d="M 34 38 C 110 38 130 38 200 42 L 200 58 C 130 58 110 58 34 56 Z" fill="url(#sk2)"/>
+                    <path class="sk-rib" d="M 34 56 C 110 56 130 60 200 62 L 200 78 C 130 78 110 76 34 72 Z" fill="url(#sk3)"/>
+                    <path class="sk-rib" d="M 34 72 C 110 72 130 80 200 82 L 200 96 C 130 96 110 90 34 88 Z" fill="url(#sk4)"/>
+                    <path class="sk-rib" d="M 34 88 C 110 88 130 100 200 100 L 200 114 C 130 114 110 110 34 106 Z" fill="url(#sk5)"/>
+                    <path class="sk-rib" d="M 34 106 C 110 106 130 116 200 118 L 200 132 C 130 132 110 126 34 124 Z" fill="url(#sk6)"/>
+                    <path class="sk-rib" d="M 34 124 C 110 124 130 136 200 136 L 200 150 C 130 150 110 142 34 142 Z" fill="url(#sk7)"/>
+                  </g>
+                  <!-- labels -->
+                  <g font-family="JetBrains Mono" font-size="9" fill="#c5cad6" class="sk-label">
+                    <text x="206" y="32">1.68kWh Others</text>
+                    <text x="206" y="52">1.18kWh Water Heater</text>
+                    <text x="206" y="72">0.86kWh TV/Speaker</text>
+                    <text x="206" y="90">0.58kWh Fellow</text>
+                    <text x="206" y="108">0.55kWh Fridge</text>
+                    <text x="206" y="126">0.52kWh Mudroom</text>
+                    <text x="206" y="144">0.39kWh Xavier</text>
+                  </g>
+                  <text x="34" y="18" font-family="JetBrains Mono" font-size="10" fill="#e7eaf0">6.35kWh Today Usage</text>
+                </svg>
+              </div>
+
+              <!-- Solar -->
+              <div class="solar">
+                <div class="solar-head">
+                  <div class="solar-title">Daily Solar Consumption (%)</div>
+                  <div class="solar-pct" id="solar-pct">0 %</div>
+                </div>
+                <svg class="solar-svg" id="solar-svg" viewBox="0 0 360 90" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="solarGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f0b35a" stop-opacity="0.3"/><stop offset="100%" stop-color="#f0b35a" stop-opacity="0"/></linearGradient>
+                  </defs>
+                  <path id="solar-area" d="M 0 70 C 40 65 80 60 120 55 C 160 50 200 60 240 50 C 280 38 320 18 360 12 L 360 90 L 0 90 Z" fill="url(#solarGrad)"/>
+                  <path id="solar-line" d="M 0 70 C 40 65 80 60 120 55 C 160 50 200 60 240 50 C 280 38 320 18 360 12" stroke="#f0b35a" stroke-width="1.8" fill="none" stroke-dasharray="600" stroke-dashoffset="600"/>
+                </svg>
+                <div class="solar-legend">
+                  <span><span class="pip" style="background:var(--cyan)"></span>Consumed Today: 2.7 kWh</span>
+                  <span><span class="pip" style="background:var(--amber)"></span>Produced Today: 6.2 kWh</span>
+                </div>
+              </div>
+
+              <!-- Pie -->
+              <div class="pie-wrap">
+                <svg class="pie-svg" id="pie-svg" viewBox="-90 -90 180 180">
+                  <!-- two slices: 6.2 amber/teal split, 2.7 blue -->
+                  <circle cx="0" cy="0" r="70" fill="none" stroke="#1c1f28" stroke-width="2"/>
+                  <path id="pie-slice-1" d="M 0 -70 A 70 70 0 0 1 60.62 35.0 L 0 0 Z" fill="#7fc278"/>
+                  <path id="pie-slice-2" d="M 60.62 35.0 A 70 70 0 1 1 0 -70 L 0 0 Z" fill="#67a5e8"/>
+                  <text x="-30" y="20" font-family="Space Grotesk" font-size="14" font-weight="600" fill="#fff">6.2</text>
+                  <text x="20" y="-5" font-family="Space Grotesk" font-size="14" font-weight="600" fill="#fff">2.7</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ COL 4: TESLA ============ -->
+          <div class="col" id="col4">
+            <div class="card" data-panel id="p-tesla">
+              <div class="card-head">
+                <div class="card-title"><span class="ico">⌬</span> xavier <span class="accent-line"></span></div>
+                <div style="font-family:var(--font-data); font-size:12px; color:var(--muted);">⌂ Home</div>
+              </div>
+
+              <div class="car-status" id="car-status">
+                <div class="item"><span class="pip"></span>Home</div>
+                <div class="item locked"><span class="pip"></span>Locked</div>
+                <div class="item off"><span class="pip"></span>Off</div>
+                <div class="item"><span class="pip"></span>Plugged in</div>
+              </div>
+
+              <div class="car-battery">
+                <span style="color:var(--green);">⚡</span>
+                <span class="pct" id="bat-pct">0%</span>
+              </div>
+              <div class="car-range">
+                <span id="range-val">0 mi</span>
+                <div class="range-bar"><div class="range-fill" id="range-fill"></div></div>
+                <span>208 mi</span>
+              </div>
+
+              <div class="car-img-wrap">
+                <div class="road-glow"></div>
+                <div class="road"></div>
+                <div class="road-dashes" id="road-dashes"></div>
+                <svg class="tesla" id="tesla-svg" viewBox="0 0 280 130">
+                  <!-- ground shadow -->
+                  <ellipse cx="140" cy="116" rx="105" ry="4" fill="rgba(0,0,0,0.55)" filter="blur(2px)"/>
+                  <!-- body (lifted, with wheel arches) -->
+                  <path d="M 30 78 L 60 58 Q 90 40 140 38 Q 190 40 220 58 L 250 78 Q 256 84 250 92
+                           L 232 92
+                           A 18 18 0 0 0 196 92
+                           L 84 92
+                           A 18 18 0 0 0 48 92
+                           L 30 92 Q 24 84 30 78 Z"
+                        fill="#0a0c12" stroke="#2a2d38" stroke-width="1"/>
+                  <!-- windows -->
+                  <path d="M 75 68 L 100 48 Q 120 43 140 43 Q 160 43 180 48 L 205 68 Z" fill="#1a1d27" stroke="#2a2d38" stroke-width="0.5"/>
+                  <line x1="140" y1="43" x2="140" y2="68" stroke="#2a2d38" stroke-width="0.5"/>
+                  <!-- door highlight -->
+                  <path d="M 75 70 Q 140 62 205 70" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+                  <!-- wheels (spinning, sit cleanly under the arches) -->
+                  <g id="wheel-rear">
+                    <circle cx="66" cy="100" r="14" fill="#0a0c12" stroke="#3a3d4a" stroke-width="1.2"/>
+                    <circle cx="66" cy="100" r="11" fill="#15171f"/>
+                    <circle cx="66" cy="100" r="4" fill="#3a3d4a"/>
+                    <!-- 3-spoke Y -->
+                    <line x1="66" y1="100" x2="66" y2="89" stroke="#3a3d4a" stroke-width="1.4" stroke-linecap="round"/>
+                    <line x1="66" y1="100" x2="75.5" y2="105.5" stroke="#3a3d4a" stroke-width="1.4" stroke-linecap="round"/>
+                    <line x1="66" y1="100" x2="56.5" y2="105.5" stroke="#3a3d4a" stroke-width="1.4" stroke-linecap="round"/>
+                  </g>
+                  <g id="wheel-front">
+                    <circle cx="214" cy="100" r="14" fill="#0a0c12" stroke="#3a3d4a" stroke-width="1.2"/>
+                    <circle cx="214" cy="100" r="11" fill="#15171f"/>
+                    <circle cx="214" cy="100" r="4" fill="#3a3d4a"/>
+                    <line x1="214" y1="100" x2="214" y2="89" stroke="#3a3d4a" stroke-width="1.4" stroke-linecap="round"/>
+                    <line x1="214" y1="100" x2="223.5" y2="105.5" stroke="#3a3d4a" stroke-width="1.4" stroke-linecap="round"/>
+                    <line x1="214" y1="100" x2="204.5" y2="105.5" stroke="#3a3d4a" stroke-width="1.4" stroke-linecap="round"/>
+                  </g>
+                  <!-- headlight -->
+                  <circle cx="247" cy="76" r="2" fill="#67a5e8"/>
+                </svg>
+              </div>
+
+              <div class="map-card">
+                <svg class="map-svg" id="map-svg" viewBox="0 0 360 180" preserveAspectRatio="xMidYMid slice">
+                  <defs>
+                    <linearGradient id="seaGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0c1824"/><stop offset="100%" stop-color="#0a121d"/></linearGradient>
+                  </defs>
+                  <rect width="360" height="180" fill="url(#seaGrad)"/>
+                  <!-- caribbean / panama -->
+                  <path id="map-panama" d="M 60 80 L 90 70 L 120 80 L 160 90 L 200 100 L 230 110 L 270 130 L 290 150 L 280 165 L 260 160 L 230 145 L 200 130 L 170 120 L 140 110 L 110 105 L 80 100 Z" fill="#22303d" stroke="#3a4a5a" stroke-width="0.6" stroke-dasharray="500" stroke-dashoffset="500"/>
+                  <path id="map-colombia" d="M 230 110 L 290 150 L 330 170 L 360 180 L 360 130 L 320 110 L 290 100 L 260 100 Z" fill="#22303d" stroke="#3a4a5a" stroke-width="0.6" stroke-dasharray="500" stroke-dashoffset="500"/>
+                  <!-- grid -->
+                  <g stroke="rgba(127,209,217,0.06)" stroke-width="0.5">
+                    <line x1="0" y1="60" x2="360" y2="60"/>
+                    <line x1="0" y1="120" x2="360" y2="120"/>
+                    <line x1="120" y1="0" x2="120" y2="180"/>
+                    <line x1="240" y1="0" x2="240" y2="180"/>
+                  </g>
+                  <text x="100" y="60" font-family="JetBrains Mono" font-size="7" fill="#5a6a7a">COSTA RICA</text>
+                  <text x="170" y="105" font-family="JetBrains Mono" font-size="7" fill="#5a6a7a">PANAMA</text>
+                  <text x="280" y="160" font-family="JetBrains Mono" font-size="7" fill="#5a6a7a">Medellin</text>
+                </svg>
+                <div class="map-pin" id="map-pin" style="left:60%; top:55%;"></div>
+              </div>
+
+              <div class="tires">
+                <div class="tire" data-tire><div class="tire-dot"></div><div class="tire-name">Front Left</div><div class="tire-val">40 psi</div></div>
+                <div class="tire" data-tire><div class="tire-dot"></div><div class="tire-name">Front Right</div><div class="tire-val">41 psi</div></div>
+                <div class="tire" data-tire><div class="tire-dot"></div><div class="tire-name">Rear Left</div><div class="tire-val">39 psi</div></div>
+                <div class="tire" data-tire><div class="tire-dot"></div><div class="tire-name">Rear Right</div><div class="tire-val">40 psi</div></div>
+              </div>
+
+              <div class="deg-row">
+                <div class="deg-gauge">
+                  <svg class="deg-svg" viewBox="0 0 140 80">
+                    <defs>
+                      <linearGradient id="degGrad" x1="0" x2="1"><stop offset="0%" stop-color="#7fc278"/><stop offset="50%" stop-color="#f0b35a"/><stop offset="100%" stop-color="#e76f6f"/></linearGradient>
+                    </defs>
+                    <path d="M 14 70 A 56 56 0 0 1 126 70" stroke="#272a35" stroke-width="10" fill="none" stroke-linecap="round"/>
+                    <path id="deg-arc" d="M 14 70 A 56 56 0 0 1 126 70" stroke="url(#degGrad)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="176" stroke-dashoffset="176"/>
+                    <line id="deg-needle" x1="70" y1="70" x2="70" y2="22" stroke="#fff" stroke-width="2" stroke-linecap="round" transform="rotate(-90 70 70)"/>
+                    <circle cx="70" cy="70" r="4" fill="#fff"/>
+                  </svg>
+                  <div class="deg-val" id="deg-val">0.0 %</div>
+                </div>
+                <div class="deg-stats">
+                  <div class="row"><span>Max range (raw)</span><span class="v">327.1 mi</span></div>
+                  <div class="row"><span>Max range (now)</span><span class="v">319.4 mi</span></div>
+                  <div class="row"><span>Range lost</span><span class="v">7.7 mi</span></div>
+                </div>
+              </div>
+
+              <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line);">
+                <div class="card-title" style="margin-bottom:6px;">Charging Stats <span class="accent-line"></span></div>
+                <div class="charging-stats">
+                  <div class="cs-row"><span class="lbl"># of Charges</span><span class="val" id="cs-charges">0</span></div>
+                  <div class="cs-row"><span class="lbl"># of Charging cycles</span><span class="val" id="cs-cycles">0</span></div>
+                  <div class="cs-row"><span class="lbl">Total energy added</span><span class="val" id="cs-energy">0.00 MWh</span></div>
+                  <div class="cs-row"><span class="lbl">Total Energy used</span><span class="val" id="cs-used">0.00 MWh</span></div>
+                  <div class="cs-row"><span class="lbl">Charging Efficiency</span><span class="val" id="cs-eff">0.0%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sweep" id="sweep"></div>
+        <div class="grain"></div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ====== POW BARS DATA ======
+      // Generate ~36 bars across the day. Mix of consumed (above zero, blue) and produced (below zero, amber).
+      (function buildPowBars() {
+        var svg = document.getElementById('pow-bars');
+        var n = 36;
+        var width = 360;
+        var midY = 71;
+        var barW = (width - 4) / n - 1;
+        var seed = 17;
+        function r(){ seed=(seed*9301+49297)%233280; return seed/233280; }
+        var data = [];
+        for (var i=0;i<n;i++){
+          // morning: small consumed; midday: produced (negative); evening: large consumed
+          var t = i / (n-1);
+          var produced = Math.sin(t*Math.PI) * (50 + r()*15); // 0..~65 px below
+          var consumed = (Math.pow(t-0.2,2)*60 + r()*20) * (i>5?1:0.4);
+          if (i < 4) { consumed = 8 + r()*6; produced = 0; }
+          data.push({ produced: produced, consumed: consumed });
+        }
+        var html = svg.innerHTML;
+        for (var i=0;i<n;i++){
+          var x = 2 + i * (barW+1);
+          var d = data[i];
+          if (d.consumed > 0) {
+            html += '<rect class="pb pb-c" data-pb x="'+x+'" y="'+(midY - d.consumed)+'" width="'+barW+'" height="'+d.consumed+'" fill="#67a5e8" rx="1" data-h="'+d.consumed+'"/>';
+          }
+          if (d.produced > 0) {
+            html += '<rect class="pb pb-p" data-pb x="'+x+'" y="'+midY+'" width="'+barW+'" height="'+d.produced+'" fill="#f0b35a" rx="1" data-h="'+d.produced+'"/>';
+          }
+        }
+        svg.innerHTML = html;
+      })();
+
+      // ============ INITIAL STATE (frame 0) ============
+      tl.set("#toprail", { y: -48, autoAlpha: 0 }, 0);
+      tl.set("[data-toppill]", { y: -10, autoAlpha: 0 }, 0);
+      tl.set("[data-panel]", { y: 24, autoAlpha: 0 }, 0);
+
+      // sub-elements hidden initially within panels
+      tl.set("#alarm-btn", { autoAlpha: 0 }, 0);
+      tl.set("#patio", { x: -10, autoAlpha: 0 }, 0);
+      tl.set("[data-batt] .fill", { width: 0 }, 0);
+      tl.set("[data-batt]", { autoAlpha: 0, x: -8 }, 0);
+
+      tl.set("#sun-rays", { rotation: 0, transformOrigin: "50% 50%" }, 0);
+      tl.set("#sun .sun-core", { scale: 0, transformOrigin: "50% 50%" }, 0);
+      tl.set("[data-day]", { autoAlpha: 0, x: -10 }, 0);
+      tl.set("[data-day] .knob", { scale: 0, transformOrigin: "50% 50%" }, 0);
+      tl.set("#thermo", { autoAlpha: 0, y: 6 }, 0);
+
+      tl.set("#temp-area, #temp-area2, #hum-area", { autoAlpha: 0 }, 0);
+      tl.set("#media-1, #media-2", { autoAlpha: 0, y: 6 }, 0);
+
+      tl.set("[data-pb]", { scaleY: 0, transformOrigin: "center center" }, 0);
+      // sankey ribbons: fade + clip-path animation via scaleX
+      tl.set(".sk-rib", { autoAlpha: 0, scaleX: 0, transformOrigin: "0% 50%" }, 0);
+      tl.set(".sk-trunk", { scaleY: 0, transformOrigin: "50% 0%" }, 0);
+      tl.set(".sk-label text", { autoAlpha: 0, x: -6 }, 0);
+
+      tl.set("#solar-area", { autoAlpha: 0 }, 0);
+      tl.set("#pie-slice-1, #pie-slice-2", { autoAlpha: 0, scale: 0.6, transformOrigin: "50% 50%" }, 0);
+
+      tl.set("#car-status .item", { autoAlpha: 0, y: 4 }, 0);
+      tl.set("#tesla-svg", { x: -60, autoAlpha: 0 }, 0);
+      tl.set("#range-fill", { width: 0 }, 0);
+      tl.set("#map-pin", { scale: 0, autoAlpha: 0, transformOrigin: "50% 50%" }, 0);
+      tl.set("[data-tire]", { autoAlpha: 0, scale: 0.92, transformOrigin: "50% 50%" }, 0);
+      tl.set("#deg-needle", { rotation: -90, transformOrigin: "70px 70px" }, 0);
+      tl.set("#sweep", { left: -300 }, 0);
+
+      tl.set("#amb-a, #amb-b, #amb-c", { autoAlpha: 0 }, 0);
+
+      // ============ 0.0s — Ambients glow on ============
+      tl.to("#amb-a", { autoAlpha: 0.18, duration: 1.2, ease: "power2.out" }, 0.0);
+      tl.to("#amb-b", { autoAlpha: 0.16, duration: 1.4, ease: "power2.out" }, 0.1);
+      tl.to("#amb-c", { autoAlpha: 0.14, duration: 1.4, ease: "power2.out" }, 0.2);
+
+      // 0.0s — Top rail drops in
+      tl.to("#toprail", { y: 0, autoAlpha: 1, duration: 0.4, ease: "power3.out" }, 0.05);
+      tl.to("[data-toppill]", { y: 0, autoAlpha: 1, duration: 0.35, ease: "power2.out", stagger: 0.06 }, 0.18);
+
+      // 0.15s — Cards cascade column-by-column
+      tl.to("#col1 [data-panel]", { y: 0, autoAlpha: 1, duration: 0.55, ease: "power3.out", stagger: 0.08 }, 0.15);
+      tl.to("#col2 [data-panel]", { y: 0, autoAlpha: 1, duration: 0.55, ease: "power3.out" }, 0.30);
+      tl.to("#col3 [data-panel]", { y: 0, autoAlpha: 1, duration: 0.55, ease: "power3.out" }, 0.45);
+      tl.to("#col4 [data-panel]", { y: 0, autoAlpha: 1, duration: 0.55, ease: "power3.out" }, 0.60);
+
+      // sweep across screen behind cards
+      tl.to("#sweep", { left: 1920, duration: 1.2, ease: "power2.out" }, 0.1);
+
+      // ============ COL 1 INTERIOR ============
+      // 0.6s — Alarm content reveal
+      tl.from("#alarm .alarm-shield", { scale: 0, autoAlpha: 0, duration: 0.45, ease: "back.out(1.6)", transformOrigin: "50% 50%" }, 0.55);
+      tl.from("#alarm .alarm-floor", { autoAlpha: 0, y: 8, duration: 0.4, ease: "power2.out" }, 0.7);
+      tl.from("#alarm .alarm-status", { autoAlpha: 0, y: 6, duration: 0.4 }, 0.78);
+      tl.to("#alarm-btn", { autoAlpha: 1, duration: 0.4, ease: "power2.out" }, 0.9);
+      tl.to("#patio", { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 1.0);
+
+      // Battery list
+      tl.to("[data-batt]", { autoAlpha: 1, x: 0, duration: 0.4, ease: "power2.out", stagger: 0.06 }, 0.7);
+      // Battery fills + counters
+      var battEls = document.querySelectorAll('[data-batt]');
+      battEls.forEach(function(row, i){
+        var pct = parseInt(row.getAttribute('data-pct'),10);
+        var fill = row.querySelector('.fill');
+        var pctEl = row.querySelector('.batt-pct');
+        var obj = { v:0 };
+        tl.to(fill, { width: (pct/100*14.5)+"px", duration: 0.9, ease: "power2.out" }, 0.95 + i*0.05);
+        tl.to(obj, {
+          v: pct, duration: 0.9, ease: "power2.out",
+          onUpdate: function(){ pctEl.textContent = Math.round(obj.v) + " %"; }
+        }, 0.95 + i*0.05);
+      });
+
+      // Coffee gauge
+      var coffeeObj = { v: 0 };
+      tl.to("#coffee-arc", { strokeDashoffset: 63, duration: 1.0, ease: "power2.out" }, 1.2); // 50% of 126
+      tl.to(coffeeObj, {
+        v: 50, duration: 1.0, ease: "power2.out",
+        onUpdate: function(){ document.getElementById('coffee-pct').textContent = Math.round(coffeeObj.v) + ' %'; }
+      }, 1.2);
+      // sump bars wiggle (mid-scene activity)
+      tl.from("#sump-bars rect", { scaleY: 0, transformOrigin: "50% 100%", duration: 0.5, ease: "power2.out", stagger: 0.02 }, 1.3);
+
+      // ============ COL 2 INTERIOR ============
+      // Sun rays spin in + core scale
+      tl.to("#sun-rays", { rotation: 360, duration: 4.5, ease: "none" }, 0.4);
+      tl.to("#sun .sun-core", { scale: 1, duration: 0.6, ease: "back.out(1.6)" }, 0.55);
+      // pulsing sun-core glow
+      tl.to("#sun .sun-core", {
+        boxShadow: "0 0 50px rgba(240,160,74,0.85)",
+        duration: 1.2, ease: "sine.inOut", yoyo: true, repeat: 3
+      }, 1.2);
+
+      // Clock count-up to 10:40
+      var clockH = { v: 0 }, clockM = { v: 0 };
+      tl.to(clockH, {
+        v: 10, duration: 1.0, ease: "power2.out",
+        onUpdate: function(){ document.getElementById('clock-h').textContent = String(Math.round(clockH.v)).padStart(2,'0'); }
+      }, 0.55);
+      tl.to(clockM, {
+        v: 40, duration: 1.1, ease: "power2.out",
+        onUpdate: function(){ document.getElementById('clock-m').textContent = String(Math.round(clockM.v)).padStart(2,'0'); }
+      }, 0.6);
+
+      // 5-day rows
+      tl.to("[data-day]", { autoAlpha:1, x:0, duration:0.4, ease:"power2.out", stagger: 0.06 }, 0.85);
+      tl.to("[data-day] .knob", { scale: 1, duration: 0.4, ease: "back.out(1.7)", stagger: 0.06 }, 1.05);
+
+      // Thermostat
+      tl.to("#thermo", { autoAlpha: 1, y: 0, duration: 0.45, ease: "power3.out" }, 1.3);
+
+      // Temp + humidity sparkline
+      tl.to("#temp-line", { strokeDashoffset: 0, duration: 1.4, ease: "power2.out" }, 1.5);
+      tl.to("#temp-line2", { strokeDashoffset: 0, duration: 1.5, ease: "power2.out" }, 1.55);
+      tl.to("#temp-area", { autoAlpha: 1, duration: 1.0, ease: "power2.out" }, 1.7);
+      tl.to("#temp-area2", { autoAlpha: 1, duration: 1.0, ease: "power2.out" }, 1.75);
+
+      tl.to("#hum-line", { strokeDashoffset: 0, duration: 1.4, ease: "power2.out" }, 1.7);
+      tl.to("#hum-area", { autoAlpha: 1, duration: 1.0, ease: "power2.out" }, 1.85);
+
+      // Counters: temp & humidity
+      var tin = {v:0}, tout = {v:0}, tnow={v:0}, hin={v:0}, hout={v:0}, hnow={v:0};
+      tl.to(tin, { v: 69.6, duration: 1.2, ease: "power2.out", onUpdate: function(){ document.getElementById('t-in').textContent = tin.v.toFixed(1) + '°F'; } }, 1.5);
+      tl.to(tout, { v: 48.2, duration: 1.2, ease: "power2.out", onUpdate: function(){ document.getElementById('t-out').textContent = tout.v.toFixed(1) + '°F'; } }, 1.55);
+      tl.to(tnow, { v: 69.6, duration: 1.2, ease: "power2.out", onUpdate: function(){ document.getElementById('t-now').textContent = tnow.v.toFixed(1); } }, 1.6);
+      tl.to(hin, { v: 34.0, duration: 1.2, ease: "power2.out", onUpdate: function(){ document.getElementById('h-in').textContent = hin.v.toFixed(1) + '%'; } }, 1.7);
+      tl.to(hout, { v: 53.0, duration: 1.2, ease: "power2.out", onUpdate: function(){ document.getElementById('h-out').textContent = hout.v.toFixed(1) + '%'; } }, 1.75);
+      tl.to(hnow, { v: 34.0, duration: 1.2, ease: "power2.out", onUpdate: function(){ document.getElementById('h-now').textContent = hnow.v.toFixed(0) + '%'; } }, 1.8);
+
+      // Media bars
+      tl.to("#media-1", { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 2.0);
+      tl.to("#media-2", { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 2.1);
+      // Equalizer bars in media
+      var eq1bars = document.querySelectorAll('#eq1 .bar');
+      eq1bars.forEach(function(b, i){
+        tl.to(b, {
+          height: (3 + Math.abs(Math.sin(i*1.7))*11) + 'px',
+          duration: 0.25, ease: "sine.inOut", yoyo: true, repeat: 13
+        }, 2.3 + i*0.04);
+      });
+
+      // ============ COL 3 INTERIOR (POWER) ============
+      // Bar chart: bars rise sequentially L→R
+      tl.to("[data-pb]", {
+        scaleY: 1, duration: 0.5, ease: "power2.out",
+        stagger: { each: 0.012, from: "start" }
+      }, 1.0);
+
+      // Sankey: trunk grows then ribbons wipe right
+      tl.to(".sk-trunk", { scaleY: 1, duration: 0.5, ease: "power2.out" }, 1.4);
+      tl.to(".sk-rib", {
+        autoAlpha: 1, scaleX: 1, duration: 0.6, ease: "power2.out",
+        stagger: 0.06
+      }, 1.6);
+      tl.to(".sk-label text", { autoAlpha: 1, x: 0, duration: 0.4, ease: "power2.out", stagger: 0.05 }, 1.9);
+
+      // Solar line
+      tl.to("#solar-line", { strokeDashoffset: 0, duration: 1.3, ease: "power2.out" }, 2.4);
+      tl.to("#solar-area", { autoAlpha: 1, duration: 1.0, ease: "power2.out" }, 2.6);
+      var solarObj = { v: 0 };
+      tl.to(solarObj, {
+        v: 45, duration: 1.2, ease: "power2.out",
+        onUpdate: function(){ document.getElementById('solar-pct').textContent = Math.round(solarObj.v) + ' %'; }
+      }, 2.4);
+
+      // Pie chart
+      tl.to("#pie-slice-1", { autoAlpha: 1, scale: 1, duration: 0.55, ease: "back.out(1.4)" }, 2.6);
+      tl.to("#pie-slice-2", { autoAlpha: 1, scale: 1, duration: 0.55, ease: "back.out(1.4)" }, 2.75);
+      tl.to("#pie-svg", { rotation: 360, duration: 3.0, ease: "none", transformOrigin: "50% 50%" }, 2.9);
+
+      // ============ COL 4 INTERIOR (TESLA) ============
+      tl.to("#car-status .item", { autoAlpha:1, y:0, duration: 0.3, ease: "power2.out", stagger: 0.05 }, 0.85);
+      // battery pct counter
+      var batObj = { v: 0 };
+      tl.to(batObj, {
+        v: 65, duration: 1.0, ease: "power2.out",
+        onUpdate: function(){ document.getElementById('bat-pct').textContent = Math.round(batObj.v) + '%'; }
+      }, 1.0);
+      // range fill
+      tl.to("#range-fill", { width: "100%", duration: 1.2, ease: "power2.out" }, 1.0);
+      var rangeObj = { v: 0 };
+      tl.to(rangeObj, {
+        v: 208, duration: 1.2, ease: "power2.out",
+        onUpdate: function(){ document.getElementById('range-val').textContent = Math.round(rangeObj.v) + ' mi'; }
+      }, 1.0);
+
+      // Tesla slides in from left
+      tl.to("#tesla-svg", { x: 0, autoAlpha: 1, duration: 0.7, ease: "power3.out" }, 1.1);
+      // subtle body bob (driving feel)
+      tl.to("#tesla-svg", { y: -2, duration: 0.45, ease: "sine.inOut", yoyo: true, repeat: 7 }, 1.9);
+      // wheels spin (CW for forward motion to the right) — SVG groups need svgOrigin
+      tl.to("#wheel-rear",  { rotation: 1440, duration: 4.6, ease: "none", svgOrigin: "66 100" }, 1.3);
+      tl.to("#wheel-front", { rotation: 1440, duration: 4.6, ease: "none", svgOrigin: "214 100" }, 1.3);
+      // road dashes scroll right→left to feel like motion
+      var roadObj = { v: 0 };
+      tl.to(roadObj, {
+        v: -1120, duration: 4.6, ease: "none",
+        onUpdate: function () {
+          var el = document.getElementById('road-dashes');
+          if (el) el.style.backgroundPosition = roadObj.v + 'px 0';
+        }
+      }, 1.3);
+
+      // Map: country paths trace
+      tl.to("#map-panama", { strokeDashoffset: 0, duration: 1.2, ease: "power2.out" }, 1.5);
+      tl.to("#map-colombia", { strokeDashoffset: 0, duration: 1.2, ease: "power2.out" }, 1.6);
+      tl.to("#map-pin", { autoAlpha: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 2.4);
+      // pin pulse
+      tl.to("#map-pin", { boxShadow: "0 0 0 14px rgba(127,209,217,0)", duration: 1.0, ease: "power2.out", repeat: 2 }, 2.8);
+
+      // Tires stagger pop
+      tl.to("[data-tire]", { autoAlpha:1, scale:1, duration: 0.4, ease: "back.out(1.6)", stagger: 0.07 }, 2.0);
+
+      // Degradation arc + needle sweep + counter
+      // Arc total length 176; gauge spans 180°. Show ~92.5% (deg=7.5%) of full health → fill ~92.5% of arc
+      tl.to("#deg-arc", { strokeDashoffset: 13, duration: 1.4, ease: "power3.out" }, 2.4);
+      // needle sweeps from -90° (pointing left) up and over to ~+76° to match the arc fill
+      tl.to("#deg-needle", { rotation: 76, duration: 1.4, ease: "power3.out" }, 2.4);
+      // Tiny settle wobble
+      tl.to("#deg-needle", { rotation: 72, duration: 0.25, ease: "sine.inOut", yoyo: true, repeat: 1 }, 3.85);
+      var degObj = { v: 0 };
+      tl.to(degObj, {
+        v: 7.5, duration: 1.4, ease: "power3.out",
+        onUpdate: function(){ document.getElementById('deg-val').textContent = degObj.v.toFixed(1) + ' %'; }
+      }, 2.4);
+
+      // Charging stats counters
+      var csC={v:0}, csCy={v:0}, csE={v:0}, csU={v:0}, csEf={v:0};
+      tl.to(csC,  { v: 257,  duration: 1.0, ease: "power2.out", onUpdate: function(){ document.getElementById('cs-charges').textContent = Math.round(csC.v); } }, 2.6);
+      tl.to(csCy, { v: 19,   duration: 1.0, ease: "power2.out", onUpdate: function(){ document.getElementById('cs-cycles').textContent = Math.round(csCy.v); } }, 2.7);
+      tl.to(csE,  { v: 1.55, duration: 1.0, ease: "power2.out", onUpdate: function(){ document.getElementById('cs-energy').textContent = csE.v.toFixed(2) + ' MWh'; } }, 2.8);
+      tl.to(csU,  { v: 1.67, duration: 1.0, ease: "power2.out", onUpdate: function(){ document.getElementById('cs-used').textContent = csU.v.toFixed(2) + ' MWh'; } }, 2.9);
+      tl.to(csEf, { v: 92.8, duration: 1.0, ease: "power2.out", onUpdate: function(){ document.getElementById('cs-eff').textContent = csEf.v.toFixed(1) + '%'; } }, 3.0);
+
+      // ============ Live state — alive after assembly ============
+      // ARM NIGHT button breathing pulse — continuous until end
+      tl.to("#alarm-btn", {
+        boxShadow: "0 0 0 8px rgba(231,111,111,0.16)",
+        duration: 0.55, ease: "sine.inOut", yoyo: true, repeat: 5
+      }, 2.6);
+
+      // Sun core glow — continuous breathing to the end
+      tl.to("#sun .sun-core", {
+        scale: 1.08,
+        duration: 0.9, ease: "sine.inOut", yoyo: true, repeat: 3
+      }, 2.2);
+
+      // Ambient blurs drift in opacity
+      tl.to("#amb-a", { autoAlpha: 0.24, duration: 1.2, ease: "sine.inOut", yoyo: true, repeat: 1 }, 2.6);
+      tl.to("#amb-b", { autoAlpha: 0.22, duration: 1.3, ease: "sine.inOut", yoyo: true, repeat: 1 }, 2.8);
+      tl.to("#amb-c", { autoAlpha: 0.20, duration: 1.1, ease: "sine.inOut", yoyo: true, repeat: 1 }, 3.0);
+
+      // Map pin — ring pulse continues
+      tl.to("#map-pin", { boxShadow: "0 0 0 18px rgba(127,209,217,0)", duration: 0.75, ease: "power2.out", repeat: 2 }, 3.6);
+      // Gentle scale bob on pin
+      tl.to("#map-pin", { scale: 1.12, duration: 0.42, ease: "sine.inOut", yoyo: true, repeat: 4 }, 3.6);
+
+      // Headlight pulse — car is driving
+      tl.to("#tesla-svg circle[fill='#67a5e8']", {
+        attr: { r: 3 }, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 5
+      }, 2.4);
+
+      // Equalizer bars — keep dancing until end (extend beyond original)
+      var eq1bars2 = document.querySelectorAll('#eq1 .bar');
+      eq1bars2.forEach(function(b, i){
+        tl.to(b, {
+          scaleY: 0.35 + Math.abs(Math.sin(i*2.3))*0.9,
+          duration: 0.18, ease: "sine.inOut", yoyo: true, repeat: 7,
+          transformOrigin: "50% 100%"
+        }, 4.2 + i*0.015);
+      });
+
+      // Sankey ribbons — flowing dash animation (data flowing through pipes)
+      gsap.set(".sk-rib", {
+        strokeDasharray: "6 5",
+        stroke: "rgba(255,255,255,0.28)",
+        strokeWidth: 0.8
+      });
+      tl.to(".sk-rib", {
+        strokeDashoffset: -60, duration: 2.8, ease: "none", repeat: 0
+      }, 2.8);
+
+      // Sankey ribbons breathe scaleX subtly (pipe pressure)
+      tl.to(".sk-rib", {
+        scaleX: 1.015, duration: 0.55, ease: "sine.inOut", yoyo: true, repeat: 1,
+        transformOrigin: "0% 50%",
+        stagger: { each: 0.025, from: "start" }
+      }, 3.2);
+
+      // Temp lines — drifting Y wave (live sensor feel)
+      tl.to("#temp-line, #temp-area", {
+        y: -2, duration: 0.55, ease: "sine.inOut", yoyo: true, repeat: 4,
+        transformOrigin: "50% 50%"
+      }, 3.2);
+      tl.to("#temp-line2, #temp-area2", {
+        y: 2, duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 3,
+        transformOrigin: "50% 50%"
+      }, 3.3);
+      // Humidity line — different phase
+      tl.to("#hum-line, #hum-area", {
+        y: -2.5, duration: 0.7, ease: "sine.inOut", yoyo: true, repeat: 3,
+        transformOrigin: "50% 50%"
+      }, 3.2);
+      // Solar line — drifts + subtle scaleY
+      tl.to("#solar-line, #solar-area", {
+        y: -1.8, duration: 0.52, ease: "sine.inOut", yoyo: true, repeat: 4,
+        transformOrigin: "50% 100%"
+      }, 3.4);
+      tl.to("#solar-line", {
+        scaleY: 1.04, duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 3,
+        transformOrigin: "50% 100%"
+      }, 3.6);
+
+      // 5-day weather knobs: tiny bounce + day-bar width pulse
+      tl.to("[data-day] .knob", {
+        scale: 1.22, duration: 0.4, ease: "sine.inOut", yoyo: true, repeat: 3,
+        stagger: { each: 0.04, from: "random" }
+      }, 3.6);
+      tl.to("[data-day] .day-bar-fill, [data-day] .fill, [data-day] .day-bar > div:first-child", {
+        opacity: 0.7, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 2,
+        stagger: 0.03
+      }, 3.8);
+
+      // Range-fill on Tesla — shimmer sweep (moving highlight)
+      tl.to("#range-fill", {
+        backgroundPosition: "200% 0",
+        duration: 1.4, ease: "none", repeat: 1
+      }, 3.2);
+      gsap.set("#range-fill", {
+        backgroundImage: "linear-gradient(90deg, var(--red) 0%, #ff8a4a 30%, #ffd2a6 50%, #ff8a4a 70%, var(--red) 100%)",
+        backgroundSize: "200% 100%"
+      });
+
+      // Battery pct counters — tiny jitter after settling (live feel)
+      var battPctRows = document.querySelectorAll('[data-batt]');
+      battPctRows.forEach(function(row, i){
+        var el = row.querySelector('.batt-pct');
+        var m = parseInt(row.getAttribute('data-pct'), 10);
+        var target = { v: m };
+        tl.to(target, {
+          v: m + (i%2===0?1:-1), duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 1,
+          onUpdate: function(){ el.textContent = Math.round(target.v) + ' %'; }
+        }, 3.4 + i*0.03);
+      });
+
+      // Tesla battery pct — live tick 65 → 66 → 65
+      var batLive = { v: 65 };
+      tl.to(batLive, {
+        v: 66, duration: 0.9, ease: "sine.inOut", yoyo: true, repeat: 1,
+        onUpdate: function(){ document.getElementById('bat-pct').textContent = Math.round(batLive.v) + '%'; }
+      }, 4.0);
+
+      // Charging stats — tiny tick on charges count
+      var csCLive = { v: 257 };
+      tl.to(csCLive, {
+        v: 258, duration: 1.2, ease: "none",
+        onUpdate: function(){ document.getElementById('cs-charges').textContent = Math.round(csCLive.v); }
+      }, 4.3);
+
+      // Patio occupant indicator — subtle pulse
+      tl.to("#patio", {
+        boxShadow: "0 0 0 6px rgba(127,209,217,0.12)",
+        duration: 0.8, ease: "sine.inOut", yoyo: true, repeat: 2
+      }, 3.4);
+
+      // Thermostat orange core — rotation/glow
+      tl.to("#thermo .thermo-ring, .thermo-ring", {
+        rotation: 360, duration: 3.0, ease: "none",
+        transformOrigin: "50% 50%"
+      }, 3.0);
+
+      // Solar percentage — live tick after settling
+      var solarLive = { v: 45 };
+      tl.to(solarLive, {
+        v: 47, duration: 1.0, ease: "sine.inOut", yoyo: true, repeat: 1,
+        onUpdate: function(){ document.getElementById('solar-pct').textContent = Math.round(solarLive.v) + '%'; }
+      }, 3.8);
+
+      // Thermostat temp — gentle live tick
+      var thermoLive = { v: 65.0 };
+      tl.to(thermoLive, {
+        v: 65.2, duration: 0.9, ease: "sine.inOut", yoyo: true, repeat: 1,
+        onUpdate: function(){
+          var el = document.getElementById('thermo-set');
+          if (el) el.textContent = thermoLive.v.toFixed(1);
+        }
+      }, 3.8);
+
+      // t-now live breathing
+      var tNowLive = { v: 69.6 };
+      tl.to(tNowLive, {
+        v: 69.9, duration: 0.9, ease: "sine.inOut", yoyo: true, repeat: 1,
+        onUpdate: function(){
+          var el = document.getElementById('t-now');
+          if (el) el.textContent = tNowLive.v.toFixed(1);
+        }
+      }, 4.0);
+
+      // Power bar-chart breathing — small scale ripple
+      tl.to("[data-pb]", {
+        scaleY: function(){ return 0.94 + Math.random()*0.12; },
+        duration: 0.32, ease: "sine.inOut", yoyo: true, repeat: 2,
+        stagger: { each: 0.003, from: "random" }
+      }, 3.6);
+
+      // Battery fills — subtle opacity breathing (charging feel)
+      tl.to("[data-batt] .batt-fill", {
+        opacity: 0.75,
+        duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 3
+      }, 3.4);
+
+      // Coffee arc — subtle sweep flicker
+      tl.to("#coffee-arc", {
+        opacity: 0.7,
+        duration: 0.45, ease: "sine.inOut", yoyo: true, repeat: 4
+      }, 3.6);
+
+      // Sump-pump EQ — keep them dancing too
+      var sumpBars = document.querySelectorAll('#sumpeq .bar, [data-sumpbar]');
+      sumpBars.forEach(function(b, i){
+        tl.to(b, {
+          scaleY: 0.4 + Math.abs(Math.cos(i*1.3))*0.8,
+          duration: 0.25, ease: "sine.inOut", yoyo: true, repeat: 8,
+          transformOrigin: "50% 100%"
+        }, 3.6 + i*0.04);
+      });
+
+      // Degradation needle — tiny live jitter after settle
+      tl.to("#deg-needle", {
+        rotation: 74, duration: 0.4, ease: "sine.inOut", yoyo: true, repeat: 2
+      }, 4.4);
+
+      // Pie chart — slight radius breathing on slices
+      tl.to("#pie-slice-1, #pie-slice-2", {
+        scale: 1.02, duration: 0.8, ease: "sine.inOut", yoyo: true, repeat: 2,
+        transformOrigin: "50% 50%"
+      }, 3.6);
+
+      // Thermostat pill gentle glow
+      tl.to("#thermo", {
+        boxShadow: "0 0 24px rgba(240,160,74,0.25)",
+        duration: 0.7, ease: "sine.inOut", yoyo: true, repeat: 2
+      }, 3.6);
+
+      window.__timelines["dashboard"] = tl;
+    </script>    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/shader-transitions/dist/index.global.js"></script>
+
+  </div>
+</template>

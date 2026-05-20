@@ -1,0 +1,105 @@
+<template id="beat-03-crt-thesis-template">
+<div data-composition-id="beat-03-crt-thesis" data-start="0" data-duration="6.28" data-width="1920" data-height="1080">
+<style>
+  [data-composition-id="beat-03-crt-thesis"]{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;background:#0A1530;font-family:'VT323',monospace;color:#FFE1A8}
+  [data-composition-id="beat-03-crt-thesis"] .xf-b3{position:absolute;inset:0;transform-origin:center center;will-change:transform,filter,opacity}
+  [data-composition-id="beat-03-crt-thesis"] .frame{position:absolute;inset:0;background:radial-gradient(ellipse at center,#142B66 0%,#0A1530 55%,#050B1C 100%)}
+  [data-composition-id="beat-03-crt-thesis"] .scan{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(255,255,255,0.02) 0 2px,rgba(0,0,0,0.18) 2px 4px);mix-blend-mode:screen}
+  [data-composition-id="beat-03-crt-thesis"] .vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,0.7) 100%)}
+  [data-composition-id="beat-03-crt-thesis"] .crt{position:absolute;left:120px;right:120px;top:80px;bottom:140px;border-radius:80px/45px;border:3px solid rgba(255,180,70,0.25);box-shadow:0 0 120px rgba(255,180,70,0.1) inset,0 0 40px rgba(0,200,255,0.07) inset;overflow:hidden}
+  [data-composition-id="beat-03-crt-thesis"] .hud{position:absolute;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:20px;letter-spacing:0.12em;text-transform:uppercase;color:#FFB446;text-shadow:0 0 10px rgba(255,180,70,0.55)}
+  [data-composition-id="beat-03-crt-thesis"] .hud.tl{top:50px;left:80px}
+  [data-composition-id="beat-03-crt-thesis"] .hud.tr{top:50px;right:80px;text-align:right}
+  [data-composition-id="beat-03-crt-thesis"] .hud.bl{bottom:50px;left:80px;color:#22DDAA;text-shadow:0 0 10px rgba(34,221,170,0.6)}
+  [data-composition-id="beat-03-crt-thesis"] .hud.br{bottom:50px;right:80px;text-align:right;color:#E9EDFF;text-shadow:0 0 8px rgba(200,220,255,0.6)}
+  [data-composition-id="beat-03-crt-thesis"] .dim{opacity:0.5}
+  [data-composition-id="beat-03-crt-thesis"] .term{position:absolute;top:100px;left:80px;font-size:28px;color:#22DDAA;text-shadow:0 0 10px #22DDAA;line-height:1.4}
+  [data-composition-id="beat-03-crt-thesis"] .term .prompt{color:#FFB446;text-shadow:0 0 8px #FFB446}
+  [data-composition-id="beat-03-crt-thesis"] .hero{position:absolute;top:160px;left:80px;right:80px;bottom:280px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;text-align:center;line-height:0.95;color:#FFE1A8;text-shadow:0 0 20px rgba(255,180,70,0.7),0 0 40px rgba(255,100,60,0.3);letter-spacing:0.01em}
+  [data-composition-id="beat-03-crt-thesis"] .hero .row1{display:block;font-size:110px}
+  [data-composition-id="beat-03-crt-thesis"] .hero .row2{display:block;font-size:70px;color:#FF7A50;text-shadow:0 0 22px rgba(255,100,60,0.9)}
+  [data-composition-id="beat-03-crt-thesis"] .hero .row3{display:block;font-size:88px}
+  [data-composition-id="beat-03-crt-thesis"] .hero .row4{display:block;font-size:180px;line-height:1}
+  [data-composition-id="beat-03-crt-thesis"] .hero .zap{color:#22DDAA;text-shadow:0 0 20px #22DDAA}
+  [data-composition-id="beat-03-crt-thesis"] .cursor{display:inline-block;width:30px;height:80px;background:#FFE1A8;vertical-align:-10px;margin-left:10px;box-shadow:0 0 20px rgba(255,225,168,0.8)}
+  [data-composition-id="beat-03-crt-thesis"] .miniwin{position:absolute;right:80px;bottom:140px;width:320px;height:180px;background:#0E1B3E;border:2px solid #FFB446;box-shadow:0 0 20px rgba(255,180,70,0.4)}
+  [data-composition-id="beat-03-crt-thesis"] .miniwin .tt{background:#FFB446;color:#0A1530;font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:14px;padding:6px 10px;letter-spacing:0.15em;text-transform:uppercase}
+  [data-composition-id="beat-03-crt-thesis"] .miniwin .body{padding:14px;color:#E9EDFF;font-size:22px;line-height:1.25;text-shadow:0 0 6px rgba(200,220,255,0.5)}
+  [data-composition-id="beat-03-crt-thesis"] .pulse{position:absolute;top:50%;left:50%;width:1400px;height:1400px;border-radius:50%;background:radial-gradient(circle,rgba(255,180,70,0.08),transparent 65%);pointer-events:none;transform:translate(-50%,-50%)}
+  [data-composition-id="beat-03-crt-thesis"] .glitch{position:absolute;left:0;right:0;top:420px;height:6px;background:linear-gradient(90deg,transparent,rgba(34,221,170,0.6),transparent);mix-blend-mode:screen}
+</style>
+<div class="xf-b3">
+<div class="frame">
+  <div class="pulse"></div>
+  <div class="crt">
+    <div class="hud tl" id="b3-tl">&#9646; CRT &middot; CH 03 &middot; 5.2s</div>
+    <div class="hud tr" id="b3-tr"><span class="dim">sync</span> &#9632; 60Hz</div>
+    <div class="term" id="b3-term"><span class="prompt">&gt;</span> view-source: <span class="dim">./you.mp4</span>&nbsp;<span style="color:#E9EDFF">_</span></div>
+
+    <div class="hero">
+      <span class="row1" id="b3-r1">THIS VIDEO</span>
+      <span class="row2" id="b3-r2">you&rsquo;re watching right now</span>
+      <span class="row3" id="b3-r3">AIN&rsquo;T NOTHING BUT</span>
+      <span class="row4" id="b3-r4"><span class="zap">&lt;</span>HTML<span class="zap">&gt;</span><span class="cursor" id="b3-cur"></span></span>
+    </div>
+
+    <div class="glitch" id="b3-glitch"></div>
+
+    <div class="miniwin" id="b3-mini">
+      <div class="tt">&#9632; &#9632; &#9632;  inspector</div>
+      <div class="body">
+        &lt;video src=<span style="color:#FFB446">"self"</span>&gt;<br>
+        &nbsp;&nbsp;just.html<br>
+        &lt;/video&gt;
+      </div>
+    </div>
+
+    <div class="hud bl" id="b3-bl">&#9655; playback 00:17.4 / 00:20.9</div>
+    <div class="hud br" id="b3-br">03 / 08 &nbsp; thesis</div>
+  </div>
+  <div class="scan"></div>
+  <div class="vignette"></div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script>
+(function(){
+  const DUR = 6.28;
+  // Lyric word times, relative to sub-comp start (subtract 14.58)
+  // This 1.06 video 1.66 you're 2.14 watching 2.52 right 2.66 now 3.02
+  // ain't 4.16 nothing 4.28 but 4.58 HTML 5.10-6.28
+  const tl = gsap.timeline({ paused: true });
+  // Transition IN: curve-UP (enters from y:+100, sweeps up to 0 — matches b2's upward exit)
+  tl.fromTo('.xf-b3', { y:100, scale:1.04, filter:'blur(10px)', opacity:0.25 }, { y:0, scale:1, filter:'blur(0px)', opacity:1, duration:0.35, ease:'expo.out' }, 0);
+  // Transition OUT: zoom-through forward (to b4)
+  tl.to('.xf-b3', { scale:1.12, filter:'blur(10px)', opacity:0.2, duration:0.3, ease:'power2.in', overwrite:'auto' }, DUR - 0.3);
+  tl.from('.crt', { scale:0.9, opacity:0, duration:0.45, ease:'power3.out' }, 0.1);
+  tl.from('#b3-tl,#b3-tr,#b3-bl,#b3-br', { opacity:0, duration:0.35, stagger:0.06 }, 0.3);
+  tl.from('#b3-term', { x:-30, opacity:0, duration:0.4, ease:'power2.out' }, 0.4);
+  // Word-synced lyric lines
+  tl.from('#b3-r1', { y:30, opacity:0, duration:0.3, ease:'power3.out' }, 1.06);
+  tl.from('#b3-r2', { y:30, opacity:0, duration:0.3, ease:'power3.out' }, 2.14);
+  tl.from('#b3-r3', { y:30, opacity:0, duration:0.3, ease:'power3.out' }, 4.16);
+  tl.from('#b3-r4', { scale:0.7, opacity:0, duration:0.45, ease:'back.out(1.8)' }, 5.10);
+  // Cursor blink (finite)
+  const blinks = Math.max(1, Math.floor((DUR - 5.3) / 0.5));
+  for(let i=0;i<blinks;i++){
+    tl.to('#b3-cur', { opacity:0, duration:0.25 }, 5.3 + i*0.5);
+    tl.to('#b3-cur', { opacity:1, duration:0.25 }, 5.55 + i*0.5);
+  }
+  // Glitch sweep
+  tl.fromTo('#b3-glitch', { x:'-100%' }, { x:'100%', duration:0.35, ease:'power2.in' }, 0.9);
+  tl.fromTo('#b3-glitch', { x:'-100%', opacity:0 }, { x:'100%', opacity:1, duration:0.4, ease:'power2.in' }, 3.6);
+  // Mini window slide-in
+  tl.from('#b3-mini', { x:80, opacity:0, duration:0.4, ease:'power3.out' }, 1.4);
+  // Pulse glow
+  tl.fromTo('.pulse', { scale:0.7, opacity:0 }, { scale:1, opacity:1, duration:0.8, ease:'power2.out' }, 0.2);
+  tl.to('.pulse', { scale:1.1, duration: DUR-1.0, ease:'sine.inOut' }, 1.0);
+
+  tl.to({}, { duration: DUR }, 0);
+  window.__timelines = window.__timelines || {};
+  window.__timelines["beat-03-crt-thesis"] = tl;
+})();
+</script>
+</div>
+</template>

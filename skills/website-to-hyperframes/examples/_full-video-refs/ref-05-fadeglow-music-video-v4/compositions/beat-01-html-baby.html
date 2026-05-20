@@ -1,0 +1,76 @@
+<template id="beat-01-html-baby-template">
+<div data-composition-id="beat-01-html-baby" data-start="0" data-duration="4.84" data-width="1920" data-height="1080">
+<style>
+  [data-composition-id="beat-01-html-baby"]{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;background:#F4E9D8;font-family:'Archivo Black',sans-serif}
+  [data-composition-id="beat-01-html-baby"] .xf-b1{position:absolute;inset:0;transform-origin:center center;will-change:transform,filter,opacity}
+  [data-composition-id="beat-01-html-baby"] .frame{position:absolute;inset:0;background:#F4E9D8;
+    background-image:
+      radial-gradient(rgba(0,0,0,0.08) 1px, transparent 1.4px),
+      radial-gradient(circle at 12% 18%, rgba(230,57,70,0.18), transparent 55%),
+      radial-gradient(circle at 85% 82%, rgba(38,70,196,0.18), transparent 55%);
+    background-size: 4px 4px, auto, auto}
+  [data-composition-id="beat-01-html-baby"] .grain{position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:0.35;background-image:radial-gradient(rgba(0,0,0,0.4) 0.5px, transparent 0.8px);background-size:2px 2px}
+  [data-composition-id="beat-01-html-baby"] .corner{position:absolute;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:18px;letter-spacing:0.18em;text-transform:uppercase;color:#1a1a1a}
+  [data-composition-id="beat-01-html-baby"] .tl{top:60px;left:72px}
+  [data-composition-id="beat-01-html-baby"] .tr{top:60px;right:72px;text-align:right}
+  [data-composition-id="beat-01-html-baby"] .bl{bottom:60px;left:72px}
+  [data-composition-id="beat-01-html-baby"] .br{bottom:60px;right:72px;text-align:right;color:#E63946}
+  [data-composition-id="beat-01-html-baby"] .dim{opacity:0.45}
+  [data-composition-id="beat-01-html-baby"] .tag{color:#2646C4}
+  [data-composition-id="beat-01-html-baby"] .hot{color:#E63946}
+  [data-composition-id="beat-01-html-baby"] .hero{position:absolute;left:120px;right:120px;top:170px;bottom:170px;display:flex;flex-direction:column;justify-content:space-between;letter-spacing:-0.04em}
+  [data-composition-id="beat-01-html-baby"] .line1{font-size:150px;color:#1a1a1a;position:relative;display:inline-block;align-self:flex-start;line-height:1}
+  [data-composition-id="beat-01-html-baby"] .line1::before{content:"it’s just";position:absolute;left:5px;top:5px;color:#E63946;z-index:-1;mix-blend-mode:multiply;white-space:nowrap;line-height:inherit;font:inherit;width:auto}
+  [data-composition-id="beat-01-html-baby"] .line2{font-size:320px;color:#2646C4;position:relative;display:inline-block;align-self:flex-end;line-height:1;margin-top:-30px;margin-bottom:-10px}
+  [data-composition-id="beat-01-html-baby"] .line2::before{content:'HTML,';position:absolute;left:-8px;top:8px;color:#E63946;z-index:-1;mix-blend-mode:multiply}
+  [data-composition-id="beat-01-html-baby"] .line3{font-family:'Instrument Serif',serif;font-style:italic;font-size:190px;color:#E63946;font-weight:400;display:inline-block;align-self:flex-end;line-height:0.95}
+  [data-composition-id="beat-01-html-baby"] .tagline{position:absolute;bottom:115px;left:72px;font-family:'JetBrains Mono',monospace;font-size:22px;color:#1a1a1a;letter-spacing:0.04em}
+  [data-composition-id="beat-01-html-baby"] .bracket{font-family:'JetBrains Mono',monospace;font-size:160px;color:#2646C4;opacity:0.22;position:absolute;line-height:1}
+  [data-composition-id="beat-01-html-baby"] .bracket.l{top:170px;left:8px}
+  [data-composition-id="beat-01-html-baby"] .bracket.r{bottom:200px;right:12px}
+  [data-composition-id="beat-01-html-baby"] .tape{position:absolute;top:28px;left:50%;background:#2646C4;color:#F4E9D8;padding:8px 32px;font-family:'JetBrains Mono',monospace;font-size:18px;letter-spacing:0.3em;text-transform:uppercase;transform:translateX(-50%) rotate(-2deg);transform-origin:center;white-space:nowrap}
+  [data-composition-id="beat-01-html-baby"] .wave{position:absolute;bottom:72px;left:72px;right:72px;height:6px;background:#1a1a1a;overflow:hidden}
+  [data-composition-id="beat-01-html-baby"] .wave-fill{position:absolute;left:0;top:-3px;width:0%;height:12px;background:#E63946}
+</style>
+<div class="xf-b1">
+<div class="frame">
+  <div class="grain"></div>
+  <div class="tape" id="b1-tape">Side A &middot; Beat 01 &middot; 00:02.1 &ndash; 00:04.8</div>
+  <div class="corner tl" id="b1-tl"><span class="tag">&lt;</span>html<span class="tag">&gt;</span> <span class="dim">lang="en"</span></div>
+  <div class="corner tr" id="b1-tr">html_fadeglow &middot; v4</div>
+  <div class="bracket l" id="b1-bl2">&lt;</div>
+  <div class="bracket r" id="b1-br2">/&gt;</div>
+
+  <div class="hero">
+    <div class="line1" id="b1-l1">it&rsquo;s just</div>
+    <div class="line2" id="b1-l2">HTML,</div>
+    <div class="line3" id="b1-l3">baby<span class="hot">.</span></div>
+  </div>
+
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script>
+(function(){
+  const DUR = 4.84;
+  const tl = gsap.timeline({ paused: true });
+  // Entry: gentle zoom settle (opening beat — no prior scene)
+  tl.fromTo('.xf-b1', { scale:1.05, filter:'blur(6px)', opacity:0.3 }, { scale:1, filter:'blur(0px)', opacity:1, duration:0.35, ease:'expo.out' }, 0);
+  // Words: It's 2.12, just 2.72, HTML 2.98, baby 4.14
+  tl.from('#b1-tape', { y:-60, opacity:0, duration:0.5, ease:'back.out(1.6)' }, 0.1);
+  tl.from('#b1-tl', { x:-40, opacity:0, duration:0.4, ease:'power2.out' }, 0.35);
+  tl.from('#b1-tr', { x:40, opacity:0, duration:0.4, ease:'power2.out' }, 0.35);
+  tl.from('#b1-bl2', { x:-120, opacity:0, duration:0.6, ease:'power3.out' }, 0.4);
+  tl.from('#b1-br2', { x:120, opacity:0, duration:0.6, ease:'power3.out' }, 0.4);
+  tl.from('#b1-l1', { y:60, opacity:0, duration:0.35, ease:'power3.out' }, 2.12);
+  tl.from('#b1-l2', { scale:0.6, opacity:0, duration:0.5, ease:'back.out(2)' }, 2.98);
+  tl.from('#b1-l3', { x:-60, opacity:0, duration:0.45, ease:'power2.out' }, 4.14);
+  // Exit: zoom-through forward (to beat 2)
+  tl.to('.xf-b1', { scale:1.12, filter:'blur(10px)', opacity:0.2, duration:0.3, ease:'power2.in', overwrite:'auto' }, DUR - 0.3);
+  tl.to({}, { duration: DUR }, 0);
+  window.__timelines = window.__timelines || {};
+  window.__timelines["beat-01-html-baby"] = tl;
+})();
+</script>
+</div>
+</template>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Beat 5 · It's a template, baby</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700;900&family=DM+Mono:wght@500&display=swap">
+<style>
+  html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#FFF7F2;font-family:'DM Sans',sans-serif}
+  .frame{position:relative;width:1920px;height:1080px;background:
+    linear-gradient(180deg,#FFF7F2 0%,#FFE8EF 100%);
+  }
+  .mono{font-family:'DM Mono',monospace;letter-spacing:0.02em}
+  .grid{position:absolute;inset:0;background-image:
+    linear-gradient(to right,rgba(163,96,212,0.07) 1px,transparent 1px),
+    linear-gradient(to bottom,rgba(163,96,212,0.07) 1px,transparent 1px);
+    background-size:40px 40px;pointer-events:none}
+  .canvas{position:absolute;left:60px;top:120px;right:420px;bottom:120px;background:#FFFFFF;border:2px dashed #A360D4;box-shadow:0 30px 60px rgba(163,96,212,0.15)}
+  .canvas::before{content:'artboard · 1920 × 1080';position:absolute;top:-34px;left:0;font-family:'DM Mono',monospace;font-size:14px;color:#A360D4;letter-spacing:0.16em;text-transform:uppercase}
+  .box{position:absolute;border:2px solid #FF4E8A;background:rgba(255,78,138,0.06);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:18px;color:#B8245A;letter-spacing:0.1em;text-transform:uppercase}
+  .box .hdl{position:absolute;width:10px;height:10px;background:#FFFFFF;border:2px solid #FF4E8A}
+  .box .hdl.tl{left:-6px;top:-6px}.box .hdl.tr{right:-6px;top:-6px}
+  .box .hdl.bl{left:-6px;bottom:-6px}.box .hdl.br{right:-6px;bottom:-6px}
+  .box.sel{border-color:#7A2CF0;background:rgba(122,44,240,0.08);box-shadow:0 0 0 4px rgba(122,44,240,0.15)}
+  .box.sel .hdl{border-color:#7A2CF0;background:#FFE94F}
+  .box .lbl{font-weight:700}
+  .hero{position:absolute;top:150px;left:120px;right:calc(420px + 60px);font-family:'DM Sans',sans-serif;font-weight:900;font-size:180px;line-height:0.9;letter-spacing:-0.04em;color:#2A0A3A}
+  .hero .row1{color:#A360D4}
+  .hero .row1::first-letter{color:#FF4E8A}
+  .hero .row2{color:#2A0A3A}
+  .hero .row2 em{font-style:italic;font-weight:500;color:#FF4E8A}
+  .inspector{position:absolute;right:60px;top:120px;bottom:120px;width:320px;background:#FFFFFF;border:2px solid #A360D4;border-radius:14px;padding:28px;box-shadow:0 30px 60px rgba(163,96,212,0.15)}
+  .inspector h3{margin:0 0 12px 0;font-family:'DM Mono',monospace;font-size:13px;color:#7A2CF0;letter-spacing:0.2em;text-transform:uppercase}
+  .inspector .row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(163,96,212,0.15);font-family:'DM Mono',monospace;font-size:16px;color:#2A0A3A}
+  .inspector .row span:last-child{color:#FF4E8A;font-weight:500}
+  .inspector .sec{margin-top:22px}
+  .inspector .pill{display:inline-block;padding:6px 14px;border-radius:999px;background:#FFE8EF;color:#B8245A;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;margin:4px 4px 4px 0}
+  .inspector .pill.act{background:#7A2CF0;color:#FFF}
+  .swatch{width:24px;height:24px;border-radius:6px;display:inline-block;vertical-align:middle;margin-right:8px}
+  .corner{position:absolute;font-family:'DM Mono',monospace;font-size:16px;color:#7A2CF0;letter-spacing:0.15em;text-transform:uppercase}
+  .corner.tl{top:40px;left:60px}
+  .corner.br{bottom:40px;right:60px;color:#FF4E8A}
+  .tag{position:absolute;background:#7A2CF0;color:#FFF;padding:4px 10px;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;border-radius:4px}
+</style></head>
+<body>
+<div class="frame">
+  <div class="grid"></div>
+  <div class="corner tl">● editor · layers · 05</div>
+
+  <div class="canvas">
+    <div class="hero">
+      <div class="row1">it&rsquo;s a</div>
+      <div class="row2">template<em>,</em></div>
+      <div class="row2" style="font-style:italic;font-weight:500;color:#A360D4">baby.</div>
+    </div>
+
+    <div class="box" style="left:60px;top:480px;width:280px;height:180px">
+      <span class="lbl">[ hero ]</span>
+      <span class="hdl tl"></span><span class="hdl tr"></span><span class="hdl bl"></span><span class="hdl br"></span>
+    </div>
+    <div class="box sel" style="left:380px;top:480px;width:340px;height:180px">
+      <span class="tag" style="top:-28px;left:0">component · selected</span>
+      <span class="lbl">[ template ]</span>
+      <span class="hdl tl"></span><span class="hdl tr"></span><span class="hdl bl"></span><span class="hdl br"></span>
+    </div>
+    <div class="box" style="left:760px;top:480px;width:240px;height:180px">
+      <span class="lbl">[ slot ]</span>
+      <span class="hdl tl"></span><span class="hdl tr"></span><span class="hdl bl"></span><span class="hdl br"></span>
+    </div>
+    <div class="box" style="left:60px;top:700px;width:940px;height:110px">
+      <span class="lbl">[ caption · word-by-word ]</span>
+      <span class="hdl tl"></span><span class="hdl tr"></span><span class="hdl bl"></span><span class="hdl br"></span>
+    </div>
+  </div>
+
+  <div class="inspector">
+    <h3>Inspector</h3>
+    <div class="row"><span>type</span><span>template</span></div>
+    <div class="row"><span>w × h</span><span>1920 × 1080</span></div>
+    <div class="row"><span>fill</span><span><span class="swatch" style="background:#FFE8EF"></span>#FFE8EF</span></div>
+    <div class="row"><span>accent</span><span><span class="swatch" style="background:#FF4E8A"></span>#FF4E8A</span></div>
+    <div class="row"><span>font</span><span>DM Sans 900</span></div>
+    <div class="sec">
+      <h3>Variants</h3>
+      <span class="pill act">baby</span>
+      <span class="pill">calm</span>
+      <span class="pill">loud</span>
+      <span class="pill">dark</span>
+    </div>
+    <div class="sec">
+      <h3>Actions</h3>
+      <span class="pill" style="background:#FFE94F;color:#2A0A3A">⌘D duplicate</span>
+      <span class="pill">⌘S save</span>
+    </div>
+  </div>
+
+  <div class="corner br">05 / 08 &nbsp; figma vibes</div>
+</div>
+</body></html>

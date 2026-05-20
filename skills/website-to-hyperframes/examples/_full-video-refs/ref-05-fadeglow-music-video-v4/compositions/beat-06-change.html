@@ -1,0 +1,113 @@
+<template id="beat-06-change-template">
+<div data-composition-id="beat-06-change" data-start="0" data-duration="3.38" data-width="1920" data-height="1080">
+<style>
+  [data-composition-id="beat-06-change"]{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:'Space Grotesk',sans-serif}
+  [data-composition-id="beat-06-change"] .xf-b6{position:absolute;inset:0;transform-origin:center center;will-change:transform,filter,opacity}
+  [data-composition-id="beat-06-change"] .frame{position:absolute;inset:0;overflow:hidden}
+  [data-composition-id="beat-06-change"] .half{position:absolute;top:0;bottom:0;width:50%;overflow:hidden}
+  [data-composition-id="beat-06-change"] .half.l{left:0;background:#0B1F3A;color:#D4FF5E}
+  [data-composition-id="beat-06-change"] .half.r{right:0;background:#FF2E9A;color:#FFE94F}
+  [data-composition-id="beat-06-change"] .half.l .swatch-grid{position:absolute;inset:0;opacity:0.12;background-image:linear-gradient(45deg,#D4FF5E 25%,transparent 25%,transparent 75%,#D4FF5E 75%),linear-gradient(45deg,#D4FF5E 25%,transparent 25%,transparent 75%,#D4FF5E 75%);background-size:80px 80px;background-position:0 0, 40px 40px}
+  [data-composition-id="beat-06-change"] .half.r .memphis{position:absolute;inset:0;pointer-events:none}
+  [data-composition-id="beat-06-change"] .half.r .memphis span{position:absolute;display:block}
+  [data-composition-id="beat-06-change"] .dot{width:18px;height:18px;background:#FFE94F;border-radius:50%;box-shadow:0 0 0 3px #0B1F3A}
+  [data-composition-id="beat-06-change"] .sq{width:40px;height:40px;background:#00D4C1;transform:rotate(18deg);border:3px solid #0B1F3A}
+  [data-composition-id="beat-06-change"] .sq2{width:70px;height:20px;background:#0B1F3A;transform:rotate(-12deg)}
+  [data-composition-id="beat-06-change"] .tri{width:0;height:0;border-left:28px solid transparent;border-right:28px solid transparent;border-bottom:42px solid #D4FF5E;transform:rotate(12deg)}
+  [data-composition-id="beat-06-change"] .squig{width:120px;height:40px;border-top:6px solid #FFE94F;border-radius:50%;transform:rotate(-8deg)}
+  [data-composition-id="beat-06-change"] .lyric{position:absolute;left:70px;right:70px;font-family:'Boldonse',sans-serif;line-height:0.86;letter-spacing:-0.02em}
+  [data-composition-id="beat-06-change"] .half.l .lyric{top:130px;font-size:140px;color:#D4FF5E}
+  [data-composition-id="beat-06-change"] .half.l .lyric em{color:#F4F1E6;font-style:normal;opacity:0.55;font-weight:400;font-family:'Space Grotesk',sans-serif;font-size:68px;display:block;letter-spacing:-0.01em;margin-top:18px}
+  [data-composition-id="beat-06-change"] .half.r .lyric{top:130px;font-size:140px;color:#FFE94F;text-shadow:8px 8px 0 #0B1F3A}
+  [data-composition-id="beat-06-change"] .half.r .lyric em{color:#0B1F3A;font-style:italic;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:68px;display:block;margin-top:18px;letter-spacing:-0.01em;text-shadow:none}
+  [data-composition-id="beat-06-change"] .mega{position:absolute;top:50%;left:50%;z-index:20;font-family:'Boldonse',sans-serif;font-size:420px;line-height:0.8;letter-spacing:-0.05em;color:#FFE94F;text-shadow:12px 12px 0 #0B1F3A, 24px 24px 0 #FF2E9A;padding:0 40px;transform:translate(-50%,-50%) rotate(-4deg)}
+  [data-composition-id="beat-06-change"] .swap{position:absolute;top:50%;left:50%;width:240px;height:240px;z-index:21;transform:translate(-50%,-50%) rotate(45deg)}
+  [data-composition-id="beat-06-change"] .swap::before,[data-composition-id="beat-06-change"] .swap::after{content:'';position:absolute;background:#0B1F3A}
+  [data-composition-id="beat-06-change"] .swap::before{left:50%;top:0;width:16px;height:100%;margin-left:-8px;border-radius:4px}
+  [data-composition-id="beat-06-change"] .swap::after{top:50%;left:0;height:16px;width:100%;margin-top:-8px;border-radius:4px}
+  [data-composition-id="beat-06-change"] .palette{position:absolute;bottom:70px;display:flex;gap:8px;align-items:center}
+  [data-composition-id="beat-06-change"] .palette.l{left:70px}
+  [data-composition-id="beat-06-change"] .palette.r{right:70px}
+  [data-composition-id="beat-06-change"] .chip{width:54px;height:54px;border-radius:50%;border:3px solid #F4F1E6}
+  [data-composition-id="beat-06-change"] .plabel{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;letter-spacing:0.18em;text-transform:uppercase;margin-left:14px}
+  [data-composition-id="beat-06-change"] .half.l .plabel{color:#D4FF5E}
+  [data-composition-id="beat-06-change"] .half.r .plabel{color:#0B1F3A}
+  [data-composition-id="beat-06-change"] .hud{position:absolute;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:16px;letter-spacing:0.18em;text-transform:uppercase}
+  [data-composition-id="beat-06-change"] .hud.tl{top:48px;left:70px;color:#D4FF5E}
+  [data-composition-id="beat-06-change"] .hud.tr{top:48px;right:70px;color:#0B1F3A;text-align:right}
+  [data-composition-id="beat-06-change"] .hud.br{bottom:48px;right:70px;color:#0B1F3A;text-align:right;z-index:30}
+</style>
+<div class="xf-b6">
+<div class="frame">
+  <div class="half l" id="b6-left">
+    <div class="swatch-grid"></div>
+    <div class="hud tl" id="b6-hud-l">before &middot; 31.3s</div>
+    <div class="lyric" id="b6-lyric-l">you want these lyrics<em>navy &middot; lime &middot; calm</em></div>
+    <div class="palette l" id="b6-pal-l">
+      <div class="chip" style="background:#0B1F3A"></div>
+      <div class="chip" style="background:#D4FF5E"></div>
+      <div class="chip" style="background:#F4F1E6"></div>
+      <span class="plabel">calm</span>
+    </div>
+  </div>
+  <div class="half r" id="b6-right">
+    <div class="memphis" id="b6-memphis">
+      <span class="dot" style="top:12%;right:18%"></span>
+      <span class="sq" style="top:22%;right:10%"></span>
+      <span class="tri" style="top:40%;right:28%"></span>
+      <span class="squig" style="top:58%;right:8%"></span>
+      <span class="sq2" style="top:72%;right:22%"></span>
+      <span class="dot" style="top:82%;right:40%;background:#00D4C1"></span>
+      <span class="tri" style="top:16%;right:48%;border-bottom-color:#FFE94F"></span>
+      <span class="sq" style="top:66%;right:40%;background:#FFE94F"></span>
+    </div>
+    <div class="hud tr" id="b6-hud-r">after &middot; 33.7s</div>
+    <div class="lyric" id="b6-lyric-r">then change them<em>magenta &middot; yellow &middot; loud</em></div>
+    <div class="palette r" id="b6-pal-r">
+      <span class="plabel" style="margin:0 14px 0 0">loud</span>
+      <div class="chip" style="background:#FFE94F"></div>
+      <div class="chip" style="background:#00D4C1"></div>
+      <div class="chip" style="background:#0B1F3A"></div>
+    </div>
+  </div>
+  <div class="mega" id="b6-mega">CHANGE</div>
+  <div class="swap" id="b6-swap"></div>
+  <div class="hud br" id="b6-br">06 / 08 &nbsp; palette swap</div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script>
+(function(){
+  const DUR = 3.38;
+  // Words rel to 30.42: You 0.90, want 1.00, these 1.20, lyrics 1.40, Change 2.22, Then 2.38, change 2.48, them 2.88
+  const tl = gsap.timeline({ paused: true });
+  // Transition IN: zoom-through (matches b5 forward push)
+  tl.fromTo('.xf-b6', { scale:0.88, filter:'blur(10px)', opacity:0.2 }, { scale:1, filter:'blur(0px)', opacity:1, duration:0.3, ease:'expo.out' }, 0);
+  // Transition OUT: zoom-through forward (to b7)
+  tl.to('.xf-b6', { scale:1.14, filter:'blur(12px)', opacity:0.2, duration:0.3, ease:'power2.in', overwrite:'auto' }, DUR - 0.3);
+  // LEFT only initially; right starts hidden
+  gsap.set('#b6-right', { clipPath:'inset(0 0 0 100%)' });
+  gsap.set('#b6-mega', { scale:0, opacity:0 });
+  gsap.set('#b6-swap', { scale:0, opacity:0 });
+
+  tl.from('#b6-hud-l', { y:-20, opacity:0, duration:0.3, ease:'power2.out' }, 0.1);
+  tl.from('#b6-lyric-l', { y:40, opacity:0, duration:0.45, ease:'power3.out' }, 0.9);
+  tl.from('#b6-pal-l', { y:20, opacity:0, duration:0.35, ease:'power2.out' }, 1.4);
+
+  // Palette swap at "Change" (2.22)
+  tl.to('#b6-mega', { scale:1.0, opacity:1, duration:0.35, ease:'back.out(2)' }, 2.10);
+  tl.to('#b6-swap', { scale:1, opacity:1, duration:0.25, ease:'back.out(2)' }, 2.18);
+  tl.to('#b6-right', { clipPath:'inset(0 0 0 0%)', duration:0.35, ease:'power3.inOut' }, 2.22);
+  tl.from('#b6-hud-r', { y:-20, opacity:0, duration:0.3, ease:'power2.out' }, 2.45);
+  tl.from('#b6-lyric-r', { scale:0.8, opacity:0, duration:0.4, ease:'back.out(1.6)' }, 2.48);
+  tl.from('#b6-pal-r', { y:20, opacity:0, duration:0.3, ease:'power2.out' }, 2.75);
+
+  // Mega rotates a bit and settles
+  tl.to('#b6-mega', { rotation:-4, duration:0.6, ease:'power2.out' }, 2.3);
+  tl.to({}, { duration: DUR }, 0);
+  window.__timelines = window.__timelines || {};
+  window.__timelines["beat-06-change"] = tl;
+})();
+</script>
+</div>
+</template>

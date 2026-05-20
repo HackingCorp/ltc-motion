@@ -1,0 +1,323 @@
+<template id="shader-render-template">
+  <div data-composition-id="shader-render" data-width="1920" data-height="1080" data-start="0">
+
+    <!-- WebGL shader background -->
+    <canvas class="shader-canvas" id="shader-canvas" width="1920" height="1080"></canvas>
+
+    <!-- Floating GLSL code snippet -->
+    <div class="code-float" id="code-float">
+      <span class="cmt">// FBM domain warping shader</span><br>
+      <span class="kw">vec3</span> col = <span class="fn">palette</span>(fbm(p + <span class="fn">fbm</span>(p)));<br>
+      col *= <span class="num">0.85</span> + <span class="num">0.15</span> * <span class="fn">cos</span>(u_time * <span class="num">0.3</span>);<br>
+      col = <span class="fn">mix</span>(col, warmTint, <span class="num">0.12</span>);<br>
+      <span class="kw">float</span> v = <span class="fn">smoothstep</span>(<span class="num">0.0</span>, <span class="num">0.7</span>, d);<br>
+      col *= <span class="num">1.0</span> - v * <span class="num">0.45</span>;
+    </div>
+
+    <!-- Shader label -->
+    <div class="shader-label" id="shader-label">
+      <h2>SHADERS</h2>
+      <div class="sub">WEBGL FRAGMENT SHADERS &bull; FBM &bull; DOMAIN WARPING</div>
+    </div>
+
+    <!-- Render terminal -->
+    <div class="render-terminal" id="render-terminal">
+      <div class="term-bar">
+        <div class="term-dot r"></div>
+        <div class="term-dot y"></div>
+        <div class="term-dot g"></div>
+        <div class="term-title">hyperframes render</div>
+      </div>
+      <div class="term-body">
+        <div class="term-line"><span class="prompt">$ </span><span class="cmd">npx hyperframes render</span> <span class="arg">--output renders/out.mp4</span></div>
+        <div class="term-line sp"></div>
+        <div class="check-line cl" id="cl-1"><span class="ok">&#10003;</span> Validated 6 compositions</div>
+        <div class="check-line cl" id="cl-2"><span class="ok">&#10003;</span> Loaded GSAP 3.14.2</div>
+        <div class="check-line cl" id="cl-3"><span class="ok">&#10003;</span> WebGL shader compiled</div>
+        <div class="check-line cl" id="cl-4"><span class="ok">&#10003;</span> Lottie assets resolved (3)</div>
+        <div class="check-line cl" id="cl-5"><span class="ok">&#10003;</span> Fonts loaded (4 families)</div>
+        <div class="term-line sp"></div>
+
+        <div class="progress-block" id="prog-block">
+          <div class="term-line"><span class="warn">Rendering...</span> frame <span class="arg" id="frame-num">0</span> / <span class="dim">900</span></div>
+          <div class="render-bar-track">
+            <div class="render-bar-fill" id="bar-fill"></div>
+          </div>
+          <div class="render-stats">
+            <span><span class="val" id="pct-val">0%</span> complete</span>
+            <span><span class="val" id="time-val">0.0s</span> / 30.0s</span>
+            <span>ETA <span class="val" id="eta-val">~30s</span></span>
+          </div>
+        </div>
+
+        <div class="output-preview" id="output-preview">
+          <div class="output-row"><span class="dim">Format:</span> <span class="ok">H.264 MP4</span></div>
+          <div class="output-row"><span class="dim">Resolution:</span> <span class="ok">1920 x 1080</span></div>
+          <div class="output-row"><span class="dim">FPS:</span> <span class="ok">30</span></div>
+          <div class="output-row"><span class="dim">Size:</span> <span class="arg">14.2 MB</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CRT -->
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    <div class="bleed-bottom"></div>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+      [data-composition-id="shader-render"] {
+        width: 1920px; height: 1080px; position: relative; overflow: hidden;
+        background: #000;
+      }
+
+      [data-composition-id="shader-render"] .shader-canvas {
+        position: absolute; inset: 0; z-index: 1; width: 1920px; height: 1080px;
+      }
+
+      [data-composition-id="shader-render"] .code-float {
+        position: absolute; left: 80px; top: 80px; z-index: 20; opacity: 0;
+        font-family: 'VT323', monospace; font-size: 18px; line-height: 1.5;
+        color: rgba(0,200,150,0.5);
+        background: rgba(0,0,0,0.5); padding: 16px 20px;
+        border-left: 2px solid rgba(0,200,150,0.3);
+        backdrop-filter: blur(4px); max-width: 500px;
+      }
+      [data-composition-id="shader-render"] .kw { color: rgba(204,0,255,0.6); }
+      [data-composition-id="shader-render"] .fn { color: rgba(0,220,170,0.7); }
+      [data-composition-id="shader-render"] .num { color: rgba(255,180,70,0.6); }
+      [data-composition-id="shader-render"] .cmt { color: rgba(100,120,100,0.5); font-style: italic; }
+
+      [data-composition-id="shader-render"] .shader-label {
+        position: absolute; left: 80px; bottom: 120px; z-index: 20; opacity: 0;
+      }
+      [data-composition-id="shader-render"] .shader-label h2 {
+        font-family: 'VT323', monospace; font-size: 64px; color: #FFD080;
+        letter-spacing: 0.08em; line-height: 1; margin: 0;
+        text-shadow: 0 0 30px rgba(255,208,128,0.5), 0 0 80px rgba(255,180,70,0.2),
+          4px 0 0 rgba(255,0,50,0.12), -4px 0 0 rgba(0,100,255,0.12);
+      }
+      [data-composition-id="shader-render"] .shader-label .sub {
+        font-family: 'IBM Plex Mono', monospace; font-size: 18px;
+        color: rgba(255,255,255,0.3); letter-spacing: 0.08em; margin-top: 8px;
+      }
+
+      [data-composition-id="shader-render"] .render-terminal {
+        position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
+        z-index: 20; width: 620px; opacity: 0;
+        background: rgba(0,0,0,0.82);
+        border: 1px solid rgba(51,255,51,0.2); border-radius: 6px; overflow: hidden;
+        box-shadow: 0 0 60px rgba(0,0,0,0.6), 0 0 30px rgba(51,255,51,0.04);
+        backdrop-filter: blur(12px);
+      }
+      [data-composition-id="shader-render"] .term-bar {
+        padding: 10px 16px;
+        background: rgba(51,255,51,0.04);
+        border-bottom: 1px solid rgba(51,255,51,0.1);
+        display: flex; align-items: center; gap: 8px;
+      }
+      [data-composition-id="shader-render"] .term-dot { width: 10px; height: 10px; border-radius: 50%; }
+      [data-composition-id="shader-render"] .term-dot.r { background: #FF5F57; }
+      [data-composition-id="shader-render"] .term-dot.y { background: #FEBC2E; }
+      [data-composition-id="shader-render"] .term-dot.g { background: #28C840; }
+      [data-composition-id="shader-render"] .term-title {
+        font-family: 'IBM Plex Mono', monospace; font-size: 13px;
+        color: rgba(51,255,51,0.4); margin-left: 8px;
+      }
+      [data-composition-id="shader-render"] .term-body {
+        padding: 20px;
+        font-family: 'VT323', monospace; font-size: 20px; line-height: 1.6;
+        color: rgba(51,255,51,0.7);
+      }
+      [data-composition-id="shader-render"] .prompt { color: rgba(51,255,51,0.4); }
+      [data-composition-id="shader-render"] .cmd { color: #00DDAA; }
+      [data-composition-id="shader-render"] .arg { color: #FFD080; }
+      [data-composition-id="shader-render"] .dim { color: rgba(51,255,51,0.3); }
+      [data-composition-id="shader-render"] .ok { color: #33FF33; text-shadow: 0 0 6px rgba(51,255,51,0.3); }
+      [data-composition-id="shader-render"] .warn { color: #FFB446; }
+      [data-composition-id="shader-render"] .val { color: #FFD080; }
+      [data-composition-id="shader-render"] .sp { height: 8px; }
+      [data-composition-id="shader-render"] .cl { opacity: 0; }
+      [data-composition-id="shader-render"] .term-line { margin-bottom: 2px; }
+
+      [data-composition-id="shader-render"] .progress-block {
+        margin: 12px 0; padding: 12px 0;
+        border-top: 1px solid rgba(51,255,51,0.08);
+        border-bottom: 1px solid rgba(51,255,51,0.08);
+        opacity: 0;
+      }
+      [data-composition-id="shader-render"] .render-bar-track {
+        width: 100%; height: 12px; background: rgba(51,255,51,0.06);
+        border-radius: 2px; overflow: hidden; margin: 8px 0;
+      }
+      [data-composition-id="shader-render"] .render-bar-fill {
+        width: 0%; height: 100%;
+        background: linear-gradient(90deg, #33FF33, #00DDAA);
+        border-radius: 2px;
+        box-shadow: 0 0 12px rgba(51,255,51,0.3);
+      }
+      [data-composition-id="shader-render"] .render-stats {
+        display: flex; justify-content: space-between; font-size: 16px;
+        color: rgba(51,255,51,0.4);
+      }
+      [data-composition-id="shader-render"] .output-preview {
+        margin-top: 12px; padding-top: 12px;
+        border-top: 1px solid rgba(51,255,51,0.08);
+        opacity: 0;
+      }
+      [data-composition-id="shader-render"] .output-row {
+        display: flex; justify-content: space-between; font-size: 18px; margin-bottom: 4px;
+      }
+
+      /* CRT */
+      [data-composition-id="shader-render"] .scanlines {
+        position: absolute; inset: 0; z-index: 80;
+        background: repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px);
+        pointer-events: none;
+      }
+      [data-composition-id="shader-render"] .vignette {
+        position: absolute; inset: 0; z-index: 85;
+        background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.55) 100%);
+        pointer-events: none;
+      }
+      [data-composition-id="shader-render"] .bleed-bottom {
+        position: absolute; bottom: 0; left: 0; width: 100%; height: 5px; z-index: 90;
+        background: linear-gradient(90deg, rgba(0,221,170,0.5), rgba(204,0,255,0.4), rgba(255,180,70,0.5), rgba(68,136,255,0.4));
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const scope = document.querySelector('[data-composition-id="shader-render"]');
+      const q = (sel) => scope.querySelector(sel);
+      const qa = (sel) => scope.querySelectorAll(sel);
+
+      // WebGL shader setup
+      const canvas = q('#shader-canvas');
+      const gl = canvas.getContext('webgl');
+
+      if (gl) {
+        const vs = 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }';
+        const fs = `
+          precision mediump float;
+          uniform vec2 u_res;
+          uniform float u_time;
+          float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+          float noise(vec2 p) {
+            vec2 i = floor(p); vec2 f = fract(p);
+            f = f * f * (3.0 - 2.0 * f);
+            return mix(mix(hash(i), hash(i+vec2(1,0)), f.x), mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), f.x), f.y);
+          }
+          float fbm(vec2 p) {
+            float v = 0.0; float a = 0.5; mat2 R = mat2(0.8,0.6,-0.6,0.8);
+            for(int i=0;i<5;i++){ v += a*noise(p); p = R*p*2.0; a *= 0.5; }
+            return v;
+          }
+          vec3 palette(float t) {
+            vec3 a=vec3(0.5); vec3 b=vec3(0.5); vec3 c=vec3(1.0); vec3 d=vec3(0.0,0.1,0.2);
+            return a + b * cos(6.28318*(c*t+d));
+          }
+          void main() {
+            vec2 uv = gl_FragCoord.xy / u_res;
+            uv.x *= u_res.x / u_res.y;
+            vec2 p = uv * 3.0;
+            float t = u_time * 0.15;
+            float f1 = fbm(p + t);
+            float f2 = fbm(p + f1 + t*0.7);
+            float f3 = fbm(p + f2*1.5);
+            vec3 col = palette(f3*0.8 + t*0.1);
+            col *= 0.7 + 0.3*f2;
+            col = mix(col, col*vec3(1.0,0.85,0.6), 0.2);
+            col *= 0.55;
+            vec2 vc = (gl_FragCoord.xy/u_res) - 0.5;
+            col *= 1.0 - dot(vc,vc)*1.2;
+            gl_FragColor = vec4(col, 1.0);
+          }`;
+
+        function makeShader(src, type) {
+          const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s;
+        }
+        const prog = gl.createProgram();
+        gl.attachShader(prog, makeShader(vs, gl.VERTEX_SHADER));
+        gl.attachShader(prog, makeShader(fs, gl.FRAGMENT_SHADER));
+        gl.linkProgram(prog); gl.useProgram(prog);
+
+        const buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+        const pLoc = gl.getAttribLocation(prog, 'p');
+        gl.enableVertexAttribArray(pLoc);
+        gl.vertexAttribPointer(pLoc, 2, gl.FLOAT, false, 0, 0);
+
+        const uRes = gl.getUniformLocation(prog, 'u_res');
+        const uTime = gl.getUniformLocation(prog, 'u_time');
+        gl.viewport(0, 0, 1920, 1080);
+
+        window.__shaderGL = gl;
+        window.__shaderURes = uRes;
+        window.__shaderUTime = uTime;
+        function drawShader(t) {
+          gl.uniform2f(uRes, 1920, 1080);
+          gl.uniform1f(uTime, t);
+          gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        }
+        window.__drawShader = drawShader;
+        drawShader(0);
+      }
+
+      // Drive shader time from GSAP proxy
+      const shaderProxy = { time: 0 };
+      tl.to(shaderProxy, {
+        time: 6, duration: 6, ease: 'none',
+        onUpdate: function() {
+          if (window.__drawShader) window.__drawShader(shaderProxy.time);
+        }
+      }, 0);
+
+      // Code snippet fades in
+      tl.to(q('#code-float'), { opacity: 1, duration: 0.5 }, 0.5);
+
+      // Shader label
+      tl.to(q('#shader-label'), { opacity: 1, duration: 0.4 }, 1.0);
+
+      // Terminal slides in
+      tl.fromTo(q('#render-terminal'), { x: 80 }, { x: 0, opacity: 1, duration: 0.6, ease: 'power2.out' }, 1.5);
+
+      // Check lines fire
+      const checks = qa('.cl');
+      checks.forEach((cl, i) => {
+        tl.to(cl, { opacity: 1, duration: 0.08 }, 2.2 + i * 0.2);
+      });
+
+      // Progress block appears
+      tl.to(q('#prog-block'), { opacity: 1, duration: 0.2 }, 3.4);
+
+      // Animate progress bar via proxy
+      const proxy = { pct: 0 };
+      tl.to(proxy, {
+        pct: 100, duration: 2.0, ease: 'power1.inOut',
+        onUpdate: function() {
+          const p = Math.round(proxy.pct);
+          const frame = Math.round(p * 9);
+          q('#bar-fill').style.width = p + '%';
+          q('#pct-val').textContent = p + '%';
+          q('#frame-num').textContent = frame;
+          q('#time-val').textContent = (p * 0.3).toFixed(1) + 's';
+          q('#eta-val').textContent = '~' + Math.max(0, Math.round(30 - p * 0.3)) + 's';
+        }
+      }, 3.6);
+
+      // Output preview
+      tl.to(q('#output-preview'), { opacity: 1, duration: 0.3 }, 5.3);
+
+      // Hold
+      tl.to({}, { duration: 0.2 }, 5.8);
+
+      window.__timelines["shader-render"] = tl;
+    </script>
+  </div>
+</template>

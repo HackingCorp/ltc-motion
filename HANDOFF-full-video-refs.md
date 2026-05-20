@@ -270,7 +270,7 @@ This is what a real production HyperFrames video looks like assembled. <duration
 
 ---
 
-## Verse asset IDs (UPLOADED ✓)
+## Verse asset IDs (UPLOADED ✓ — all 6 refs)
 
 ```
 ref-01-launch-video-2.mp4:    fb0a115b-81e6-4e3f-acae-6dbe8ef3def7
@@ -281,6 +281,15 @@ ref-02-claude-design-hyperframes-video.mp4: 0e1f0a40-351d-4a2d-9b18-139c095a42dd
 
 ref-03-hermes-hyperframes.mp4: 51dbc7ce-42df-4a94-84ef-a10c302b4a2f
    https://www.heygenverse.com/s/51dbc7ce-42df-4a94-84ef-a10c302b4a2f/raw  (11MB, 41.0s)
+
+ref-04-inspector-logo-intro.mp4: e0474ffa-9c3b-4f50-b8aa-03c92ba72bf2
+   https://www.heygenverse.com/s/e0474ffa-9c3b-4f50-b8aa-03c92ba72bf2/raw  (32MB, 12.77s — locally rendered high-quality)
+
+ref-05-fadeglow-music-video-v4.mp4: 5eee1ed3-3255-473b-a0e0-f488eda984df
+   https://www.heygenverse.com/s/5eee1ed3-3255-473b-a0e0-f488eda984df/raw  (11MB, 41.6s)
+
+ref-06-webgl-textures-playground.mp4: 094d6602-c8cf-4c08-99a0-80345a60958f
+   https://www.heygenverse.com/s/094d6602-c8cf-4c08-99a0-80345a60958f/raw  (7.7MB, 12.0s)
 ```
 
 ## Source dirs lifted (ON DISK ✓)

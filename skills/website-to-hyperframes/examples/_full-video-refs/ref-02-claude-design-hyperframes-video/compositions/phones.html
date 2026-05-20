@@ -1,0 +1,682 @@
+<template id="phones-template">
+  <div data-composition-id="phones" data-width="1920" data-height="1080">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Manrope:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --ink: #f8fafc;
+        --muted: #8a8f99;
+        --font-display: "Manrope", -apple-system, "SF Pro Display", sans-serif;
+        --font-data: "Geist Mono", "SF Mono", monospace;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; color: var(--ink); font-family: var(--font-display); }
+      body {
+        background:
+          radial-gradient(circle at 22% 18%, rgba(255, 184, 124, 0.55), transparent 45%),
+          radial-gradient(circle at 78% 28%, rgba(149, 162, 255, 0.65), transparent 50%),
+          radial-gradient(circle at 65% 85%, rgba(255, 142, 196, 0.55), transparent 50%),
+          radial-gradient(circle at 15% 80%, rgba(120, 220, 200, 0.45), transparent 50%),
+          linear-gradient(160deg, #fbe7d3 0%, #f6d2e3 35%, #d8d8ff 70%, #cfeae4 100%);
+      }
+      .scene { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; overflow: hidden; }
+      .scene-content { width: 100%; height: 100%; position: relative; z-index: 1; }
+      .floor { position: absolute; left: 0; right: 0; bottom: 0; height: 320px; z-index: 0; background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.18) 40%, rgba(255,255,255,0) 100%); pointer-events: none; }
+      .blob { position: absolute; border-radius: 50%; filter: blur(40px); opacity: 0.55; pointer-events: none; z-index: 0; }
+      .grain { position: absolute; inset: 0; pointer-events: none; z-index: 50; opacity: 0.07; background-image: radial-gradient(rgba(0,0,0,0.4) 1px, transparent 1.2px), radial-gradient(rgba(255,255,255,0.4) 1px, transparent 1.2px); background-size: 3px 3px, 5px 5px; background-position: 0 0, 1px 2px; mix-blend-mode: multiply; }
+      .stage { position: absolute; inset: 0; perspective: 2200px; perspective-origin: 50% 45%; }
+
+      /* Phone */
+      .phone { position: absolute; width: 360px; height: 740px; transform-style: preserve-3d; will-change: transform, opacity; }
+      .phone-shadow { position: absolute; width: 320px; height: 56px; left: 20px; bottom: -68px; background: radial-gradient(ellipse at center, rgba(0,0,0,0.32), transparent 70%); filter: blur(18px); border-radius: 50%; transform: translateZ(-1px); }
+      .phone-body { position: relative; width: 100%; height: 100%; background: linear-gradient(135deg, #3a3a3d 0%, #1c1c1e 50%, #2c2c2e 100%); border-radius: 52px; padding: 8px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10), inset 0 0 0 4px #1a1a1c, inset 0 0 0 5px rgba(255,255,255,0.06), 0 30px 80px rgba(40,30,60,0.30), 0 8px 22px rgba(0,0,0,0.18); }
+      .btn-vol, .btn-pwr { position: absolute; width: 4px; border-radius: 2px; background: linear-gradient(180deg, #4a4a4e, #2c2c2e); }
+      .btn-vol.up { left: -7px; top: 150px; height: 56px; }
+      .btn-vol.down { left: -7px; top: 220px; height: 56px; }
+      .btn-pwr { right: -7px; top: 180px; height: 80px; }
+      .phone-screen { position: relative; width: 100%; height: 100%; background: #0c0c0d; border-radius: 44px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04); }
+      .phone-shine { position: absolute; inset: 0; border-radius: 44px; background: linear-gradient(115deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 18%, transparent 35%, transparent 60%, rgba(255,255,255,0.06) 78%, rgba(255,255,255,0.14) 100%); pointer-events: none; z-index: 30; mix-blend-mode: screen; }
+      .dynamic-island { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 108px; height: 30px; background: #000; border-radius: 18px; z-index: 12; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06); }
+      .status-bar { position: absolute; top: 17px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 30px; font-weight: 600; font-size: 13px; color: #fff; z-index: 13; }
+      .status-bar .icons { display: flex; gap: 4px; align-items: center; font-size: 11px; }
+      .home-ind { position: absolute; bottom: 9px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; background: rgba(255,255,255,0.95); border-radius: 3px; z-index: 15; }
+
+      /* ==== STRAVA-style ride summary (Scene 1 hero) ==== */
+      .strava { padding: 50px 0 30px; height: 100%; background: linear-gradient(180deg, #fc4c02 0%, #ff7e3f 100%); display: flex; flex-direction: column; }
+      .strava-top { display: flex; align-items: center; justify-content: space-between; padding: 0 18px; height: 28px; color: white; font-size: 11px; }
+      .strava-share { background: rgba(255,255,255,0.2); border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; }
+      .strava-card { margin: 14px 14px 0; background: white; border-radius: 14px; padding: 14px 14px 12px; box-shadow: 0 12px 30px rgba(0,0,0,0.18); flex: 1; display: flex; flex-direction: column; }
+      .athlete { display: flex; align-items: center; gap: 8px; }
+      .athlete-pic { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #fc4c02, #ff7e3f); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 13px; }
+      .athlete-info { display: flex; flex-direction: column; }
+      .athlete-name { font-size: 12px; font-weight: 700; color: #1a1a1a; }
+      .athlete-meta { font-size: 9px; color: #777; }
+      .ride-title { margin-top: 10px; font-size: 16px; font-weight: 800; color: #1a1a1a; line-height: 1.15; }
+      .ride-subtitle { font-size: 10px; color: #fc4c02; font-weight: 600; margin-top: 1px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+      /* mini map */
+      .map-wrap { position: relative; margin-top: 10px; height: 120px; border-radius: 10px; overflow: hidden; background: linear-gradient(180deg, #e9e3d4 0%, #d6d0c0 100%); }
+      .map-wrap::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 16px 16px; }
+      .map-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .map-pin { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: white; border: 2px solid #fc4c02; }
+
+      /* metrics */
+      .ride-metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 12px; }
+      .ride-metric { text-align: center; }
+      .rm-val { font-family: var(--font-data); font-weight: 600; font-size: 18px; color: #1a1a1a; font-variant-numeric: tabular-nums; line-height: 1; }
+      .rm-unit { font-size: 9px; color: #888; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+      .ride-actions { display: flex; gap: 16px; padding-top: 10px; margin-top: auto; border-top: 1px solid #f0f0f0; }
+      .ride-action { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #555; }
+      .ride-kudos { color: #fc4c02; font-weight: 700; }
+
+      /* ==== Spotify Wrapped-style player (Scene 2 hero) ==== */
+      .spot { padding: 46px 16px 20px; height: 100%; background: linear-gradient(180deg, #d96b8d 0%, #4a3878 50%, #1a1430 100%); display: flex; flex-direction: column; }
+      .spot-head { display: flex; align-items: center; justify-content: space-between; height: 24px; padding: 0 4px; color: white; font-size: 14px; }
+      .spot-head-mid { display: flex; flex-direction: column; align-items: center; line-height: 1.05; }
+      .spot-head-mid .lbl { font-size: 8px; color: rgba(255,255,255,0.7); letter-spacing: 0.1em; text-transform: uppercase; }
+      .spot-head-mid .play-from { font-size: 11px; color: white; font-weight: 700; }
+
+      .spot-cover { width: 200px; height: 200px; border-radius: 6px; margin: 18px auto 0; overflow: hidden; box-shadow: 0 18px 50px rgba(0,0,0,0.5); position: relative; background: linear-gradient(180deg, #1f4d8a 0%, #2c1856 100%); }
+      .cv-cloud { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.95); }
+      .cv-cloud::before, .cv-cloud::after { content: ""; position: absolute; background: rgba(255,255,255,0.95); border-radius: 50%; }
+      .cv-cloud.c1 { width: 38px; height: 22px; top: 26px; left: 22px; }
+      .cv-cloud.c1::before { width: 22px; height: 22px; top: -10px; left: 6px; }
+      .cv-cloud.c2 { width: 50px; height: 26px; top: 14px; right: 18px; }
+      .cv-cloud.c2::before { width: 26px; height: 26px; top: -12px; left: 12px; }
+      .cv-cloud.c3 { width: 32px; height: 18px; bottom: 30px; left: 18px; }
+      .cv-cloud.c4 { width: 44px; height: 24px; bottom: 16px; right: 16px; }
+      .cv-cloud.c4::before { width: 22px; height: 22px; top: -10px; right: 8px; }
+      .cv-title { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; font-family: "Manrope", cursive; font-weight: 900; font-style: italic; font-size: 36px; color: #ff6f9c; letter-spacing: 0.01em; text-shadow: 2px 2px 0 white, -2px -2px 0 white, -2px 2px 0 white, 2px -2px 0 white, 0 4px 0 rgba(0,0,0,0.15); z-index: 2; transform-origin: center; }
+      .cv-explicit { position: absolute; bottom: 6px; right: 6px; z-index: 3; font-size: 7px; font-weight: 800; color: rgba(255,255,255,0.9); background: rgba(0,0,0,0.45); padding: 2px 4px; border-radius: 2px; }
+
+      .spot-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding: 0 4px; }
+      .song-title { font-weight: 800; font-size: 18px; color: white; letter-spacing: -0.01em; }
+      .song-artist { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 1px; }
+      .spot-check { width: 22px; height: 22px; border-radius: 50%; background: #1ed760; display: flex; align-items: center; justify-content: center; color: black; font-size: 13px; font-weight: 800; }
+
+      .progress-row { width: 100%; margin-top: 12px; padding: 0 4px; }
+      .progress-track { width: 100%; height: 3px; background: rgba(255,255,255,0.25); border-radius: 2px; position: relative; }
+      .progress-fill { position: absolute; top: 0; left: 0; height: 100%; width: 32%; background: white; border-radius: 2px; }
+      .progress-knob { position: absolute; top: 50%; width: 10px; height: 10px; background: white; border-radius: 50%; transform: translate(-50%, -50%); left: 32%; }
+      .progress-times { display: flex; justify-content: space-between; margin-top: 5px; font-family: var(--font-data); font-size: 9px; color: rgba(255,255,255,0.6); font-variant-numeric: tabular-nums; }
+
+      .controls { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; padding: 0 18px; color: white; }
+      .ctrl { font-size: 16px; opacity: 0.95; }
+      .ctrl.shuffle { color: #1ed760; font-size: 14px; }
+      .play-btn { width: 50px; height: 50px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px rgba(0,0,0,0.4); }
+
+      .spot-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; padding: 0 8px; color: white; font-size: 11px; }
+      .device-pill { display: flex; align-items: center; gap: 5px; color: #1ed760; font-weight: 600; }
+      .lyrics-card { margin-top: 10px; background: linear-gradient(135deg, #5d8868, #3a4d40); border-radius: 8px; padding: 10px 12px; height: 36px; display: flex; align-items: center; justify-content: space-between; }
+      .lyrics-card .lyr { font-size: 12px; color: white; font-weight: 700; }
+      .lyrics-card .lyr-tag { font-size: 9px; color: rgba(255,255,255,0.7); }
+
+      /* Spotify waveform */
+      .waveform { display: flex; align-items: flex-end; justify-content: center; gap: 2px; margin-top: 12px; padding: 0 4px; height: 32px; }
+      .waveform .bar { flex: 1; background: #1ed760; border-radius: 1px; min-height: 2px; transform-origin: bottom center; }
+
+      /* Strava route map (enriched) */
+      .map-park { fill: #cbe3b8; }
+      .map-water { fill: #bcd6ec; }
+      .map-road { stroke: #ffffff; stroke-width: 2.2; fill: none; opacity: 0.8; }
+      .map-road-minor { stroke: #ffffff; stroke-width: 1.2; fill: none; opacity: 0.7; }
+      .ride-stat-strip { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding: 8px 10px; background: #fff7ef; border-radius: 8px; }
+      .rss-item { display: flex; flex-direction: column; }
+      .rss-label { font-size: 8px; color: #888; text-transform: uppercase; letter-spacing: 0.08em; }
+      .rss-val { font-family: var(--font-data); font-size: 11px; font-weight: 600; color: #1a1a1a; font-variant-numeric: tabular-nums; }
+
+      /* ==== Photos / share-sheet (Scene 1 LEFT phone) — iOS Photos layout ==== */
+      .pho { padding: 50px 14px 26px; height: 100%; background: linear-gradient(180deg, #f6f4ef 0%, #ecebe6 100%); display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+      .pho-top { display: flex; justify-content: space-between; align-items: center; }
+      .pho-title { font-family: var(--font-display); font-weight: 800; font-size: 22px; color: #111; letter-spacing: -0.02em; }
+      .pho-searchpill { background: #0a66ff; color: white; font-size: 10px; font-weight: 600; padding: 5px 10px; border-radius: 100px; }
+      .pho-avatar { width: 22px; height: 22px; border-radius: 50%; background-image: url('assets/subject.webp'); background-size: cover; background-position: 50% 32%; border: 1.5px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+      .pho-heroes { display: flex; gap: 8px; overflow: hidden; margin-top: 4px; }
+      .pho-hero { flex: 0 0 150px; background: white; border-radius: 14px; padding: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+      .pho-hero-img { width: 100%; aspect-ratio: 1/1; border-radius: 10px; overflow: hidden; }
+      .pho-hero-cap { padding: 6px 4px 2px; text-align: center; }
+      .pho-hero-cap .t { font-size: 11px; font-weight: 700; color: #111; }
+      .pho-hero-cap .s { font-size: 9px; color: #888; }
+      .pho-section-head { display: flex; align-items: center; gap: 4px; font-size: 15px; font-weight: 800; color: #111; margin-top: 6px; letter-spacing: -0.01em; }
+      .pho-section-head .chev { color: #0a66ff; font-weight: 600; }
+      .pho-people { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+      .pho-person { aspect-ratio: 1/1; border-radius: 10px; position: relative; overflow: hidden; }
+      .pho-person-heart { position: absolute; top: 5px; right: 5px; width: 16px; height: 16px; border-radius: 50%; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; color: white; font-size: 9px; }
+      .pho-person-name { position: absolute; left: 4px; right: 4px; bottom: 4px; font-size: 9px; font-weight: 700; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+      .pho-share-sheet { position: absolute; left: 8px; right: 8px; bottom: 32px; background: rgba(40,40,42,0.95); backdrop-filter: blur(20px); border-radius: 14px; padding: 12px; z-index: 10; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+      .pho-share-sheet .ss-title { color: white; font-weight: 700; font-size: 12px; margin-bottom: 8px; }
+      .pho-share-sheet .ss-row { display: flex; gap: 10px; }
+      .pho-share-sheet .ss-app { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+      .pho-share-sheet .ss-icon { width: 48px; height: 48px; border-radius: 11px; overflow: hidden; position: relative; box-shadow: 0 2px 6px rgba(0,0,0,0.35); }
+      .pho-share-sheet .ss-name { font-size: 9px; color: rgba(255,255,255,0.9); font-weight: 500; }
+
+      /* Realistic app icons */
+      .appicon-x { background: #000; display: flex; align-items: center; justify-content: center; }
+      .appicon-msgs { background: linear-gradient(180deg, #5bea6e 0%, #1fd453 100%); display: flex; align-items: center; justify-content: center; }
+      .appicon-ig { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); display: flex; align-items: center; justify-content: center; }
+      .appicon-gmail { background: white; display: flex; align-items: center; justify-content: center; }
+
+      /* ==== Calendar (Scene 1 RIGHT phone) ==== */
+      .cal { padding: 50px 16px 26px; height: 100%; background: linear-gradient(180deg, #fafafa 0%, #f0f0f0 100%); }
+      .cal-month { font-size: 10px; color: #fc4c02; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+      .cal-title { font-size: 22px; font-weight: 800; color: #111; margin-top: 2px; letter-spacing: -0.02em; }
+      .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 12px; }
+      .cal-dow { font-size: 8px; color: #888; text-align: center; padding: 2px 0; }
+      .cal-day { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #333; border-radius: 8px; position: relative; }
+      .cal-day.muted { color: #ccc; }
+      .cal-day.event { background: rgba(252,76,2,0.08); color: #fc4c02; font-weight: 700; }
+      .cal-day.today { background: #fc4c02; color: white; font-weight: 700; }
+      .cal-day .dot { position: absolute; bottom: 3px; width: 3px; height: 3px; border-radius: 50%; background: #fc4c02; }
+      .cal-events { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+      .cal-event { background: white; border-left: 3px solid #fc4c02; border-radius: 6px; padding: 6px 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+      .cal-ev-time { font-family: var(--font-data); font-size: 9px; color: #888; }
+      .cal-ev-title { font-size: 11px; font-weight: 700; color: #1a1a1a; }
+
+      /* ==== Notes app (Scene 2 LEFT phone) ==== */
+      .notes { padding: 50px 16px 26px; height: 100%; background: linear-gradient(180deg, #1c1c1e 0%, #0f0f0f 100%); display: flex; flex-direction: column; gap: 8px; }
+      .notes-top { display: flex; align-items: center; justify-content: space-between; color: #f6c33b; font-size: 12px; }
+      .notes-back { font-size: 14px; }
+      .note-title { font-size: 18px; font-weight: 800; color: white; margin-top: 4px; line-height: 1.1; }
+      .note-meta { font-size: 9px; color: #888; }
+      .note-body { font-size: 12px; color: rgba(255,255,255,0.85); line-height: 1.5; margin-top: 8px; }
+      .note-body .hl { background: rgba(246,195,59,0.2); padding: 1px 3px; border-radius: 3px; color: #f6c33b; }
+      .note-list { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+      .note-list .item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: rgba(255,255,255,0.85); }
+      .note-list .item .check { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid #555; display: flex; align-items: center; justify-content: center; font-size: 10px; color: black; flex-shrink: 0; }
+      .note-list .item.done .check { background: #f6c33b; border-color: #f6c33b; }
+      .note-list .item.done .label { text-decoration: line-through; color: #777; }
+
+      /* ==== Camera viewfinder (Scene 2 RIGHT phone) ==== */
+      .cam { padding: 0; height: 100%; background: #000; position: relative; overflow: hidden; }
+      .cam-feed { position: absolute; inset: 0; background-image: url('assets/subject.webp'); background-size: 115% auto; background-position: 50% 38%; background-repeat: no-repeat; will-change: background-size; }
+      .cam-feed::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 52% 42%, transparent 30%, rgba(0,0,0,0.20) 75%); }
+      .cam-overexpose { position: absolute; inset: 0; background: white; opacity: 0; pointer-events: none; z-index: 7; }
+      .cam-grid { position: absolute; inset: 50px 0 100px; pointer-events: none; }
+      .cam-grid::before, .cam-grid::after { content: ""; position: absolute; background: rgba(255,255,255,0.18); }
+      .cam-grid::before { left: 33.33%; right: 33.33%; top: 0; bottom: 0; width: 0; border-left: 1px solid rgba(255,255,255,0.18); border-right: 1px solid rgba(255,255,255,0.18); }
+      .cam-grid::after { top: 33.33%; bottom: 33.33%; left: 0; right: 0; height: 0; border-top: 1px solid rgba(255,255,255,0.18); border-bottom: 1px solid rgba(255,255,255,0.18); }
+      .cam-top { position: absolute; top: 50px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 18px; color: white; font-size: 11px; z-index: 5; }
+      .cam-flash { width: 26px; height: 26px; border-radius: 50%; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+      .cam-modes { position: absolute; bottom: 110px; left: 0; right: 0; display: flex; justify-content: center; gap: 18px; color: rgba(255,255,255,0.6); font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; z-index: 5; }
+      .cam-modes .active { color: #ffd460; font-weight: 700; }
+      .cam-controls { position: absolute; bottom: 30px; left: 0; right: 0; display: flex; align-items: center; justify-content: space-around; padding: 0 24px; z-index: 5; }
+      .cam-thumb { width: 36px; height: 36px; border-radius: 6px; background: linear-gradient(135deg, #fc4c02, #ff7e3f); border: 2px solid white; }
+      .cam-shutter { width: 56px; height: 56px; border-radius: 50%; background: white; border: 3px solid white; outline: 3px solid white; box-shadow: 0 0 0 5px rgba(0,0,0,0.3); }
+      .cam-flip { width: 36px; height: 36px; border-radius: 50%; background: rgba(80,80,80,0.6); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
+      .focus-ring { position: absolute; width: 96px; height: 96px; border: 1.5px solid #ffd460; border-radius: 4px; pointer-events: none; z-index: 6; box-shadow: 0 0 0 1px rgba(0,0,0,0.25); }
+      .focus-ring::before, .focus-ring::after { content: ""; position: absolute; background: #ffd460; }
+      .focus-ring::before { left: 50%; top: -4px; bottom: -4px; width: 1px; transform: translateX(-50%); }
+      .focus-ring::after { top: 50%; left: -4px; right: -4px; height: 1px; transform: translateY(-50%); }
+
+      /* Caption */
+      .caption { position: absolute; left: 50%; transform: translateX(-50%); bottom: 60px; text-align: center; z-index: 5; }
+      .caption .kicker { display: inline-block; font-family: var(--font-data); font-weight: 500; font-size: 12px; letter-spacing: 0.24em; color: #2a2733; text-transform: uppercase; padding: 7px 16px; background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.4); border-radius: 100px; backdrop-filter: blur(12px); box-shadow: 0 6px 20px rgba(80,60,140,0.12); }
+      .caption .title { display: block; margin-top: 14px; font-family: var(--font-display); font-weight: 800; font-size: 46px; color: #1a1424; letter-spacing: -0.02em; text-shadow: 0 2px 14px rgba(255,255,255,0.4); }
+    </style>
+
+      <!-- ====== SCENE 1 — Strava-style ride summary hero (0-2s) ====== -->
+      <div class="scene clip" id="s1" data-start="0" data-duration="2" data-track-index="0">
+        <div class="grain"></div>
+        <div class="floor"></div>
+        <div class="blob" style="width: 380px; height: 380px; top: -80px; left: -60px; background: #ffb47a;"></div>
+        <div class="blob" style="width: 460px; height: 460px; bottom: -120px; right: -120px; background: #a89bff;"></div>
+        <div class="blob" style="width: 280px; height: 280px; top: 140px; right: 220px; background: #ff89c0;"></div>
+
+        <div class="scene-content">
+          <div class="stage">
+            <!-- LEFT: Photos with share sheet sliding up -->
+            <div class="phone" id="s1-pL" style="left: 150px; top: 140px; transform: rotateY(24deg) rotateX(4deg) rotateZ(-3deg) translateZ(-80px) scale(1.12);">
+              <div class="phone-shadow"></div>
+              <div class="phone-body">
+                <div class="btn-vol up"></div><div class="btn-vol down"></div><div class="btn-pwr"></div>
+                <div class="phone-screen">
+                  <div class="dynamic-island"></div>
+                  <div class="status-bar"><span>9:41</span><span class="icons">●●● ◐ ▮</span></div>
+                  <div class="pho">
+                    <div class="pho-top">
+                      <div class="pho-title">Photos</div>
+                      <div style="display:flex; align-items:center; gap:8px;">
+                        <div class="pho-searchpill">◐ Search</div>
+                        <div class="pho-avatar" style="background-image: url('assets/pho5.jpg');"></div>
+                      </div>
+                    </div>
+                    <div class="pho-heroes">
+                      <div class="pho-hero" id="s1-hero1">
+                        <div class="pho-hero-img" style="background-image: url('assets/pho4.webp'); background-size: cover; background-position: 50% 20%;"></div>
+                        <div class="pho-hero-cap"><div class="t">Bieber · Coachella</div><div class="s">Apr 19 · 42 photos</div></div>
+                      </div>
+                      <div class="pho-hero" id="s1-hero2">
+                        <div class="pho-hero-img" style="background-image: url('assets/pho1.png'); background-size: cover; background-position: 50% 50%;"></div>
+                        <div class="pho-hero-cap"><div class="t">What is my purpose</div><div class="s">Mar 17 · 3 photos</div></div>
+                      </div>
+                      <div class="pho-hero">
+                        <div class="pho-hero-img" style="background-image: url('assets/pho2.webp'); background-size: cover; background-position: 50% 45%;"></div>
+                        <div class="pho-hero-cap"><div class="t">Absolutely Right</div><div class="s">Feb 28 · 8 photos</div></div>
+                      </div>
+                    </div>
+                    <div class="pho-section-head">People &amp; Pets <span class="chev">›</span></div>
+                    <div class="pho-people">
+                      <div class="pho-person" style="background-image: url('assets/pho5.jpg'); background-size: cover; background-position: 50% 30%;"><div class="pho-person-heart">♥</div><div class="pho-person-name">Mochi</div></div>
+                      <div class="pho-person" style="background-image: url('assets/pho3.jpeg'); background-size: cover; background-position: 50% 30%;"><div class="pho-person-heart">♥</div><div class="pho-person-name">Snoop</div></div>
+                      <div class="pho-person" style="background-image: url('assets/pho4.webp'); background-size: cover; background-position: 50% 15%;"><div class="pho-person-heart">♥</div><div class="pho-person-name">JB</div></div>
+                      <div class="pho-person" style="background-image: url('assets/pho2.webp'); background-size: cover; background-position: 50% 35%;"><div class="pho-person-heart">♥</div><div class="pho-person-name">T-800</div></div>
+                    </div>
+                    <div class="pho-section-head">Pinned Collections <span class="chev">›</span></div>
+                    <div class="pho-share-sheet" id="s1-share" style="transform: translateY(120%);">
+                      <div class="ss-title">Share to</div>
+                      <div class="ss-row">
+                        <div class="ss-app">
+                          <div class="ss-icon appicon-x">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                          </div>
+                          <span class="ss-name">X</span>
+                        </div>
+                        <div class="ss-app">
+                          <div class="ss-icon appicon-msgs">
+                            <svg viewBox="0 0 32 32" width="30" height="30"><path d="M16 5C9.373 5 4 9.477 4 15c0 3.34 1.954 6.294 4.948 8.144.091.897-.53 2.73-1.2 3.856-.08.132.041.298.19.259 2.36-.61 4.236-1.51 5.13-2.019A14.48 14.48 0 0 0 16 25c6.627 0 12-4.477 12-10S22.627 5 16 5z" fill="white"/></svg>
+                          </div>
+                          <span class="ss-name">Messages</span>
+                        </div>
+                        <div class="ss-app">
+                          <div class="ss-icon appicon-ig">
+                            <svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="white" stroke-width="2.3"><rect x="5" y="5" width="22" height="22" rx="6"/><circle cx="16" cy="16" r="5.2"/><circle cx="22.8" cy="9.2" r="1.4" fill="white"/></svg>
+                          </div>
+                          <span class="ss-name">Instagram</span>
+                        </div>
+                        <div class="ss-app">
+                          <div class="ss-icon appicon-gmail">
+                            <svg viewBox="0 0 100 80" width="34" height="27"><rect x="10" y="22" width="12" height="48" rx="3" fill="#4285f4"/><rect x="78" y="22" width="12" height="48" rx="3" fill="#34a853"/><rect x="64" y="34" width="12" height="36" rx="3" fill="#fbbc04"/><path d="M10 22 L22 22 L50 50 L78 22 L90 22 L50 70 Z" fill="#ea4335"/></svg>
+                          </div>
+                          <span class="ss-name">Gmail</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="home-ind"></div>
+                  <div class="phone-shine"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT: Calendar with events -->
+            <div class="phone" id="s1-pR" style="right: 120px; top: 180px; transform: rotateY(-28deg) rotateX(4deg) rotateZ(5deg) translateZ(-110px) scale(1.08);">
+              <div class="phone-shadow"></div>
+              <div class="phone-body">
+                <div class="btn-vol up"></div><div class="btn-vol down"></div><div class="btn-pwr"></div>
+                <div class="phone-screen">
+                  <div class="dynamic-island"></div>
+                  <div class="status-bar"><span>9:41</span><span class="icons">●●● ◐ ▮</span></div>
+                  <div class="cal">
+                    <div class="cal-month">April 2026</div>
+                    <div class="cal-title">Today</div>
+                    <div class="cal-grid">
+                      <div class="cal-dow">M</div><div class="cal-dow">T</div><div class="cal-dow">W</div><div class="cal-dow">T</div><div class="cal-dow">F</div><div class="cal-dow">S</div><div class="cal-dow">S</div>
+                      <div class="cal-day muted">31</div><div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div><div class="cal-day">4</div><div class="cal-day">5</div><div class="cal-day">6</div>
+                      <div class="cal-day">7</div><div class="cal-day event">8</div><div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day event">11</div><div class="cal-day">12</div><div class="cal-day">13</div>
+                      <div class="cal-day">14</div><div class="cal-day">15</div><div class="cal-day event">16</div><div class="cal-day">17</div><div class="cal-day">18</div><div class="cal-day event">19</div><div class="cal-day">20</div>
+                      <div class="cal-day">21</div><div class="cal-day">22</div><div class="cal-day">23</div><div class="cal-day today" id="s1-today">24</div><div class="cal-day">25</div><div class="cal-day">26</div><div class="cal-day">27</div>
+                    </div>
+                    <div class="cal-events">
+                      <div class="cal-event"><div class="cal-ev-time">7:00 AM</div><div class="cal-ev-title">Sunrise loop</div></div>
+                      <div class="cal-event"><div class="cal-ev-time">12:30 PM</div><div class="cal-ev-title">Lunch w/ Maya</div></div>
+                    </div>
+                  </div>
+                  <div class="home-ind"></div>
+                  <div class="phone-shine"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CENTER: Strava ride summary -->
+            <div class="phone" id="s1-pC" style="left: 50%; top: 110px; margin-left: -180px; transform: rotateY(-6deg) rotateX(2deg) translateZ(40px);">
+              <div class="phone-shadow"></div>
+              <div class="phone-body">
+                <div class="btn-vol up"></div><div class="btn-vol down"></div><div class="btn-pwr"></div>
+                <div class="phone-screen">
+                  <div class="dynamic-island"></div>
+                  <div class="status-bar"><span>9:41</span><span class="icons">●●● ◐ ▮</span></div>
+                  <div class="strava">
+                    <div class="strava-top">
+                      <span>‹ Feed</span>
+                      <span>Today's Ride</span>
+                      <div class="strava-share">↗</div>
+                    </div>
+                    <div class="strava-card">
+                      <div class="athlete">
+                        <div class="athlete-pic">A</div>
+                        <div class="athlete-info">
+                          <div class="athlete-name">Alex Park</div>
+                          <div class="athlete-meta">Mon, Apr 24 · 7:14 AM</div>
+                        </div>
+                      </div>
+                      <div class="ride-title">Sunrise loop along the river</div>
+                      <div class="ride-subtitle">Morning ride</div>
+                      <div class="map-wrap" style="background: linear-gradient(180deg, #e3dccb 0%, #d6ccb3 100%);">
+                        <svg viewBox="0 0 280 120" preserveAspectRatio="none" style="position:absolute; inset:0; width:100%; height:100%;">
+                          <rect x="0" y="0" width="280" height="120" fill="#ede5d0"/>
+                          <path class="map-park" d="M 12 8 L 88 10 L 94 52 L 40 66 L 14 54 Z"/>
+                          <path class="map-park" d="M 180 70 L 268 62 L 270 110 L 196 114 Z"/>
+                          <path class="map-water" d="M 0 78 Q 60 62 120 82 T 280 72 L 280 120 L 0 120 Z"/>
+                          <path class="map-road" d="M 0 40 L 280 34"/>
+                          <path class="map-road" d="M 0 92 L 280 96"/>
+                          <path class="map-road" d="M 60 0 L 56 120"/>
+                          <path class="map-road" d="M 160 0 L 170 120"/>
+                          <path class="map-road-minor" d="M 110 0 L 108 120"/>
+                          <path class="map-road-minor" d="M 220 0 L 226 120"/>
+                          <path class="map-road-minor" d="M 0 66 L 280 60"/>
+                          <path id="s1-route" d="M 18 96 Q 60 30 110 64 T 200 30 Q 240 18 262 56" stroke="#fc4c02" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="320" stroke-dashoffset="320" />
+                        </svg>
+                        <div class="map-pin" style="left: 12px; bottom: 18px;"></div>
+                        <div class="map-pin" id="s1-pin-end" style="right: 12px; top: 42px; opacity: 0;"></div>
+                      </div>
+                      <div class="ride-stat-strip">
+                        <div class="rss-item"><div class="rss-label">Avg speed</div><div class="rss-val">22.0 km/h</div></div>
+                        <div class="rss-item"><div class="rss-label">Avg HR</div><div class="rss-val">148 bpm</div></div>
+                        <div class="rss-item"><div class="rss-label">Calories</div><div class="rss-val">612 cal</div></div>
+                      </div>
+                      <div class="ride-metrics">
+                        <div class="ride-metric"><div class="rm-val" id="s1-dist">0.0</div><div class="rm-unit">km</div></div>
+                        <div class="ride-metric"><div class="rm-val" id="s1-time">0:00</div><div class="rm-unit">time</div></div>
+                        <div class="ride-metric"><div class="rm-val" id="s1-elev">0</div><div class="rm-unit">m elev</div></div>
+                      </div>
+                      <div class="ride-actions">
+                        <div class="ride-action ride-kudos"><span id="s1-kudos">♥ 0</span></div>
+                        <div class="ride-action">💬 4</div>
+                        <div class="ride-action" style="margin-left: auto;">↗ Share</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="home-ind"></div>
+                  <div class="phone-shine"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="caption" id="s1-cap">
+            <span class="kicker">RIDE · 24.6 KM</span>
+            <span class="title">Outpace yesterday.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== SCENE 2 — Spotify-Wrapped style hero (2-5s) ====== -->
+      <div class="scene clip" id="s2" data-start="2" data-duration="3" data-track-index="0" style="visibility:hidden;">
+        <div class="grain"></div>
+        <div class="floor"></div>
+        <div class="blob" style="width: 420px; height: 420px; top: -100px; right: -80px; background: #ff89c0;"></div>
+        <div class="blob" style="width: 460px; height: 460px; bottom: -120px; left: -120px; background: #a89bff;"></div>
+        <div class="blob" style="width: 280px; height: 280px; top: 130px; left: 220px; background: #78dcc8;"></div>
+
+        <div class="scene-content">
+          <div class="stage">
+            <!-- LEFT: Notes app -->
+            <div class="phone" id="s2-pL" style="left: 150px; top: 180px; transform: rotateY(24deg) rotateX(4deg) rotateZ(-4deg) translateZ(-90px) scale(1.10);">
+              <div class="phone-shadow"></div>
+              <div class="phone-body">
+                <div class="btn-vol up"></div><div class="btn-vol down"></div><div class="btn-pwr"></div>
+                <div class="phone-screen">
+                  <div class="dynamic-island"></div>
+                  <div class="status-bar"><span>9:43</span><span class="icons">●●● ◐ ▮</span></div>
+                  <div class="notes">
+                    <div class="notes-top"><span class="notes-back">‹ Notes</span><span>⤴ ⋯</span></div>
+                    <div class="note-title">Road trip playlist</div>
+                    <div class="note-meta">Today at 9:42</div>
+                    <div class="note-body">Pulled together for the <span class="hl">Pacific Coast</span> drive next weekend. Synthwave, downtempo, a couple of bangers for the tunnels.</div>
+                    <div class="note-list" id="s2-notelist">
+                      <div class="item done"><div class="check">✓</div><div class="label">Midnight Drive — Synthwave Collective</div></div>
+                      <div class="item done"><div class="check">✓</div><div class="label">Static Coast — Aurora Belt</div></div>
+                      <div class="item" id="s2-item3"><div class="check"></div><div class="label">Glasshouse — Vell</div></div>
+                      <div class="item" id="s2-item4"><div class="check"></div><div class="label">Slow Burn — Indigo Pier</div></div>
+                    </div>
+                  </div>
+                  <div class="home-ind"></div>
+                  <div class="phone-shine"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT: Camera viewfinder -->
+            <div class="phone" id="s2-pR" style="right: 135px; top: 170px; transform: rotateY(-26deg) rotateX(4deg) rotateZ(5deg) translateZ(-110px) scale(1.08);">
+              <div class="phone-shadow"></div>
+              <div class="phone-body">
+                <div class="btn-vol up"></div><div class="btn-vol down"></div><div class="btn-pwr"></div>
+                <div class="phone-screen">
+                  <div class="dynamic-island"></div>
+                  <div class="status-bar"><span>9:43</span><span class="icons">●●● ◐ ▮</span></div>
+                  <div class="cam">
+                    <div class="cam-feed" id="s2-feed"></div>
+                    <div class="cam-grid"></div>
+                    <div class="focus-ring" id="s2-focus" style="left: 124px; top: 200px; opacity: 0;"></div>
+                    <div class="cam-top">
+                      <span class="cam-flash">⚡</span>
+                      <span style="background: rgba(255,214,96,0.2); color: #ffd460; padding: 3px 8px; border-radius: 12px;">PORTRAIT · ƒ1.8</span>
+                      <span class="cam-flash">↻</span>
+                    </div>
+                    <div class="cam-modes">
+                      <span>VIDEO</span><span>PHOTO</span><span class="active">PORTRAIT</span>
+                    </div>
+                    <div class="cam-controls">
+                      <div class="cam-thumb"></div>
+                      <div class="cam-shutter" id="s2-shutter"></div>
+                      <div class="cam-flip">⟳</div>
+                    </div>
+                    <div class="cam-overexpose" id="s2-overexpose"></div>
+                  </div>
+                  <div class="home-ind"></div>
+                  <div class="phone-shine"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CENTER: Spotify -->
+            <div class="phone" id="s2-pC" style="left: 50%; top: 110px; margin-left: -180px; transform: rotateY(6deg) rotateX(2deg) translateZ(40px);">
+              <div class="phone-shadow"></div>
+              <div class="phone-body">
+                <div class="btn-vol up"></div><div class="btn-vol down"></div><div class="btn-pwr"></div>
+                <div class="phone-screen">
+                  <div class="dynamic-island"></div>
+                  <div class="status-bar"><span>9:43</span><span class="icons">●●● ◐ ▮</span></div>
+                  <div class="spot">
+                    <div class="spot-head">
+                      <span>⌄</span>
+                      <div class="spot-head-mid">
+                        <div class="lbl">Playing from album</div>
+                        <div class="play-from">Neon Mileage</div>
+                      </div>
+                      <span>⋯</span>
+                    </div>
+                    <div class="spot-cover" id="s2-album">
+                      <div class="cv-cloud c1"></div>
+                      <div class="cv-cloud c2"></div>
+                      <div class="cv-cloud c3"></div>
+                      <div class="cv-cloud c4"></div>
+                      <div class="cv-title" id="s2-cv-title">Midnight</div>
+                      <div class="cv-explicit">E</div>
+                    </div>
+                    <div class="spot-meta">
+                      <div>
+                        <div class="song-title" id="s2-title">Midnight Drive</div>
+                        <div class="song-artist" id="s2-artist">Synthwave Collective</div>
+                      </div>
+                      <div class="spot-check" id="s2-check">✓</div>
+                    </div>
+                    <div class="progress-row" id="s2-progrow">
+                      <div class="progress-track">
+                        <div class="progress-fill" id="s2-fill"></div>
+                        <div class="progress-knob" id="s2-knob"></div>
+                      </div>
+                      <div class="progress-times">
+                        <span id="s2-tcur">1:24</span><span>4:12</span>
+                      </div>
+                    </div>
+                    <div class="controls" id="s2-controls">
+                      <span class="ctrl shuffle">⤭</span>
+                      <span class="ctrl">⏮</span>
+                      <div class="play-btn"><svg width="18" height="18" viewBox="0 0 20 20" fill="black"><rect x="4" y="3" width="4" height="14" rx="1"/><rect x="12" y="3" width="4" height="14" rx="1"/></svg></div>
+                      <span class="ctrl">⏭</span>
+                      <span class="ctrl">↻</span>
+                    </div>
+                    <div class="waveform" id="s2-waveform"></div>
+                    <div class="spot-foot">
+                      <span class="device-pill">📱 Your iPhone</span>
+                      <span>↗ ≡</span>
+                    </div>
+                    <div class="lyrics-card">
+                      <div class="lyr" id="s2-lyric">— neon on the highway —</div>
+                      <div class="lyr-tag">Lyrics ⤢</div>
+                    </div>
+                  </div>
+                  <div class="home-ind"></div>
+                  <div class="phone-shine"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="caption" id="s2-cap">
+            <span class="kicker">SOUNDTRACK · 04:12</span>
+            <span class="title">Score the moment.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      tl.set("#s1", { autoAlpha: 0 }, 2.0);
+      tl.set("#s2", { autoAlpha: 1 }, 2.0);
+
+      /* ============ SCENE 1 (0–2s) ============ */
+      tl.from("#s1-pC", { y: 60, scale: 0.92, autoAlpha: 0, duration: 0.55, ease: "power3.out" }, 0.0);
+      tl.from("#s1-pL", { x: -140, autoAlpha: 0, duration: 0.55, ease: "power3.out" }, 0.18);
+      tl.from("#s1-pR", { x: 140, autoAlpha: 0, duration: 0.55, ease: "power3.out" }, 0.22);
+      tl.to("#s1-pC", { keyframes: [{ rotationY: -3, rotationX: 3, y: -6 }, { rotationY: -8, rotationX: 1, y: 0 }], duration: 1.6, ease: "sine.inOut" }, 0.2);
+      tl.to("#s1-pL", { keyframes: [
+        { y: -8, rotationY: "+=2", rotationZ: "+=1.2", duration: 1.0, ease: "sine.inOut" },
+        { y: 4, rotationY: "-=3", rotationZ: "-=2", duration: 1.0, ease: "sine.inOut" }
+      ]}, 0.3);
+      tl.to("#s1-pR", { keyframes: [
+        { y: 10, rotationY: "-=2.5", rotationZ: "+=1.5", duration: 1.1, ease: "sine.inOut" },
+        { y: -4, rotationY: "+=3", rotationZ: "-=2.5", duration: 0.9, ease: "sine.inOut" }
+      ]}, 0.4);
+
+      // Strava: route draws, metrics count, pin appears, kudos ticks up
+      tl.to("#s1-route", { strokeDashoffset: 0, duration: 1.2, ease: "power2.out" }, 0.4);
+      tl.fromTo("#s1-pin-end", { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, 1.55);
+
+      var distObj = { v: 0 };
+      tl.to(distObj, { v: 24.6, duration: 1.0, ease: "power2.out", onUpdate: function() { document.getElementById("s1-dist").textContent = distObj.v.toFixed(1); }}, 0.5);
+      var timeObj1 = { v: 0 };
+      tl.to(timeObj1, { v: 67, duration: 1.0, ease: "power2.out", onUpdate: function() {
+        var s = Math.round(timeObj1.v); var m = Math.floor(s / 60); var ss = (s % 60).toString().padStart(2, "0");
+        document.getElementById("s1-time").textContent = m + ":" + ss;
+      }}, 0.5);
+      var elevObj = { v: 0 };
+      tl.to(elevObj, { v: 184, duration: 1.0, ease: "power2.out", onUpdate: function() { document.getElementById("s1-elev").textContent = Math.round(elevObj.v); }}, 0.5);
+      var kudosObj = { v: 0 };
+      tl.to(kudosObj, { v: 27, duration: 0.6, ease: "power2.out", onUpdate: function() { document.getElementById("s1-kudos").textContent = "♥ " + Math.round(kudosObj.v); }}, 1.2);
+
+      // Photos share-sheet slides up with bounce
+      tl.to("#s1-share", { y: "0%", duration: 0.55, ease: "back.out(1.4)" }, 0.6);
+
+      // Calendar: today cell pulses
+      tl.from("#s1-today", { scale: 0.5, autoAlpha: 0, duration: 0.4, ease: "back.out(2)" }, 0.5);
+      tl.to("#s1-today", { scale: 1.08, duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0.95);
+
+      tl.from("#s1-cap .kicker", { y: 12, autoAlpha: 0, duration: 0.4, ease: "power2.out" }, 0.55);
+      tl.from("#s1-cap .title", { y: 18, autoAlpha: 0, duration: 0.5, ease: "power3.out" }, 0.7);
+
+      /* ============ SCENE 2 (2–5s) ============ */
+      tl.from("#s2-pC", { y: 60, scale: 0.92, autoAlpha: 0, duration: 0.55, ease: "power3.out" }, 2.0);
+      tl.from("#s2-pL", { x: -140, autoAlpha: 0, duration: 0.55, ease: "power3.out" }, 2.18);
+      tl.from("#s2-pR", { x: 140, autoAlpha: 0, duration: 0.55, ease: "power3.out" }, 2.22);
+      tl.to("#s2-pC", { keyframes: [{ rotationY: 4, rotationX: 3, y: -6 }, { rotationY: 10, rotationX: 1, y: 0 }, { rotationY: 6, rotationX: 2, y: -4 }], duration: 2.6, ease: "sine.inOut" }, 2.2);
+      tl.to("#s2-pL", { keyframes: [
+        { y: -10, rotationY: "+=2", rotationZ: "+=1.5", duration: 1.2, ease: "sine.inOut" },
+        { y: 6, rotationY: "-=3.5", rotationZ: "-=2.5", duration: 1.2, ease: "sine.inOut" },
+        { y: -3, rotationY: "+=2", rotationZ: "+=1.2", duration: 0.8, ease: "sine.inOut" }
+      ]}, 2.4);
+      tl.to("#s2-pR", { keyframes: [
+        { y: 8, rotationY: "-=2", rotationZ: "+=1.8", duration: 1.0, ease: "sine.inOut" },
+        { y: -6, rotationY: "+=3", rotationZ: "-=2.5", duration: 1.2, ease: "sine.inOut" },
+        { y: 3, rotationY: "-=2", rotationZ: "+=1.2", duration: 0.9, ease: "sine.inOut" }
+      ]}, 2.5);
+
+      // Spotify hero
+      tl.from("#s2-album", { scale: 0.85, autoAlpha: 0, duration: 0.55, ease: "back.out(1.6)" }, 2.15);
+      tl.to("#s2-cv-title", { rotation: -3, duration: 1.4, ease: "sine.inOut", yoyo: true, repeat: 1 }, 2.7);
+      tl.from("#s2-check", { scale: 0, autoAlpha: 0, duration: 0.45, ease: "back.out(2)" }, 2.6);
+      tl.fromTo("#s2-fill", { width: "32%" }, { width: "65%", duration: 2.6, ease: "none" }, 2.3);
+      tl.fromTo("#s2-knob", { left: "32%" }, { left: "65%", duration: 2.6, ease: "none" }, 2.3);
+      var t2 = { v: 84 };
+      tl.to(t2, { v: 164, duration: 2.6, ease: "none", onUpdate: function() {
+        var s = Math.round(t2.v); var m = Math.floor(s / 60); var ss = (s % 60).toString().padStart(2, "0");
+        document.getElementById("s2-tcur").textContent = m + ":" + ss;
+      }}, 2.3);
+
+      // Lyric swap
+      tl.to("#s2-lyric", { autoAlpha: 0, y: -10, duration: 0.3, ease: "power2.in", onComplete: function() {
+        document.getElementById("s2-lyric").textContent = "— chasing taillight stars —";
+      }}, 3.6);
+      tl.to("#s2-lyric", { autoAlpha: 1, y: 0, duration: 0.3, ease: "power2.out" }, 3.95);
+
+      // Notes: 3rd item gets checked
+      tl.to("#s2-item3 .check", { backgroundColor: "#f6c33b", borderColor: "#f6c33b", duration: 0.2 }, 3.2);
+      tl.to("#s2-item3 .check", { innerText: "✓", duration: 0 }, 3.2);
+      tl.to("#s2-item3 .label", { color: "#777", textDecoration: "line-through", duration: 0.2 }, 3.2);
+
+      // Camera: slow zoom-in (dolly toward subject) — starts wide, pushes during capture
+      tl.fromTo("#s2-feed", { backgroundSize: "112% auto" }, { backgroundSize: "122% auto", duration: 1.4, ease: "sine.inOut" }, 2.3);
+      tl.to("#s2-feed", { backgroundSize: "138% auto", duration: 0.5, ease: "power3.in" }, 3.7);
+      tl.to("#s2-feed", { backgroundSize: "142% auto", duration: 0.6, ease: "power2.out" }, 4.2);
+
+      // Camera: focus ring locks onto subject's face, then shutter fires + flash
+      tl.fromTo("#s2-focus", { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out" }, 2.6);
+      tl.to("#s2-focus", { scale: 0.92, duration: 0.55, ease: "sine.inOut", yoyo: true, repeat: 1 }, 3.05);
+      tl.to("#s2-focus", { opacity: 0, duration: 0.22, ease: "power2.in" }, 3.7);
+      tl.to("#s2-shutter", { scale: 0.82, duration: 0.08 }, 3.85);
+      tl.to("#s2-shutter", { scale: 1, duration: 0.22, ease: "back.out(2)" }, 3.93);
+      tl.to("#s2-overexpose", { opacity: 0.85, duration: 0.06 }, 3.85);
+      tl.to("#s2-overexpose", { opacity: 0, duration: 0.28, ease: "power2.out" }, 3.92);
+
+      // Spotify waveform — deterministic, seeded
+      (function() {
+        var wf = document.getElementById("s2-waveform");
+        if (!wf) return;
+        var n = 42;
+        var seed = 0xC0FFEE;
+        function rand() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+        var bars = [];
+        for (var i = 0; i < n; i++) {
+          var bar = document.createElement("div");
+          bar.className = "bar";
+          var c = (i - n / 2) / (n / 2);
+          var envelope = 1 - c * c * 0.55;
+          var h = (0.20 + rand() * 0.78) * envelope;
+          bar.dataset.target = h;
+          bar.style.height = (h * 100) + "%";
+          bar.style.opacity = 0.5 + h * 0.5;
+          wf.appendChild(bar);
+          bars.push(bar);
+        }
+        bars.forEach(function(b, i) {
+          var t = parseFloat(b.dataset.target);
+          tl.fromTo(b, { scaleY: 0.05 }, { scaleY: 1, duration: 0.4, ease: "back.out(1.6)" }, 2.45 + i * 0.012);
+          var amp = 0.45 + ((i * 7) % 11) / 22;
+          var dur = 0.30 + (i % 5) * 0.07;
+          tl.to(b, { scaleY: t * amp, duration: dur, ease: "sine.inOut", yoyo: true, repeat: 3 }, 2.95 + (i % 6) * 0.06);
+        });
+      })();
+
+      tl.from("#s2-cap .kicker", { y: 12, autoAlpha: 0, duration: 0.4, ease: "power2.out" }, 2.55);
+      tl.from("#s2-cap .title", { y: 18, autoAlpha: 0, duration: 0.5, ease: "power3.out" }, 2.7);
+
+      window.__timelines["phones"] = tl;
+    </script>    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/shader-transitions/dist/index.global.js"></script>
+
+  </div>
+</template>

@@ -1,0 +1,113 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>fadeglow v4 · keyframe contact sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Inter:wght@500;700;800&display=swap">
+<style>
+  :root{--w:1920px;--h:1080px;--scale:0.333}
+  html,body{margin:0;background:#111416;color:#F1EDE3;font-family:'Inter',sans-serif;min-height:100vh}
+  .wrap{padding:36px 36px 80px}
+  h1{font-size:28px;letter-spacing:-0.01em;margin:0 0 4px;font-weight:800}
+  .sub{font-family:'JetBrains Mono',monospace;font-size:13px;color:#A09A8A;letter-spacing:0.16em;text-transform:uppercase;margin-bottom:28px}
+  .sub b{color:#FFC94A}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+  .card{background:#1A1E22;border-radius:14px;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.4);position:relative}
+  .card .frame{position:relative;width:100%;padding-top:56.25%;overflow:hidden;background:#000}
+  .card iframe{position:absolute;inset:0;border:0;width:var(--w);height:var(--h);transform:scale(var(--scale));transform-origin:0 0}
+  .meta{display:flex;justify-content:space-between;align-items:baseline;padding:14px 18px 16px;border-top:1px solid rgba(255,255,255,0.06)}
+  .meta .n{font-family:'JetBrains Mono',monospace;font-size:12px;color:#6E665A;letter-spacing:0.18em;text-transform:uppercase}
+  .meta .n b{color:#FFC94A;margin-right:10px}
+  .meta .t{font-family:'JetBrains Mono',monospace;font-size:12px;color:#8A8273;letter-spacing:0.1em}
+  .title{font-weight:700;font-size:16px;letter-spacing:-0.01em;margin:0;padding:16px 18px 0}
+  .title em{color:#FFC94A;font-style:normal}
+  .lyric{padding:2px 18px 0;font-size:13px;color:#BCB3A2;line-height:1.4;font-style:italic}
+  @media (max-width:1400px){:root{--scale:0.25}.grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:900px){:root{--scale:0.18}.grid{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="wrap">
+  <h1>fadeglow-music-video-v4 &mdash; keyframes</h1>
+  <div class="sub">8 distinct worlds &middot; 1920×1080 &middot; <b>41.56s total runtime</b> &middot; preview before animation</div>
+  <div class="grid">
+
+    <div class="card">
+      <h3 class="title"><em>01</em> It&rsquo;s just HTML, baby</h3>
+      <div class="lyric">Risograph cover &middot; red+cobalt on cream</div>
+      <div class="frame"><iframe src="beat-01-html-baby.html"></iframe></div>
+      <div class="meta"><span class="n"><b>beat 1</b> 2.12 &ndash; 4.84</span><span class="t">opening hook</span></div>
+    </div>
+
+    <div class="card">
+      <h3 class="title"><em>02</em> bum bum bum bum &hellip; <span style="color:#FF2D7A">(viz hero)</span></h3>
+      <div class="lyric">Neobrutalist spectrum &middot; magenta+black on white &middot; <b>9.7s</b></div>
+      <div class="frame"><iframe src="beat-02-bum-viz.html"></iframe></div>
+      <div class="meta"><span class="n"><b>beat 2</b> 4.90 &ndash; 14.58</span><span class="t">audio-viz hero</span></div>
+    </div>
+
+    <div class="card">
+      <h3 class="title"><em>03</em> This video you&rsquo;re watching &hellip;</h3>
+      <div class="lyric">CRT meta &middot; cobalt bg + amber phosphor scanlines</div>
+      <div class="frame"><iframe src="beat-03-crt-thesis.html"></iframe></div>
+      <div class="meta"><span class="n"><b>beat 3</b> 15.64 &ndash; 20.86</span><span class="t">thesis</span></div>
+    </div>
+
+    <div class="card" style="outline:2px solid #FFC94A;outline-offset:-2px">
+      <h3 class="title"><em>04 · pick one</em> every fade, every glow &hellip;</h3>
+      <div class="lyric">Three variants below &mdash; <b style="color:#FFC94A">A/B/C</b></div>
+      <div class="frame" style="padding-top:0;height:0"></div>
+      <div class="meta"><span class="n"><b>beat 4</b> 21.12 &ndash; 25.82</span><span class="t">chorus · variants</span></div>
+    </div>
+
+    <div class="card">
+      <h3 class="title"><em>05</em> It&rsquo;s a template, baby</h3>
+      <div class="lyric">Figma wireframe &middot; pink+purple on cream</div>
+      <div class="frame"><iframe src="beat-05-template.html"></iframe></div>
+      <div class="meta"><span class="n"><b>beat 5</b> 25.96 &ndash; 30.42</span><span class="t">hook reprise</span></div>
+    </div>
+
+    <div class="card">
+      <h3 class="title"><em>06</em> <span style="color:#FFE94F;background:#FF2E9A;padding:0 8px">Change.</span> Then change them.</h3>
+      <div class="lyric">Literal palette swap &middot; navy/lime &rarr; magenta/yellow</div>
+      <div class="frame"><iframe src="beat-06-change.html"></iframe></div>
+      <div class="meta"><span class="n"><b>beat 6</b> 31.32 &ndash; 33.68</span><span class="t">palette swap</span></div>
+    </div>
+
+    <div class="card">
+      <h3 class="title"><em>07</em> Red. <span style="color:#FFC94A">Go ahead.</span></h3>
+      <div class="lyric">Flood RED &middot; Bauhaus circles &middot; giant single word</div>
+      <div class="frame"><iframe src="beat-07-red.html"></iframe></div>
+      <div class="meta"><span class="n"><b>beat 7</b> 33.94 &ndash; 35.92</span><span class="t">spotlight</span></div>
+    </div>
+
+    <div class="card">
+      <h3 class="title"><em>08</em> a div and a timeline, baby &middot; render it <em>fresh</em></h3>
+      <div class="lyric">Warm code editor + rendered output &middot; closer</div>
+      <div class="frame"><iframe src="beat-08-div-timeline.html"></iframe></div>
+      <div class="meta"><span class="n"><b>beat 8</b> 36.60 &ndash; 41.04</span><span class="t">closer</span></div>
+    </div>
+
+  </div>
+
+  <h1 style="margin-top:56px">Beat 04 variants &mdash; pick one</h1>
+  <div class="sub">same 4.7s lyric &middot; 3 aesthetic approaches</div>
+  <div class="grid">
+    <div class="card">
+      <h3 class="title"><em>A</em> gradient pill garden <span style="color:#A09A8A;font-weight:500;font-size:13px">(original)</span></h3>
+      <div class="lyric">Soft peach/teal/lilac gradient with CSS-annotated pill chips</div>
+      <div class="frame"><iframe src="beat-04-every-fade.html"></iframe></div>
+      <div class="meta"><span class="n"><b>var A</b></span><span class="t">pills</span></div>
+    </div>
+    <div class="card">
+      <h3 class="title"><em>B</em> each word IS its effect</h3>
+      <div class="lyric">Cinematic rainbow-gradient stage &middot; 6 huge lines, each typographically demonstrating its meaning (fade blurs, glow glows, "word" has every letter in a different face, "screen" is a CRT block, "file" is a document chip, "open" is literally split)</div>
+      <div class="frame"><iframe src="beat-04-every-fade-B.html"></iframe></div>
+      <div class="meta"><span class="n"><b>var B</b></span><span class="t">semantic type</span></div>
+    </div>
+    <div class="card">
+      <h3 class="title"><em>C</em> swatch library</h3>
+      <div class="lyric">Editorial 3×2 magazine spread &middot; 6 poster tiles, each a distinct palette + texture + CSS annotation in the corner. Feels like a designer's swatch book.</div>
+      <div class="frame"><iframe src="beat-04-every-fade-C.html"></iframe></div>
+      <div class="meta"><span class="n"><b>var C</b></span><span class="t">magazine grid</span></div>
+    </div>
+  </div>
+</div>
+</body></html>

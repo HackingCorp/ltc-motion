@@ -1,0 +1,135 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Beat 4C · swatch library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;900&family=Fraunces:ital,wght@1,600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#F4EFE1;font-family:'Archivo',sans-serif}
+  .frame{position:relative;width:1920px;height:1080px;background:#F4EFE1}
+  .grain{position:absolute;inset:0;background-image:radial-gradient(rgba(0,0,0,0.05) 0.6px, transparent 0.9px);background-size:3px 3px;mix-blend-mode:multiply;opacity:0.5;pointer-events:none}
+  .head{position:absolute;top:44px;left:56px;right:56px;display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:0.2em;text-transform:uppercase;color:#2A1A0A}
+  .head h1{font-family:'Archivo',sans-serif;font-weight:900;font-size:44px;margin:0;letter-spacing:-0.02em;text-transform:none}
+  .head h1 em{font-family:'Fraunces',serif;font-style:italic;font-weight:600;color:#B8320E}
+  .head .rule{flex:1;height:2px;background:#2A1A0A;margin:0 24px}
+  .grid{position:absolute;top:110px;left:56px;right:56px;bottom:110px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:16px}
+  .tile{position:relative;overflow:hidden;border-radius:10px;padding:40px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 12px 24px rgba(0,0,0,0.12), inset 0 0 0 2px rgba(0,0,0,0.08)}
+  .tile .tag{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;opacity:0.75;margin-bottom:12px}
+  .tile .hero{font-family:'Archivo',sans-serif;font-weight:900;font-size:150px;letter-spacing:-0.045em;line-height:0.88}
+  .tile .hero em{font-family:'Fraunces',serif;font-style:italic;font-weight:600}
+  .tile .code{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:16px;letter-spacing:0.02em;opacity:0.85}
+
+  /* FADE */
+  .t-fade{background:linear-gradient(110deg, #FF7A5C 0%, #FFB48A 55%, rgba(255,180,138,0) 100%);color:#3A0E0A}
+  .t-fade .hero span:nth-child(1){opacity:1}
+  .t-fade .hero span:nth-child(2){opacity:0.72}
+  .t-fade .hero span:nth-child(3){opacity:0.42;filter:blur(2px)}
+  .t-fade .hero span:nth-child(4){opacity:0.18;filter:blur(6px)}
+
+  /* GLOW */
+  .t-glow{background:radial-gradient(ellipse at 35% 45%, #FFE29A 0%, #FFB84A 35%, #C87410 100%);color:#2A0E03;position:relative}
+  .t-glow::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 35% 45%, rgba(255,255,255,0.6), transparent 45%);pointer-events:none}
+  .t-glow .hero{text-shadow:0 0 24px rgba(255,255,220,0.9), 0 0 60px rgba(255,200,80,0.7)}
+
+  /* WORD */
+  .t-word{background:#0F2C24;color:#C8F0DC}
+  .t-word .hero{letter-spacing:-0.04em}
+  .t-word .hero .l1{font-family:'Archivo',sans-serif;font-weight:900;color:#FFE94F}
+  .t-word .hero .l2{font-family:'Fraunces',serif;font-style:italic;color:#A2E6CC}
+  .t-word .hero .l3{font-family:'JetBrains Mono',monospace;font-weight:700;color:#FF9BC6;font-size:130px;letter-spacing:-0.05em}
+
+  /* SCREEN */
+  .t-screen{background:#0A1530;color:#22DDAA;position:relative}
+  .t-screen::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.03) 0 2px, transparent 2px 4px);pointer-events:none}
+  .t-screen::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.55) 100%);pointer-events:none}
+  .t-screen .hero{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:130px;color:#22DDAA;text-shadow:0 0 14px rgba(34,221,170,0.7);letter-spacing:-0.02em;position:relative;z-index:2}
+  .t-screen .tag{color:#FFB446;position:relative;z-index:2}
+  .t-screen .code{color:#7DE3D1;position:relative;z-index:2}
+
+  /* FILE */
+  .t-file{background:#FDF5E3;color:#1E1E1E;position:relative}
+  .t-file::before{content:'';position:absolute;inset:0;background-image:
+    linear-gradient(to right, rgba(30,30,30,0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30,30,30,0.05) 1px, transparent 1px);
+    background-size:24px 24px;pointer-events:none}
+  .t-file .stack{position:relative;display:flex;align-items:flex-end;gap:-40px;z-index:2}
+  .t-file .doc{width:140px;height:180px;background:#FFF;border:3px solid #1E1E1E;border-radius:6px;box-shadow:10px 10px 0 #1E1E1E;position:relative;margin-right:-60px}
+  .t-file .doc::before{content:'';position:absolute;top:0;right:0;width:34px;height:34px;background:linear-gradient(135deg, transparent 50%, #1E1E1E 50%)}
+  .t-file .doc.two{background:#FF6AA8;transform:rotate(-6deg) translateY(-14px);z-index:2}
+  .t-file .doc.three{background:#7DD3FC;transform:rotate(4deg) translateY(-22px);z-index:3;margin-right:0}
+  .t-file .hero{font-size:140px}
+  .t-file .hero em{color:#B8320E}
+
+  /* OPEN */
+  .t-open{background:linear-gradient(135deg, #FF6AA8 0%, #B08AFF 100%);color:#FFF6EC;position:relative;overflow:hidden}
+  .t-open::before{content:'';position:absolute;top:-50%;left:50%;width:4px;height:200%;background:#FFE07A;box-shadow:0 0 30px #FFE07A;transform:translateX(-50%)}
+  .t-open .hero{font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:140px}
+  .t-open .hero .l{display:inline-block;transform:translateX(-14px) rotate(-1deg)}
+  .t-open .hero .r{display:inline-block;transform:translateX(14px) rotate(1deg);color:#FFE07A}
+
+  .foot{position:absolute;bottom:44px;left:56px;right:56px;display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;color:#2A1A0A}
+  .foot .r{color:#B8320E;font-weight:700}
+</style></head>
+<body>
+<div class="frame">
+  <div class="head">
+    <h1><em>every</em> &mdash; a swatch library</h1>
+    <div class="rule"></div>
+    <span>beat 04 &middot; variant C &middot; 21.1 &ndash; 25.8s</span>
+  </div>
+
+  <div class="grid">
+    <div class="tile t-fade">
+      <div>
+        <div class="tag">01 &middot; fade</div>
+        <div class="hero"><span>e</span><span>v</span><span>r</span><span>y</span> <em>fade</em></div>
+      </div>
+      <div class="code">opacity: 1 &rarr; 0;</div>
+    </div>
+    <div class="tile t-glow">
+      <div>
+        <div class="tag">02 &middot; glow</div>
+        <div class="hero">every <em>glow</em></div>
+      </div>
+      <div class="code">box-shadow: 0 0 80px;</div>
+    </div>
+    <div class="tile t-word">
+      <div>
+        <div class="tag">03 &middot; word</div>
+        <div class="hero"><span class="l1">every</span><br><span class="l2">every</span>&nbsp;<span class="l3">word</span></div>
+      </div>
+      <div class="code">font-family: &lt;any&gt;;</div>
+    </div>
+    <div class="tile t-screen">
+      <div>
+        <div class="tag">04 &middot; screen</div>
+        <div class="hero">on the screen_</div>
+      </div>
+      <div class="code">background: #0A1530;</div>
+    </div>
+    <div class="tile t-file">
+      <div>
+        <div class="tag">05 &middot; file</div>
+        <div class="stack">
+          <div class="doc"></div>
+          <div class="doc two"></div>
+          <div class="doc three"></div>
+        </div>
+        <div class="hero">is a <em>.html</em></div>
+      </div>
+      <div class="code">3.2 KB &middot; open source</div>
+    </div>
+    <div class="tile t-open">
+      <div>
+        <div class="tag">06 &middot; open yourself</div>
+        <div class="hero"><span class="l">you can</span> <span class="r">open</span></div>
+      </div>
+      <div class="code">you &rarr; edit &rarr; render;</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>fadeglow.v4 &middot; swatch library edition</span>
+    <span class="r">● 04 / 08 &middot; chorus</span>
+  </div>
+  <div class="grain"></div>
+</div>
+</body></html>

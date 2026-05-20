@@ -1,0 +1,692 @@
+<template id="moodboard-template">
+  <div data-composition-id="moodboard" data-width="1920" data-height="1080">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,700;9..144,900&family=Archivo:wght@300;400;500;700;900&family=Archivo+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f1ece2;
+        --bg-2: #ebe4d4;
+        --paper: #fbf8f1;
+        --ink: #14181f;
+        --ink-soft: #2b2f38;
+        --muted: #6c6457;
+        --accent: #1f3a8a;       /* deep cobalt ink */
+        --accent-2: #b94a3e;     /* terracotta */
+        --gold: #b8893a;         /* connecting lines */
+        --gold-soft: rgba(184, 137, 58, 0.55);
+        --font-display: "Fraunces", Georgia, serif;
+        --font-ui: "Archivo", "Helvetica Neue", sans-serif;
+        --font-mono: "Archivo Mono", monospace;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--ink);
+      }
+
+      .scene {
+        position: absolute;
+        top: 0; left: 0;
+        width: 1920px; height: 1080px;
+        overflow: hidden;
+        background:
+          radial-gradient(ellipse at 30% 20%, #f6f0e3 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 90%, #e8dfca 0%, transparent 60%),
+          var(--bg);
+      }
+      .scene-content {
+        width: 100%; height: 100%;
+        position: relative; z-index: 1;
+      }
+
+      /* ---- paper grain ---- */
+      .grain {
+        position: absolute; inset: 0;
+        pointer-events: none; z-index: 50;
+        opacity: 0.22;
+        background-image:
+          radial-gradient(rgba(20, 24, 31, 0.10) 1px, transparent 1.2px),
+          radial-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1.2px);
+        background-size: 3px 3px, 5px 5px;
+        background-position: 0 0, 1px 2px;
+        mix-blend-mode: multiply;
+      }
+      .vignette {
+        position: absolute; inset: 0;
+        pointer-events: none; z-index: 49;
+        background: radial-gradient(ellipse at center, transparent 55%, rgba(40,32,18,0.18) 100%);
+      }
+
+      /* ---- crown / brand name ---- */
+      .crown {
+        position: absolute;
+        top: 64px; left: 50%;
+        transform: translateX(-50%);
+        display: flex; align-items: center; gap: 28px;
+        z-index: 5;
+      }
+      .crown-line {
+        height: 1px;
+        background: var(--ink);
+        width: 480px;
+        transform-origin: right center;
+      }
+      .crown-line.right { transform-origin: left center; }
+      .crown-name {
+        font-family: var(--font-display);
+        font-weight: 300;
+        font-style: italic;
+        font-size: 44px;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: var(--ink);
+        white-space: nowrap;
+      }
+      .crown-name b {
+        font-style: normal;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+      }
+      .crown-meta {
+        position: absolute;
+        top: 132px; left: 50%;
+        transform: translateX(-50%);
+        font-family: var(--font-mono);
+        font-size: 14px;
+        letter-spacing: 0.4em;
+        color: var(--muted);
+        text-transform: uppercase;
+        z-index: 5;
+      }
+
+      /* ---- swatches row ---- */
+      .swatches {
+        position: absolute;
+        top: 220px; left: 140px;
+        display: flex; gap: 28px;
+        z-index: 4;
+      }
+      .swatch {
+        width: 132px; height: 168px;
+        background: var(--paper);
+        padding: 14px 14px 16px;
+        box-shadow:
+          0 1px 0 rgba(0,0,0,0.04),
+          0 18px 30px -18px rgba(20,18,10,0.35);
+        display: flex; flex-direction: column;
+        position: relative;
+      }
+      .swatch .chip {
+        flex: 1;
+        width: 100%;
+      }
+      .swatch .label {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        margin-top: 10px;
+        letter-spacing: 0.18em;
+        color: var(--ink-soft);
+        text-transform: uppercase;
+      }
+      .swatch .hex {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: var(--muted);
+        margin-top: 2px;
+        letter-spacing: 0.1em;
+      }
+      .sw1 .chip { background: #14181f; }
+      .sw2 .chip { background: #1f3a8a; }
+      .sw3 .chip { background: #b94a3e; }
+      .sw4 .chip { background: #d8c89a; }
+      .sw5 .chip { background: #f1ece2; border: 1px solid #d8d2c2; }
+      .sw6 .chip { background: #2f5d3a; }
+
+      /* glow on accent swatch (sw2) */
+      .sw2 {
+        position: relative;
+      }
+      .sw2 .glow {
+        position: absolute;
+        inset: -10px;
+        border-radius: 4px;
+        background: radial-gradient(closest-side, rgba(31, 58, 138, 0.45), transparent 70%);
+        filter: blur(8px);
+        z-index: -1;
+        opacity: 0;
+      }
+
+      /* ---- logo ---- */
+      .logo-stage {
+        position: absolute;
+        top: 470px; left: 200px;
+        width: 220px; height: 220px;
+        z-index: 4;
+      }
+      .logo-card {
+        width: 100%; height: 100%;
+        background: var(--ink);
+        color: var(--paper);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 24px 36px -16px rgba(20,18,10,0.55);
+        position: relative;
+      }
+      .logo-mark {
+        font-family: var(--font-display);
+        font-weight: 900;
+        font-size: 132px;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        position: relative;
+      }
+      .logo-mark .dot {
+        position: absolute;
+        right: -18px; bottom: 22px;
+        width: 16px; height: 16px;
+        background: var(--accent-2);
+        border-radius: 50%;
+      }
+      .logo-caption {
+        position: absolute;
+        bottom: -32px; left: 0;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.32em;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+
+      /* ---- typography panel ---- */
+      .type-panel {
+        position: absolute;
+        top: 750px; left: 160px;
+        width: 560px;
+        z-index: 4;
+      }
+      .type-row {
+        margin-bottom: 22px;
+      }
+      .type-name {
+        font-size: 64px;
+        line-height: 1;
+        color: var(--ink);
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .type-name.fraunces {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-style: italic;
+        letter-spacing: -0.02em;
+      }
+      .type-name.archivo {
+        font-family: var(--font-ui);
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        text-transform: uppercase;
+        font-size: 56px;
+      }
+      .type-meta {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.3em;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-top: 6px;
+      }
+      .type-cursor {
+        display: inline-block;
+        width: 4px;
+        background: currentColor;
+        margin-left: 4px;
+        vertical-align: -8px;
+      }
+
+      /* ---- screenshot cards ---- */
+      .cards {
+        position: absolute;
+        top: 220px; left: 880px;
+        width: 900px; height: 720px;
+        z-index: 4;
+      }
+      .card {
+        position: absolute;
+        background: var(--paper);
+        padding: 16px 16px 60px;
+        box-shadow:
+          0 2px 0 rgba(0,0,0,0.03),
+          0 36px 50px -28px rgba(20,18,10,0.5),
+          0 12px 18px -10px rgba(20,18,10,0.25);
+      }
+      .card .img {
+        width: 100%; height: 100%;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+      .card .cap {
+        position: absolute;
+        bottom: 18px; left: 18px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.22em;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+      .card-1 { top: 30px; left: 60px; width: 380px; height: 250px; transform: rotate(-4.5deg); }
+      .card-1 .img { background-image: url('assets/screenshot1.jpg'); height: 195px; }
+      .card-2 { top: 80px; left: 380px; width: 360px; height: 240px; transform: rotate(3deg); }
+      .card-2 .img { background-image: url('assets/screenshot2.png'); height: 185px; }
+      .card-3 { top: 290px; left: 120px; width: 340px; height: 280px; transform: rotate(2.2deg); }
+      .card-3 .img { background-image: url('assets/screenshot3.jpg'); height: 225px; }
+      .card-4 { top: 320px; left: 440px; width: 320px; height: 240px; transform: rotate(-3deg); }
+      .card-4 .img { background-image: url('assets/screenshot4.jpg'); height: 185px; }
+      .card-5 { top: 540px; left: 280px; width: 300px; height: 200px; transform: rotate(-2deg); }
+      .card-5 .img { background-image: url('assets/screenshot5.jpg'); height: 145px; }
+
+      .card .pin {
+        position: absolute;
+        top: -8px; left: 50%;
+        width: 14px; height: 14px;
+        border-radius: 50%;
+        background: var(--accent-2);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.25);
+        transform: translateX(-50%);
+      }
+
+      /* ---- connector lines ---- */
+      .connectors {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        pointer-events: none;
+      }
+      .connectors path {
+        fill: none;
+        stroke: var(--gold);
+        stroke-width: 1.4;
+        stroke-linecap: round;
+        opacity: 0.85;
+      }
+      .connectors circle {
+        fill: var(--gold);
+        opacity: 0.95;
+      }
+
+      /* ---- floating sticky / annotation ---- */
+      .sticky {
+        position: absolute;
+        top: 470px; left: 470px;
+        width: 220px;
+        background: #f7e6a8;
+        padding: 18px 18px 22px;
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 22px;
+        line-height: 1.25;
+        color: var(--ink);
+        transform: rotate(-5deg);
+        box-shadow: 0 18px 22px -14px rgba(20,18,10,0.4);
+        z-index: 4;
+      }
+      .sticky::after {
+        content: "";
+        position: absolute;
+        top: -10px; left: 50%;
+        transform: translateX(-50%) rotate(-12deg);
+        width: 60px; height: 18px;
+        background: rgba(255,255,255,0.5);
+        border: 1px solid rgba(0,0,0,0.05);
+      }
+      .sticky .sig {
+        margin-top: 10px;
+        font-family: var(--font-mono);
+        font-style: normal;
+        font-size: 10px;
+        letter-spacing: 0.3em;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+
+      /* corner stamp */
+      .stamp {
+        position: absolute;
+        bottom: 56px; left: 140px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.3em;
+        color: var(--muted);
+        text-transform: uppercase;
+        z-index: 4;
+        display: flex; align-items: center; gap: 14px;
+      }
+      .stamp .sq {
+        width: 10px; height: 10px;
+        background: var(--accent);
+      }
+      .stamp-r {
+        position: absolute;
+        bottom: 56px; right: 140px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.3em;
+        color: var(--muted);
+        text-transform: uppercase;
+        z-index: 4;
+      }
+    </style>
+
+      <div class="scene clip" id="s1" data-start="0" data-duration="6" data-track-index="0">
+        <div class="vignette"></div>
+
+        <div class="scene-content">
+
+          <!-- Crown / brand name -->
+          <div class="crown" id="crown">
+            <div class="crown-line left" id="crown-line-l"></div>
+            <div class="crown-name" id="crown-name">Atelier <b>NORTH</b> &mdash; brand book</div>
+            <div class="crown-line right" id="crown-line-r"></div>
+          </div>
+          <div class="crown-meta" id="crown-meta">VOL. 04 &nbsp;·&nbsp; SPRING IDENTITY &nbsp;·&nbsp; 2026</div>
+
+          <!-- Swatches -->
+          <div class="swatches">
+            <div class="swatch sw1" id="sw1"><div class="chip"></div><div class="label">Ink</div><div class="hex">#14181F</div></div>
+            <div class="swatch sw2" id="sw2"><div class="glow" id="sw2-glow"></div><div class="chip"></div><div class="label">Cobalt</div><div class="hex">#1F3A8A</div></div>
+            <div class="swatch sw3" id="sw3"><div class="chip"></div><div class="label">Terracotta</div><div class="hex">#B94A3E</div></div>
+            <div class="swatch sw4" id="sw4"><div class="chip"></div><div class="label">Sand</div><div class="hex">#D8C89A</div></div>
+            <div class="swatch sw5" id="sw5"><div class="chip"></div><div class="label">Paper</div><div class="hex">#F1ECE2</div></div>
+            <div class="swatch sw6" id="sw6"><div class="chip"></div><div class="label">Forest</div><div class="hex">#2F5D3A</div></div>
+          </div>
+
+          <!-- Logo card -->
+          <div class="logo-stage" id="logo-stage">
+            <div class="logo-card" id="logo-card">
+              <div class="logo-mark">N<span class="dot"></span></div>
+            </div>
+            <div class="logo-caption" id="logo-cap">Primary lockup · 01</div>
+          </div>
+
+          <!-- Sticky note -->
+          <div class="sticky" id="sticky">
+            “editorial, quiet,<br/>a little defiant.”
+            <div class="sig">— art direction</div>
+          </div>
+
+          <!-- Typography -->
+          <div class="type-panel" id="type-panel">
+            <div class="type-row">
+              <div class="type-name fraunces" id="type-1"></div>
+              <div class="type-meta" id="type-1-meta">Fraunces · Display Serif</div>
+            </div>
+            <div class="type-row">
+              <div class="type-name archivo" id="type-2"></div>
+              <div class="type-meta" id="type-2-meta">Archivo · Sans Workhorse</div>
+            </div>
+          </div>
+
+          <!-- Screenshot cards -->
+          <div class="cards">
+            <div class="card card-1" id="card-1"><div class="pin"></div><div class="img"></div><div class="cap">Ref · 01 / Editorial</div></div>
+            <div class="card card-2" id="card-2"><div class="pin"></div><div class="img"></div><div class="cap">Ref · 02 / Composition</div></div>
+            <div class="card card-3" id="card-3"><div class="pin"></div><div class="img"></div><div class="cap">Ref · 03 / Color</div></div>
+            <div class="card card-4" id="card-4"><div class="pin"></div><div class="img"></div><div class="cap">Ref · 04 / System</div></div>
+            <div class="card card-5" id="card-5"><div class="pin"></div><div class="img"></div><div class="cap">Ref · 05 / Texture</div></div>
+          </div>
+
+          <!--
+            Connector lines — every line starts at the logo center (310, 580) and ends
+            at the visual center of its destination element. The "N" logo is the hub.
+          -->
+          <svg class="connectors" id="connectors" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+            <!-- logo (310,580) → cobalt swatch (366, 304) -->
+            <path id="ln-1" d="M 310 580 C 260 480, 300 380, 366 304" stroke-dasharray="320" stroke-dashoffset="320"/>
+            <!-- logo (310,580) → ink swatch (206, 304) -->
+            <path id="ln-2" d="M 310 580 C 200 500, 170 400, 206 304" stroke-dasharray="320" stroke-dashoffset="320"/>
+            <!-- logo (310,580) → screenshot card-1 center (1130, 375) -->
+            <path id="ln-3" d="M 310 580 C 540 380, 880 320, 1130 375" stroke-dasharray="900" stroke-dashoffset="900"/>
+            <!-- logo (310,580) → screenshot card-3 center (1120, 545) -->
+            <path id="ln-4" d="M 310 580 C 600 600, 880 560, 1120 545" stroke-dasharray="830" stroke-dashoffset="830"/>
+            <!-- logo (310,580) → typography baseline (440, 800) -->
+            <path id="ln-5" d="M 310 580 C 280 700, 360 770, 440 800" stroke-dasharray="280" stroke-dashoffset="280"/>
+            <!-- logo (310,580) → sticky note (580, 530) -->
+            <path id="ln-6" d="M 310 580 C 400 580, 500 550, 580 530" stroke-dasharray="290" stroke-dashoffset="290"/>
+            <!-- terminus nodes at each destination -->
+            <circle id="nd-1" cx="366" cy="304" r="3" opacity="0"/>
+            <circle id="nd-2" cx="206" cy="304" r="3" opacity="0"/>
+            <circle id="nd-3" cx="1130" cy="375" r="3" opacity="0"/>
+            <circle id="nd-4" cx="1120" cy="545" r="3" opacity="0"/>
+            <circle id="nd-5" cx="440" cy="800" r="3" opacity="0"/>
+            <circle id="nd-6" cx="580" cy="530" r="3" opacity="0"/>
+            <!-- single hub dot at the logo (drawn after lines) -->
+            <circle id="nd-hub" cx="310" cy="580" r="4" opacity="0"/>
+          </svg>
+
+          <!-- Stamps -->
+          <div class="stamp" id="stamp-l"><span class="sq"></span> Brand · in · motion</div>
+          <div class="stamp-r" id="stamp-r">No. 0426 — assembled live</div>
+
+          <div class="grain"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ============================================================
+      // SCENE 1 (0–6s) — Brand-in-motion mood board assembling itself
+      // ============================================================
+
+      // --- 1) Color swatches fly in on arcs (0.0–1.4s) ---
+      // Each swatch travels a different arc by chaining x/y tweens with different eases.
+      var swatchIds = ["#sw1", "#sw2", "#sw3", "#sw4", "#sw5", "#sw6"];
+      var swatchArcs = [
+        { dx: -1100, dy:  60, rot: -22, t: 0.05 },
+        { dx: -1200, dy: -120, rot:  18, t: 0.15 },
+        { dx: -1050, dy: 140, rot: -14, t: 0.25 },
+        { dx: -1300, dy: -40, rot:  24, t: 0.35 },
+        { dx: -1150, dy: 100, rot: -10, t: 0.45 },
+        { dx: -1250, dy: -90, rot:  20, t: 0.55 }
+      ];
+      swatchArcs.forEach(function (cfg, i) {
+        var sel = swatchIds[i];
+        // start position
+        tl.set(sel, { x: cfg.dx, y: cfg.dy, rotation: cfg.rot, autoAlpha: 0 }, 0);
+        // arc: y first (different ease), then x lands
+        tl.to(sel, { autoAlpha: 1, duration: 0.2, ease: "power1.out" }, cfg.t);
+        tl.to(sel, { y: 0, duration: 0.85, ease: "sine.inOut" }, cfg.t);
+        tl.to(sel, { x: 0, rotation: 0, duration: 0.95, ease: "power3.out" }, cfg.t);
+      });
+
+      // tiny settle wobble on the cobalt swatch
+      tl.to("#sw2", { y: -3, duration: 0.18, ease: "sine.out", yoyo: true, repeat: 1 }, 1.15);
+
+      // --- 2) Logo spin-in with bounce settle (1.0–1.9s) ---
+      tl.set("#logo-stage", { scale: 0, rotation: -180, autoAlpha: 0, transformOrigin: "50% 50%" }, 0);
+      tl.to("#logo-stage", { autoAlpha: 1, duration: 0.15, ease: "power1.out" }, 1.0);
+      tl.to("#logo-stage", { scale: 1.06, rotation: 0, duration: 0.7, ease: "back.out(2.2)" }, 1.0);
+      tl.to("#logo-stage", { scale: 1.0, duration: 0.25, ease: "power2.out" }, 1.7);
+      tl.set("#logo-cap", { autoAlpha: 0, y: 8 }, 0);
+      tl.to("#logo-cap", { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 1.85);
+
+      // --- 3) Screenshots tossed in from the right (1.6–3.0s) ---
+      var cardCfg = [
+        { sel: "#card-1", t: 1.65, fromX: 1400, fromY:  -80, fromR:  18, toR: -4.5 },
+        { sel: "#card-2", t: 1.80, fromX: 1500, fromY:  120, fromR: -22, toR:  3 },
+        { sel: "#card-3", t: 1.95, fromX: 1600, fromY:  -40, fromR:  26, toR:  2.2 },
+        { sel: "#card-4", t: 2.10, fromX: 1450, fromY:  160, fromR: -18, toR: -3 },
+        { sel: "#card-5", t: 2.25, fromX: 1550, fromY: -100, fromR:  14, toR: -2 }
+      ];
+      cardCfg.forEach(function (c) {
+        tl.set(c.sel, { x: c.fromX, y: c.fromY, rotation: c.fromR, autoAlpha: 0, transformOrigin: "50% 50%" }, 0);
+        tl.to(c.sel, { autoAlpha: 1, duration: 0.18, ease: "power1.out" }, c.t);
+        tl.to(c.sel, { x: 0, y: 0, rotation: c.toR, duration: 0.75, ease: "power3.out" }, c.t);
+        // tiny settle bump
+        tl.to(c.sel, { y: -4, duration: 0.12, ease: "sine.out", yoyo: true, repeat: 1 }, c.t + 0.7);
+      });
+
+      // sticky note drops in
+      tl.set("#sticky", { y: -40, scale: 0.85, autoAlpha: 0, rotation: -12, transformOrigin: "50% 0%" }, 0);
+      tl.to("#sticky", { autoAlpha: 1, y: 0, scale: 1, rotation: -5, duration: 0.55, ease: "back.out(1.8)" }, 2.4);
+
+      // --- 4) Typography writes itself out (2.6–3.8s) ---
+      var t1 = "Fraunces";
+      var t2 = "ARCHIVO";
+
+      tl.set("#type-1", { text: "" }, 0);
+      tl.set("#type-2", { text: "" }, 0);
+
+      var t1Obj = { i: 0 };
+      tl.to(t1Obj, {
+        i: t1.length,
+        duration: 0.7,
+        ease: "steps(" + t1.length + ")",
+        onUpdate: function () {
+          var n = Math.round(t1Obj.i);
+          document.getElementById("type-1").textContent = t1.slice(0, n) + (n < t1.length ? "▍" : "");
+        }
+      }, 2.65);
+      tl.set("#type-1", {}, 3.36);
+      tl.call(function () { document.getElementById("type-1").textContent = t1; }, null, 3.4);
+
+      var t2Obj = { i: 0 };
+      tl.to(t2Obj, {
+        i: t2.length,
+        duration: 0.6,
+        ease: "steps(" + t2.length + ")",
+        onUpdate: function () {
+          var n = Math.round(t2Obj.i);
+          document.getElementById("type-2").textContent = t2.slice(0, n) + (n < t2.length ? "▍" : "");
+        }
+      }, 3.05);
+      tl.call(function () { document.getElementById("type-2").textContent = t2; }, null, 3.7);
+
+      tl.from("#type-1-meta", { autoAlpha: 0, x: -16, duration: 0.4, ease: "power2.out" }, 3.45);
+      tl.from("#type-2-meta", { autoAlpha: 0, x: -16, duration: 0.4, ease: "power2.out" }, 3.75);
+
+      // --- 5) Golden connectors trace themselves (3.7–4.8s) ---
+      // make sure all line + node visuals are FORCED hidden at t=0 so nothing flashes on first frame
+      tl.set("#connectors path", { strokeDashoffset: function (i, el) { return el.getAttribute("stroke-dasharray"); } }, 0);
+      tl.set("#connectors circle", { opacity: 0 }, 0);
+
+      var lineCfg = [
+        { sel: "#ln-1", len: 320, t: 3.75, dur: 0.55 },
+        { sel: "#ln-2", len: 320, t: 3.85, dur: 0.55 },
+        { sel: "#ln-3", len: 900, t: 3.95, dur: 0.85 },
+        { sel: "#ln-4", len: 830, t: 4.05, dur: 0.8 },
+        { sel: "#ln-5", len: 280, t: 4.20, dur: 0.5 },
+        { sel: "#ln-6", len: 290, t: 4.30, dur: 0.5 }
+      ];
+      lineCfg.forEach(function (l) {
+        tl.fromTo(l.sel, { strokeDashoffset: l.len }, { strokeDashoffset: 0, duration: l.dur, ease: "power2.out" }, l.t);
+      });
+      // hub dot pops first (origin), then terminus dots
+      tl.to("#nd-hub", { opacity: 1, duration: 0.25, ease: "power2.out" }, 3.7);
+      ["#nd-1","#nd-2","#nd-3","#nd-4","#nd-5","#nd-6"].forEach(function (sel, i) {
+        tl.to(sel, { opacity: 1, duration: 0.2, ease: "power2.out" }, 4.4 + i * 0.06);
+      });
+
+      // --- 6) Crown / brand name lands (4.6–5.4s) ---
+      tl.set("#crown-name", { y: -50, autoAlpha: 0 }, 0);
+      tl.set("#crown-line-l", { scaleX: 0 }, 0);
+      tl.set("#crown-line-r", { scaleX: 0 }, 0);
+      tl.set("#crown-meta", { autoAlpha: 0, y: -10 }, 0);
+
+      tl.to("#crown-name", { y: 0, autoAlpha: 1, duration: 0.6, ease: "power3.out" }, 4.55);
+      tl.to("#crown-line-l", { scaleX: 1, duration: 0.7, ease: "expo.out" }, 4.7);
+      tl.to("#crown-line-r", { scaleX: 1, duration: 0.7, ease: "expo.out" }, 4.7);
+      tl.to("#crown-meta", { y: 0, autoAlpha: 1, duration: 0.45, ease: "power2.out" }, 5.0);
+
+      // stamps
+      tl.from("#stamp-l", { autoAlpha: 0, x: -20, duration: 0.5, ease: "power2.out" }, 5.1);
+      tl.from("#stamp-r", { autoAlpha: 0, x: 20, duration: 0.5, ease: "power2.out" }, 5.1);
+
+      // ============================================================
+      // ALWAYS-ALIVE motion (covers entire 6s)
+      // ============================================================
+
+      // logo gentle float — entire scene
+      tl.to("#logo-card", {
+        y: -6,
+        duration: 1.6,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: Math.ceil(6 / 1.6) - 1
+      }, 0.4);
+
+      // accent swatch glow pulse — start once it's landed
+      tl.to("#sw2-glow", {
+        opacity: 0.95,
+        duration: 1.4,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: Math.ceil((6 - 1.2) / 1.4) - 1
+      }, 1.2);
+
+      // screenshots breathing zoom (Ken Burns) — slow drift through whole scene
+      ["#card-1", "#card-2", "#card-3", "#card-4", "#card-5"].forEach(function (sel, i) {
+        tl.to(sel + " .img", {
+          scale: 1.08,
+          duration: 5.2,
+          ease: "sine.inOut"
+        }, 1.8 + i * 0.05);
+      });
+
+      // typography breathing — letterspacing wobble after written
+      tl.to("#type-1", {
+        letterSpacing: "-0.01em",
+        duration: 1.8,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: 1
+      }, 3.6);
+      tl.to("#type-2", {
+        letterSpacing: "-0.02em",
+        duration: 1.8,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: 1
+      }, 3.7);
+
+      // sticky note tilt breathing
+      tl.to("#sticky", {
+        rotation: -6.5,
+        duration: 1.8,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: 1
+      }, 3.0);
+
+      // connector lines subtle shimmer — opacity pulse
+      tl.to("#connectors path", {
+        opacity: 0.55,
+        duration: 1.2,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: 1,
+        stagger: { each: 0.05, from: "start" }
+      }, 4.9);
+
+      // very subtle final settle on whole canvas (paper sigh)
+      tl.to("#s1", {
+        scale: 1.012,
+        duration: 6,
+        ease: "sine.inOut",
+        transformOrigin: "50% 50%"
+      }, 0);
+
+      window.__timelines["moodboard"] = tl;
+    </script>    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/shader-transitions/dist/index.global.js"></script>
+
+  </div>
+</template>

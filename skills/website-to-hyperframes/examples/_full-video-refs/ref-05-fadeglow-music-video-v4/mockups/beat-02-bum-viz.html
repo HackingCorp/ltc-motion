@@ -1,0 +1,63 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Beat 2 · BUM BUM BUM (viz hero)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800&family=Space+Mono:wght@700&display=swap">
+<style>
+  html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#FFFFFF;font-family:'Bricolage Grotesque',sans-serif}
+  .frame{position:relative;width:1920px;height:1080px;background:#FFFFFF}
+  .rule{position:absolute;left:0;right:0;height:4px;background:#000}
+  .rule.top{top:96px}.rule.bot{bottom:96px}
+  .mono{font-family:'Space Mono',monospace;font-weight:700;letter-spacing:0.04em;text-transform:uppercase}
+  .hud{position:absolute;font-size:20px}
+  .hud.tl{top:30px;left:48px}
+  .hud.tr{top:30px;right:48px;text-align:right}
+  .hud.bl{bottom:30px;left:48px}
+  .hud.br{bottom:30px;right:48px;text-align:right}
+  .dot{display:inline-block;width:10px;height:10px;background:#FF2D7A;border-radius:50%;margin:0 10px 2px 0;vertical-align:middle;box-shadow:0 0 0 3px rgba(255,45,122,0.25)}
+  .bars{position:absolute;left:48px;right:48px;top:130px;bottom:360px;display:flex;align-items:flex-end;gap:6px}
+  .bar{flex:1;background:#FF2D7A;border:3px solid #000;border-bottom:none;box-shadow:6px 0 0 #000}
+  .bar.pk{background:#1E1E1E}
+  .center{position:absolute;left:48px;right:48px;bottom:130px;height:210px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .bum{font-size:220px;font-weight:800;line-height:0.82;letter-spacing:-0.04em;color:#1E1E1E;-webkit-text-stroke:0;position:relative}
+  .bum.b{color:#FF2D7A;transform:translateY(-14px) rotate(-2deg)}
+  .bum.c{color:#FFE94F;-webkit-text-stroke:4px #000;transform:translateY(10px) rotate(1.5deg);text-shadow:8px 8px 0 #000}
+  .bum.d{color:#1E1E1E;transform:rotate(-1deg)}
+  .beatgrid{position:absolute;left:48px;right:48px;top:110px;display:flex;gap:4px;height:12px}
+  .beatgrid span{flex:1;background:#EAEAEA;border-radius:2px}
+  .beatgrid span.on{background:#FF2D7A}
+  .beatgrid span.dn{background:#1E1E1E}
+  .bigbpm{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Space Mono',monospace;font-size:36px;font-weight:700;color:rgba(0,0,0,0.05);letter-spacing:0.3em;text-transform:uppercase;pointer-events:none;z-index:0}
+  .peakchip{position:absolute;top:40px;left:50%;transform:translateX(-50%);background:#FFE94F;border:3px solid #000;padding:8px 26px;font-family:'Space Mono',monospace;font-weight:700;font-size:18px;letter-spacing:0.3em;text-transform:uppercase;box-shadow:6px 6px 0 #000}
+  .waveform{position:absolute;left:48px;right:48px;top:112px;height:2px;background:repeating-linear-gradient(to right,#000 0 2px,transparent 2px 12px)}
+</style></head>
+<body>
+<div class="frame">
+  <div class="rule top"></div><div class="rule bot"></div>
+  <div class="peakchip">PEAK · BUM CHANT · 09.7s</div>
+  <div class="hud mono tl"><span class="dot"></span>ANALYZER //LIVE</div>
+  <div class="hud mono tr">BPM <span style="font-size:28px">124.3</span> &nbsp; PEAK 0.94</div>
+  <div class="hud mono bl">ch. LOW · MID · HIGH &nbsp; <span style="color:#FF2D7A">●</span> kick &nbsp; <span style="color:#1E1E1E">●</span> snare</div>
+  <div class="hud mono br">02 / 08 &nbsp; VIZ HERO</div>
+
+  <div class="bigbpm">bum bum bum bum bum bum bum bum bum bum bum bum</div>
+
+  <div class="beatgrid" id="bg"></div>
+
+  <div class="bars" id="bars"></div>
+
+  <div class="center">
+    <span class="bum a">BUM</span>
+    <span class="bum b">BUM</span>
+    <span class="bum c">BUM</span>
+    <span class="bum d">BUM</span>
+  </div>
+</div>
+<script>
+  const heights=[62,78,44,88,96,54,72,90,64,82,46,94,70,58,86,68,92,80,50,74,64,88,78,86,54,70,62,82,48,66,58,80,72,44,64];
+  const bars=document.getElementById('bars');
+  heights.forEach((h,i)=>{const d=document.createElement('div');d.className='bar'+(h>85?' pk':'');d.style.height=h+'%';bars.appendChild(d);});
+  const bg=document.getElementById('bg');
+  const pattern=[1,0,0,2,0,1,0,0,2,1,0,0,2,0,1,0,0,2,0,0,1,0,0,2];
+  pattern.forEach(v=>{const s=document.createElement('span');if(v===1)s.className='on';if(v===2)s.className='dn';bg.appendChild(s);});
+</script>
+</body></html>

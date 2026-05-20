@@ -15,13 +15,23 @@ Single scenes give you a beat catalog. Full-video refs give you a sense for **ho
 
 ---
 
-## Roster
+## Roster (6 refs)
+
+### Tier A — full launch reels (40s+)
 
 | Ref | Project | Duration | Assembled MP4 | Architecture | Highest novelty |
 |-----|---------|----------|---------------|--------------|-----------------|
-| **ref-01** | [`ref-01-launch-video-2/`](ref-01-launch-video-2/) | 41.8s | https://www.heygenverse.com/s/fb0a115b-81e6-4e3f-acae-6dbe8ef3def7/raw | 4 acts as stacked `<div>` slots with `data-start`/`data-duration`, live sub-comps | Act-1's 4-panel AI-agent IDE quartet (Claude Code + Cursor + Codex + Gemini CLI) with synchronized mouse cursors, click ripples, sent-message bubbles |
-| **ref-02** | [`ref-02-claude-design-hyperframes-video/`](ref-02-claude-design-hyperframes-video/) | 43.5s | https://www.heygenverse.com/s/0e1f0a40-351d-4a2d-9b18-139c095a42dd/raw | 10 pre-rendered MP4 clips stitched via `<video class="clip">` tags + caption + music + 6 SFX overlays | `claude-ui.html` (1209 lines — full Claude.ai interface), `dashboard.html` (1525 lines — dense analytical dashboard), `grid.html` (1621 lines — 24-cell technique grid) |
-| **ref-03** | [`ref-03-hermes-hyperframes/`](ref-03-hermes-hyperframes/) | 41.0s, **1080×1080 square** | https://www.heygenverse.com/s/51dbc7ce-42df-4a94-84ef-a10c302b4a2f/raw | Single 1367-line composition (`parade.html`) renders 20 internal beats + separate captions sub-comp | VHS-noise boot + WebGL shader + GLSL code + render terminal composite + Lottie integration + 14 planning mockups (process artifact) |
+| **ref-01** | [`ref-01-launch-video-2/`](ref-01-launch-video-2/) | 41.8s | https://www.heygenverse.com/s/fb0a115b-81e6-4e3f-acae-6dbe8ef3def7/raw | 4 acts as stacked `<div>` slots with live sub-comps | Act-1's 4-panel AI-agent IDE quartet (Claude Code + Cursor + Codex + Gemini CLI) |
+| **ref-02** | [`ref-02-claude-design-hyperframes-video/`](ref-02-claude-design-hyperframes-video/) | 43.5s | https://www.heygenverse.com/s/0e1f0a40-351d-4a2d-9b18-139c095a42dd/raw | 10 pre-rendered MP4 clips stitched + captions + music + 6 SFX | `claude-ui.html` (1209 lines), `dashboard.html` (1525), `grid.html` (1621) |
+| **ref-03** | [`ref-03-hermes-hyperframes/`](ref-03-hermes-hyperframes/) | 41.0s, **1080×1080 square** | https://www.heygenverse.com/s/51dbc7ce-42df-4a94-84ef-a10c302b4a2f/raw | Single 1367-line `parade.html` w/ 20 internal beats + Lottie captions sub-comp | VHS+CRT+Lottie, square format, 14 keyframe mockups |
+| **ref-05** | [`ref-05-fadeglow-music-video-v4/`](ref-05-fadeglow-music-video-v4/) | 41.6s | https://www.heygenverse.com/s/5eee1ed3-3255-473b-a0e0-f488eda984df/raw | 8 sequential sub-comp slots, music-only audio, no narration | **Music video grammar.** No narration; cuts driven by song; kinetic typography on warm cream + red + amber; 8 distinct beats with shared aesthetic |
+
+### Tier B — short-form / single-mode references (10-15s)
+
+| Ref | Project | Duration | Assembled MP4 | Architecture | Why it earns a place |
+|-----|---------|----------|---------------|--------------|----------------------|
+| **ref-04** | [`ref-04-inspector-logo-intro/`](ref-04-inspector-logo-intro/) | 12.77s | https://www.heygenverse.com/s/e0474ffa-9c3b-4f50-b8aa-03c92ba72bf2/raw | **Single 1344-line composition** — no sub-comps, no HyperShader. Halftone canvas + 5 sub-beats inside one timeline | Production-density mini-reveal arc (logo flash → magnifying glass → inspector with cycling values). Source for the cycling-spans pattern in `04-13-design-inspector`. |
+| **ref-06** | [`ref-06-webgl-textures-playground/`](ref-06-webgl-textures-playground/) | 12.0s | https://www.heygenverse.com/s/094d6602-c8cf-4c08-99a0-80345a60958f/raw | Three.js shader + HTML overlay with `mix-blend-mode: screen` | **Shader-as-the-beat** pattern. Library has shaders as transitions and shaders as layer effects, but nothing showing the shader as the load-bearing visual for the whole beat. Use for atmospheric openers / brand reels / music video atmosphere. |
 
 ---
 
@@ -71,19 +81,43 @@ If you need to re-render or modify any ref, the production projects live at:
 
 | Pattern | When to use | Demonstrated in |
 |---------|-------------|-----------------|
-| **Stacked live sub-comps** (ref-01) | Multi-act narrative where each act is conceptually distinct, fast iteration on per-act compositions, runtime can handle the load | ref-01 launch-video-2 |
-| **Pre-rendered clip stitching** (ref-02) | Heavy compositions (1500+ lines each), wanting to iterate on one beat without re-rendering the rest, or wanting the final to play as MP4 (cheaper at runtime) | ref-02 claude-design |
-| **Single composition with many beats** (ref-03) | Beats share a common visual idiom (terminal aesthetic, kinetic typography, music video), want the whole video to feel like one continuous piece, square or unusual aspect ratios | ref-03 hermes |
-| **HyperShader.init() transitions** | Multi-beat with shader-transition wipes between beats — **not demonstrated in current refs.** The library's `examples/05-transitions-shader/` shows the shader effects; ref-01 + ref-02 use hard cuts and ref-03 uses internal beat transitions. A future ref-04 could demonstrate HyperShader orchestration. | (gap — see future work) |
+| **Stacked live sub-comps** | Multi-act narrative where each act is conceptually distinct, fast iteration on per-act compositions, runtime can handle the load | ref-01 launch-video-2 |
+| **Pre-rendered clip stitching** | Heavy compositions (1500+ lines each), wanting to iterate on one beat without re-rendering the rest, or wanting the final to play as MP4 (cheaper at runtime) | ref-02 claude-design |
+| **Single composition with many beats** | Beats share a common visual idiom (terminal aesthetic, kinetic typography), want the whole video to feel like one continuous piece, square or unusual aspect ratios | ref-03 hermes |
+| **Single composition (no beats)** | Tight short-form (10-15s) where all beats share a common visual frame (constant background, overlapping cursor/panel/highlight), single timeline orchestration without sub-comp loading overhead | ref-04 inspector-logo-intro |
+| **Sequential sub-comp slots, all on same track** | Beats fully replace previous, music-only audio, no shader transitions desired (hard cut on music beat IS the transition) | ref-05 fadeglow music video |
+| **Three.js shader + HTML overlay** | Shader is the load-bearing visual (atmospheric opener / brand reel / music video atmosphere), HTML text glows through with `mix-blend-mode: screen` | ref-06 webgl-textures-playground |
+| **HyperShader.init() transitions** | Multi-beat with shader-transition wipes between beats — **not demonstrated in current refs.** A future ref-07 could lift launch-video (the original) for this. | (gap) |
 
 ---
 
 ## Future work
 
-This tier ships with 3 refs. Potential additions:
+This tier ships with **6 refs across 6 distinct architectures**. Don't add more than ~7-8 — past that the tier dilutes.
 
-- **ref-04 launch-video** (the original HyperFrames launch reel) — would demonstrate HyperShader orchestration. Most compositions already individually lifted as scenes (anatomy → 09-01, engine → 09-02, flex-shader → 07-01, canvas-close → 07-02, flex-threejs → 11-01, flex-gsap → 10-01, cta → 04-10). Adding it would teach the assembly grammar with HyperShader transitions.
-- **ref-05 inspector-logo-intro** (12.75s standalone composition) — a single-file production composition demonstrating Figma-style inspector reveal at production density. Already partially mined as `examples/04-composed-ui/scene-13-design-inspector/` but the production original is significantly denser.
-- **ref-06 timeline-launch-video** (multi-act feature breakdown) — has 9 acts; only one already lifted (timeline-editor → 04-11). Would demonstrate "feature explanation" video grammar.
+The remaining gap: **HyperShader-orchestrated multi-beat video**. None of the current 6 use HyperShader.init() — they use stacked slots / clip stitching / single composition / sequential slots. A future ref-07 could lift `launch-video/` (the original HyperFrames launch reel) to teach that pattern. Skipped for now because most of launch-video's compositions are already individually lifted as library scenes.
 
-Add these if the library expands further. Don't add more than ~6 refs total — diluting risks the "what's load-bearing" signal.
+Other deliberately-skipped candidates (with reasons documented in `HANDOFF-full-video-refs.md`):
+- `texture-launch-video` — too monolithic, hard to read
+- `vfx-heygen-combined` — overlaps with library section 07
+- `vercel-intro-hyperframes` — partially mined (`11-02-vercel-triangle-roll`)
+- `homepage-carousel-mockups` — niche creator-reel pattern
+- `notion-oneetest-walkthrough` / `hyperframes-article-walkthrough` — niche article-walkthrough pattern
+- `playground-launch` — video-clip-driven, less compose-from-divs density
+- `timeline-launch-video` — multi-act feature breakdown; standout pattern (timeline-editor UI) already in lib as `04-11`
+
+---
+
+## Disk + Verse cost (transparency)
+
+| Ref | Source on disk | MP4 on Verse |
+|-----|----------------|--------------|
+| ref-01 launch-video-2 | 948K | 13MB |
+| ref-02 claude-design | 328K | 19MB |
+| ref-03 hermes | 664K | 11MB |
+| ref-04 inspector-logo-intro | 136K (with assets) | 32MB |
+| ref-05 fadeglow | 188K | 11MB |
+| ref-06 webgl-textures | 56K | 7.7MB |
+| **Total** | **~2.3MB** | **~94MB** |
+
+Source committed to repo: ~2.3MB across 6 refs. MP4s on Verse: ~94MB (not in repo).

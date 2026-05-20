@@ -1,0 +1,60 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Beat 4 · every fade every glow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  html,body{margin:0;width:1920px;height:1080px;overflow:hidden;font-family:'Fraunces',serif}
+  .frame{position:relative;width:1920px;height:1080px;
+    background:
+      radial-gradient(circle at 18% 30%, #FFD1B5 0%, transparent 45%),
+      radial-gradient(circle at 82% 22%, #C8EFEA 0%, transparent 45%),
+      radial-gradient(circle at 72% 82%, #E0C8FF 0%, transparent 48%),
+      radial-gradient(circle at 20% 78%, #FFE9A1 0%, transparent 45%),
+      linear-gradient(135deg,#FFF6EC, #F6EEFF 100%);
+  }
+  .grain{position:absolute;inset:0;background-image:radial-gradient(rgba(0,0,0,0.05) 0.6px, transparent 0.9px);background-size:3px 3px;mix-blend-mode:multiply;opacity:0.5;pointer-events:none}
+  .mono{font-family:'JetBrains Mono',monospace;font-weight:500;letter-spacing:0.04em}
+  .corner{position:absolute;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:18px;letter-spacing:0.16em;text-transform:uppercase;color:#3A2A4A}
+  .corner.tl{top:48px;left:60px}
+  .corner.tr{top:48px;right:60px;text-align:right}
+  .corner.bl{bottom:48px;left:60px}
+  .corner.br{bottom:48px;right:60px;text-align:right;color:#FF6A8A}
+  .chip{position:absolute;padding:22px 44px;border-radius:999px;font-family:'Fraunces',serif;font-weight:700;font-size:92px;line-height:1;letter-spacing:-0.02em;box-shadow:0 20px 40px rgba(80,40,120,0.12), 0 0 0 2px rgba(255,255,255,0.8) inset}
+  .chip .tag{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:16px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(60,40,80,0.6);display:block;margin-top:10px}
+  .fade{top:150px;left:90px;background:linear-gradient(90deg,#FF8A6B,rgba(255,138,107,0));color:#2B1830;filter:drop-shadow(0 10px 30px rgba(255,138,107,0.35))}
+  .glow{top:260px;left:820px;background:#FFE07A;color:#3A2A00;box-shadow:0 0 60px rgba(255,224,122,0.9),0 0 120px rgba(255,224,122,0.6)}
+  .word{top:430px;left:140px;background:#FFFFFF;color:#3A2A4A;font-style:italic}
+  .screen{top:560px;left:900px;background:#2B1E4A;color:#FFF6EC;padding:22px 52px}
+  .file{top:750px;left:120px;background:#A7E5DD;color:#04342A}
+  .your{top:840px;left:1160px;background:#FF6A8A;color:#FFF6EC;font-style:italic}
+  .annot{position:absolute;font-family:'JetBrains Mono',monospace;font-size:22px;color:#5A3A7A;opacity:0.75;letter-spacing:0.02em}
+  .connector{position:absolute;stroke:#5A3A7A;stroke-width:2;fill:none;opacity:0.35;stroke-dasharray:6 6}
+  .title{position:absolute;top:90px;left:60px;font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:60px;color:#3A2A4A;letter-spacing:-0.01em;max-width:900px;line-height:1.05}
+  .title em{font-style:normal;color:#FF6A8A;font-weight:700}
+  .micro{position:absolute;bottom:140px;left:60px;right:60px;display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:18px;color:#3A2A4A;letter-spacing:0.15em;text-transform:uppercase}
+  .flow{position:absolute;left:60px;right:60px;top:130px;bottom:60px;pointer-events:none}
+</style></head>
+<body>
+<div class="frame">
+  <div class="grain"></div>
+  <div class="corner tl">● css / properties / 04</div>
+  <div class="corner tr">open / source / yours</div>
+  <svg class="flow" viewBox="0 0 1800 900" preserveAspectRatio="none">
+    <path class="connector" d="M 280 160 C 500 80, 760 120, 960 220"/>
+    <path class="connector" d="M 980 320 C 700 360, 400 400, 260 460"/>
+    <path class="connector" d="M 260 480 C 500 540, 760 580, 1020 620"/>
+    <path class="connector" d="M 1120 660 C 780 720, 420 760, 260 800"/>
+    <path class="connector" d="M 320 820 C 700 860, 1000 820, 1280 880"/>
+  </svg>
+
+  <div class="chip fade">every fade<span class="tag">filter: blur(12px)</span></div>
+  <div class="chip glow">every glow<span class="tag">box-shadow: 0 0 80px #FFE07A</span></div>
+  <div class="chip word">every word<span class="tag">font-style: italic</span></div>
+  <div class="chip screen">on the screen<span class="tag" style="color:#FFE07A">background: #2B1E4A</span></div>
+  <div class="chip file">is a file<span class="tag">.html · 3.2KB</span></div>
+  <div class="chip your">you can open<span class="tag" style="color:#FFF6EC;opacity:0.7">yourself</span></div>
+
+  <div class="corner bl">&ldquo; every property &mdash; editable &rdquo;</div>
+  <div class="corner br">04 / 08 &nbsp; chorus</div>
+</div>
+</body></html>

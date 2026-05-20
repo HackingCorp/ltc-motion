@@ -1,0 +1,87 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Beat 6 · Change. Then change them.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Boldonse&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  html,body{margin:0;width:1920px;height:1080px;overflow:hidden;font-family:'Space Grotesk',sans-serif}
+  .frame{position:relative;width:1920px;height:1080px;overflow:hidden}
+  .half{position:absolute;top:0;bottom:0;width:50%;overflow:hidden}
+  .half.l{left:0;background:#0B1F3A;color:#D4FF5E}
+  .half.r{right:0;background:#FF2E9A;color:#FFE94F}
+  .half.l .swatch-grid{position:absolute;inset:0;opacity:0.12;background-image:
+    linear-gradient(45deg,#D4FF5E 25%,transparent 25%,transparent 75%,#D4FF5E 75%),
+    linear-gradient(45deg,#D4FF5E 25%,transparent 25%,transparent 75%,#D4FF5E 75%);
+    background-size:80px 80px;background-position:0 0, 40px 40px}
+  .half.r .memphis{position:absolute;inset:0;pointer-events:none}
+  .half.r .memphis span{position:absolute;display:block}
+  .half.r .memphis .dot{width:18px;height:18px;background:#FFE94F;border-radius:50%;box-shadow:0 0 0 3px #0B1F3A}
+  .half.r .memphis .sq{width:40px;height:40px;background:#00D4C1;transform:rotate(18deg);border:3px solid #0B1F3A}
+  .half.r .memphis .sq2{width:70px;height:20px;background:#0B1F3A;transform:rotate(-12deg)}
+  .half.r .memphis .tri{width:0;height:0;border-left:28px solid transparent;border-right:28px solid transparent;border-bottom:42px solid #D4FF5E;transform:rotate(12deg)}
+  .half.r .memphis .squig{width:120px;height:40px;border-top:6px solid #FFE94F;border-radius:50%;transform:rotate(-8deg)}
+  .lyric{position:absolute;left:70px;right:70px;font-family:'Boldonse',sans-serif;line-height:0.86;letter-spacing:-0.02em}
+  .half.l .lyric{top:130px;font-size:140px;color:#D4FF5E}
+  .half.l .lyric em{color:#F4F1E6;font-style:normal;opacity:0.55;font-weight:400;font-family:'Space Grotesk',sans-serif;font-size:68px;display:block;letter-spacing:-0.01em;margin-top:18px}
+  .half.r .lyric{top:130px;font-size:140px;color:#FFE94F;text-shadow:8px 8px 0 #0B1F3A}
+  .half.r .lyric em{color:#0B1F3A;font-style:italic;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:68px;display:block;margin-top:18px;letter-spacing:-0.01em;text-shadow:none}
+  .mega{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-4deg);z-index:20;font-family:'Boldonse',sans-serif;font-size:420px;line-height:0.8;letter-spacing:-0.05em;color:#FFE94F;text-shadow:12px 12px 0 #0B1F3A, 24px 24px 0 #FF2E9A;mix-blend-mode:normal;padding:0 40px}
+  .mega::before{content:'CHANGE';position:absolute;left:0;right:0;top:0;color:#FFFFFF;text-shadow:none;z-index:-1;clip-path:polygon(0 0, 50% 0, 50% 100%, 0 100%)}
+  .swap{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(45deg);width:240px;height:240px;z-index:21}
+  .swap::before,.swap::after{content:'';position:absolute;background:#0B1F3A}
+  .swap::before{left:50%;top:0;width:16px;height:100%;margin-left:-8px;border-radius:4px}
+  .swap::after{top:50%;left:0;height:16px;width:100%;margin-top:-8px;border-radius:4px}
+  .palette{position:absolute;bottom:70px;display:flex;gap:8px;align-items:center}
+  .palette.l{left:70px}
+  .palette.r{right:70px}
+  .chip{width:54px;height:54px;border-radius:50%;border:3px solid #F4F1E6}
+  .plabel{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;letter-spacing:0.18em;text-transform:uppercase;margin-left:14px}
+  .half.l .plabel{color:#D4FF5E}
+  .half.r .plabel{color:#0B1F3A}
+  .hud{position:absolute;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:16px;letter-spacing:0.18em;text-transform:uppercase}
+  .hud.tl{top:48px;left:70px;color:#D4FF5E}
+  .hud.tr{top:48px;right:70px;color:#0B1F3A;text-align:right}
+  .hud.br{bottom:48px;right:70px;color:#0B1F3A;text-align:right;z-index:30}
+  .caret{position:absolute;font-family:'JetBrains Mono',monospace;font-size:20px;bottom:120px;letter-spacing:0.1em}
+  .half.l .caret{left:80px;color:#F4F1E6;opacity:0.7}
+  .half.r .caret{right:80px;color:#0B1F3A;text-align:right}
+</style></head>
+<body>
+<div class="frame">
+  <div class="half l">
+    <div class="swatch-grid"></div>
+    <div class="hud tl">before · 31.3s</div>
+    <div class="lyric">you want these lyrics<em>navy · lime · calm</em></div>
+    <div class="caret">$ current.palette</div>
+    <div class="palette l">
+      <div class="chip" style="background:#0B1F3A"></div>
+      <div class="chip" style="background:#D4FF5E"></div>
+      <div class="chip" style="background:#F4F1E6"></div>
+      <span class="plabel">calm</span>
+    </div>
+  </div>
+  <div class="half r">
+    <div class="memphis">
+      <span class="dot" style="top:12%;right:18%"></span>
+      <span class="sq" style="top:22%;right:10%"></span>
+      <span class="tri" style="top:40%;right:28%"></span>
+      <span class="squig" style="top:58%;right:8%"></span>
+      <span class="sq2" style="top:72%;right:22%"></span>
+      <span class="dot" style="top:82%;right:40%;background:#00D4C1"></span>
+      <span class="tri" style="top:16%;right:48%;border-bottom-color:#FFE94F"></span>
+      <span class="sq" style="top:66%;right:40%;background:#FFE94F"></span>
+    </div>
+    <div class="hud tr">after · 33.7s</div>
+    <div class="lyric">then change them<em>magenta · yellow · loud</em></div>
+    <div class="caret">$ palette.next()</div>
+    <div class="palette r">
+      <span class="plabel" style="margin:0 14px 0 0">loud</span>
+      <div class="chip" style="background:#FFE94F"></div>
+      <div class="chip" style="background:#00D4C1"></div>
+      <div class="chip" style="background:#0B1F3A"></div>
+    </div>
+  </div>
+  <div class="mega">CHANGE</div>
+  <div class="swap"></div>
+  <div class="hud br">06 / 08 &nbsp; palette swap</div>
+</div>
+</body></html>

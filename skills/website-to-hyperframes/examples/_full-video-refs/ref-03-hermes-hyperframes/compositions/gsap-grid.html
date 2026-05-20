@@ -1,0 +1,429 @@
+<template id="gsap-grid-template">
+  <div data-composition-id="gsap-grid" data-width="1920" data-height="1080" data-start="0">
+
+    <!-- Background glow pools -->
+    <div class="glow g-orange"></div>
+    <div class="glow g-cyan"></div>
+    <div class="glow g-purple"></div>
+
+    <!-- 6x4 Animation Grid -->
+    <div class="grid" id="grid">
+      <!-- Row 1 -->
+      <div class="cell" id="c-1"><div class="rotating-square"></div></div>
+      <div class="cell" id="c-2"><div class="pulse-circle"><div class="pulse-ring"></div></div></div>
+      <div class="cell" id="c-3"><div class="bars"><div class="bar b1"></div><div class="bar b2"></div><div class="bar b3"></div><div class="bar b4"></div><div class="bar b5"></div><div class="bar b6"></div><div class="bar b7"></div><div class="bar b8"></div></div></div>
+      <div class="cell" id="c-4"><div class="orbit"><div class="orbit-dot od1"></div><div class="orbit-dot od2"></div><div class="orbit-dot od3"></div></div></div>
+      <div class="cell" id="c-5"><div class="bounce-box"></div></div>
+      <div class="cell" id="c-6"><div class="sweep-text">JS</div></div>
+      <!-- Row 2 -->
+      <div class="cell" id="c-7"><svg class="motion-svg" viewBox="0 0 100 100"><path class="motion-path" d="M10,50 Q30,10 50,50 Q70,90 90,50" fill="none" stroke="rgba(0,220,170,0.4)" stroke-width="2"/><circle class="motion-dot" r="4" fill="#00DDAA"/></svg></div>
+      <div class="cell" id="c-8"><div class="stagger-grid"><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div><div class="sg"></div></div></div>
+      <div class="cell" id="c-9"><div class="flip-card"><div class="flip-front">&#60;/&#62;</div><div class="flip-back">MP4</div></div></div>
+      <div class="cell" id="c-10"><svg class="wave-svg" viewBox="0 0 120 60"><path class="wave w1" d="" fill="none" stroke="rgba(255,100,150,0.6)" stroke-width="1.5"/><path class="wave w2" d="" fill="none" stroke="rgba(100,200,255,0.5)" stroke-width="1.5"/><path class="wave w3" d="" fill="none" stroke="rgba(255,200,100,0.4)" stroke-width="1.5"/></svg></div>
+      <div class="cell" id="c-11"><div class="conic-spinner"></div></div>
+      <div class="cell" id="c-12"><div class="morph-blob"></div></div>
+      <!-- Row 3 -->
+      <div class="cell" id="c-13"><div class="bounce-dots"><div class="bd"></div><div class="bd"></div><div class="bd"></div><div class="bd"></div><div class="bd"></div></div></div>
+      <div class="cell" id="c-14"><div class="progress-bars"><div class="pb"><div class="pb-fill pf1"></div></div><div class="pb"><div class="pb-fill pf2"></div></div><div class="pb"><div class="pb-fill pf3"></div></div><div class="pb"><div class="pb-fill pf4"></div></div></div></div>
+      <div class="cell" id="c-15"><div class="breathe-circles"><div class="bc bc1"></div><div class="bc bc2"></div><div class="bc bc3"></div></div></div>
+      <div class="cell" id="c-16"><div class="hexagon"></div></div>
+      <div class="cell" id="c-17"><div class="float-tri"></div></div>
+      <div class="cell" id="c-18"><div class="pulse-diamond"></div></div>
+      <!-- Row 4 -->
+      <div class="cell" id="c-19"><div class="crosshair"><div class="ch-h"></div><div class="ch-v"></div><div class="ch-ring"></div></div></div>
+      <div class="cell" id="c-20"><div class="waveform" id="waveform"></div></div>
+      <div class="cell" id="c-21"><div class="scale-square"></div></div>
+      <div class="cell" id="c-22"><div class="color-cycle"></div></div>
+      <div class="cell" id="c-23"><div class="line-draw"><svg viewBox="0 0 100 100"><line class="ld-1" x1="10" y1="10" x2="90" y2="90" stroke="rgba(255,180,70,0.6)" stroke-width="2"/><line class="ld-2" x1="90" y1="10" x2="10" y2="90" stroke="rgba(0,200,200,0.5)" stroke-width="2"/></svg></div></div>
+      <div class="cell" id="c-24"><div class="type-cursor">_</div></div>
+    </div>
+
+    <!-- Center overlay label -->
+    <div class="center-label" id="center-label">
+      <h2>JAVASCRIPT</h2>
+      <div class="cl-sub">ANIMATION ENGINE</div>
+    </div>
+
+    <!-- CRT -->
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    <div class="bleed-bottom"></div>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+      [data-composition-id="gsap-grid"] {
+        width: 1920px; height: 1080px; position: relative; overflow: hidden;
+        background: #08080c;
+      }
+
+      [data-composition-id="gsap-grid"] .glow {
+        position: absolute; border-radius: 50%; pointer-events: none; z-index: 1;
+      }
+      [data-composition-id="gsap-grid"] .g-orange {
+        width: 800px; height: 800px; bottom: -200px; left: -100px;
+        background: radial-gradient(ellipse, rgba(255,150,50,0.08) 0%, transparent 70%);
+      }
+      [data-composition-id="gsap-grid"] .g-cyan {
+        width: 600px; height: 600px; top: -100px; right: -50px;
+        background: radial-gradient(ellipse, rgba(0,200,220,0.06) 0%, transparent 70%);
+      }
+      [data-composition-id="gsap-grid"] .g-purple {
+        width: 700px; height: 700px; top: 200px; left: 500px;
+        background: radial-gradient(ellipse, rgba(150,0,200,0.05) 0%, transparent 70%);
+      }
+
+      [data-composition-id="gsap-grid"] .grid {
+        position: absolute; inset: 40px; z-index: 10;
+        display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(4, 1fr);
+        gap: 12px;
+      }
+
+      [data-composition-id="gsap-grid"] .cell {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        overflow: hidden; position: relative;
+      }
+
+      /* Cell animations - all pure CSS keyframes for deterministic looping */
+      [data-composition-id="gsap-grid"] .rotating-square {
+        width: 40px; height: 40px; background: rgba(255,180,70,0.6);
+        border-radius: 4px;
+        animation: rotSq 3s linear infinite;
+      }
+      @keyframes rotSq { to { transform: rotate(360deg); } }
+
+      [data-composition-id="gsap-grid"] .pulse-circle {
+        width: 30px; height: 30px; background: rgba(0,200,200,0.6);
+        border-radius: 50%; position: relative;
+        animation: pulseC 2s ease-in-out infinite;
+      }
+      @keyframes pulseC { 0%,100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+      [data-composition-id="gsap-grid"] .pulse-ring {
+        position: absolute; inset: -10px; border: 2px solid rgba(0,200,200,0.3);
+        border-radius: 50%;
+        animation: pulseR 2s ease-in-out infinite;
+      }
+      @keyframes pulseR { 0%,100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.5); opacity: 0; } }
+
+      [data-composition-id="gsap-grid"] .bars {
+        display: flex; gap: 4px; align-items: flex-end; height: 60%;
+      }
+      [data-composition-id="gsap-grid"] .bar {
+        width: 8px; background: rgba(51,255,51,0.5); border-radius: 2px;
+        animation: barPulse 1.5s ease-in-out infinite;
+      }
+      [data-composition-id="gsap-grid"] .b1 { height: 60%; animation-delay: 0s; }
+      [data-composition-id="gsap-grid"] .b2 { height: 80%; animation-delay: 0.1s; }
+      [data-composition-id="gsap-grid"] .b3 { height: 45%; animation-delay: 0.2s; }
+      [data-composition-id="gsap-grid"] .b4 { height: 90%; animation-delay: 0.3s; }
+      [data-composition-id="gsap-grid"] .b5 { height: 55%; animation-delay: 0.4s; }
+      [data-composition-id="gsap-grid"] .b6 { height: 75%; animation-delay: 0.5s; }
+      [data-composition-id="gsap-grid"] .b7 { height: 40%; animation-delay: 0.6s; }
+      [data-composition-id="gsap-grid"] .b8 { height: 70%; animation-delay: 0.7s; }
+      @keyframes barPulse { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(0.4); } }
+
+      [data-composition-id="gsap-grid"] .orbit {
+        width: 60px; height: 60px; position: relative;
+        animation: orbitRot 4s linear infinite;
+      }
+      @keyframes orbitRot { to { transform: rotate(360deg); } }
+      [data-composition-id="gsap-grid"] .orbit-dot {
+        position: absolute; width: 10px; height: 10px; border-radius: 50%;
+      }
+      [data-composition-id="gsap-grid"] .od1 { top: 0; left: 25px; background: rgba(255,100,150,0.7); }
+      [data-composition-id="gsap-grid"] .od2 { bottom: 5px; left: 5px; background: rgba(100,200,255,0.7); }
+      [data-composition-id="gsap-grid"] .od3 { bottom: 5px; right: 5px; background: rgba(255,200,100,0.7); }
+
+      [data-composition-id="gsap-grid"] .bounce-box {
+        width: 30px; height: 30px; background: rgba(200,0,255,0.5);
+        border-radius: 4px;
+        animation: bounceB 1.5s cubic-bezier(0.36,0.07,0.19,0.97) infinite;
+      }
+      @keyframes bounceB { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-30px); } }
+
+      [data-composition-id="gsap-grid"] .sweep-text {
+        font-family: 'IBM Plex Mono', monospace; font-size: 28px; font-weight: 700;
+        background: linear-gradient(90deg, #FFD080, #FF8040, #FFD080);
+        background-size: 200% 100%;
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: sweepG 2s linear infinite;
+      }
+      @keyframes sweepG { to { background-position: -200% 0; } }
+
+      [data-composition-id="gsap-grid"] .motion-svg { width: 80%; height: 80%; }
+
+      [data-composition-id="gsap-grid"] .stagger-grid {
+        display: grid; grid-template-columns: repeat(5,1fr); gap: 3px;
+      }
+      [data-composition-id="gsap-grid"] .sg {
+        width: 12px; height: 12px; background: rgba(0,200,170,0.4); border-radius: 2px;
+        animation: sgPulse 2s ease-in-out infinite;
+      }
+      [data-composition-id="gsap-grid"] .sg:nth-child(1) { animation-delay: 0s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(2) { animation-delay: 0.08s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(3) { animation-delay: 0.16s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(4) { animation-delay: 0.24s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(5) { animation-delay: 0.32s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(6) { animation-delay: 0.08s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(7) { animation-delay: 0.16s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(8) { animation-delay: 0.24s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(9) { animation-delay: 0.32s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(10) { animation-delay: 0.4s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(11) { animation-delay: 0.16s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(12) { animation-delay: 0.24s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(13) { animation-delay: 0.32s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(14) { animation-delay: 0.4s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(15) { animation-delay: 0.48s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(16) { animation-delay: 0.24s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(17) { animation-delay: 0.32s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(18) { animation-delay: 0.4s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(19) { animation-delay: 0.48s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(20) { animation-delay: 0.56s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(21) { animation-delay: 0.32s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(22) { animation-delay: 0.4s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(23) { animation-delay: 0.48s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(24) { animation-delay: 0.56s; }
+      [data-composition-id="gsap-grid"] .sg:nth-child(25) { animation-delay: 0.64s; }
+      @keyframes sgPulse { 0%,100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1); } }
+
+      [data-composition-id="gsap-grid"] .flip-card {
+        width: 50px; height: 50px; position: relative;
+        animation: flipC 3s ease-in-out infinite;
+        transform-style: preserve-3d;
+      }
+      [data-composition-id="gsap-grid"] .flip-front, [data-composition-id="gsap-grid"] .flip-back {
+        position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+        font-family: 'IBM Plex Mono', monospace; font-size: 18px; font-weight: 700;
+        border-radius: 6px; backface-visibility: hidden;
+      }
+      [data-composition-id="gsap-grid"] .flip-front { background: rgba(255,180,70,0.3); color: #FFD080; }
+      [data-composition-id="gsap-grid"] .flip-back { background: rgba(0,200,200,0.3); color: #88FFCC; transform: rotateY(180deg); }
+      @keyframes flipC { 0%,40% { transform: rotateY(0); } 50%,90% { transform: rotateY(180deg); } 100% { transform: rotateY(360deg); } }
+
+      [data-composition-id="gsap-grid"] .wave-svg { width: 90%; height: 90%; }
+
+      [data-composition-id="gsap-grid"] .conic-spinner {
+        width: 50px; height: 50px; border-radius: 50%;
+        background: conic-gradient(rgba(255,180,70,0.6), rgba(0,200,200,0.4), rgba(200,0,255,0.4), rgba(255,180,70,0.6));
+        animation: spinC 2s linear infinite;
+      }
+      @keyframes spinC { to { transform: rotate(360deg); } }
+
+      [data-composition-id="gsap-grid"] .morph-blob {
+        width: 50px; height: 50px; background: rgba(200,100,255,0.4);
+        animation: morphB 4s ease-in-out infinite;
+      }
+      @keyframes morphB {
+        0%,100% { border-radius: 50% 30% 50% 70%; }
+        25% { border-radius: 30% 50% 70% 50%; }
+        50% { border-radius: 50% 70% 30% 50%; }
+        75% { border-radius: 70% 50% 50% 30%; }
+      }
+
+      [data-composition-id="gsap-grid"] .bounce-dots { display: flex; gap: 6px; }
+      [data-composition-id="gsap-grid"] .bd {
+        width: 10px; height: 10px; background: rgba(255,100,150,0.6); border-radius: 50%;
+        animation: bdBounce 1.2s ease-in-out infinite;
+      }
+      [data-composition-id="gsap-grid"] .bd:nth-child(2) { animation-delay: 0.1s; }
+      [data-composition-id="gsap-grid"] .bd:nth-child(3) { animation-delay: 0.2s; }
+      [data-composition-id="gsap-grid"] .bd:nth-child(4) { animation-delay: 0.3s; }
+      [data-composition-id="gsap-grid"] .bd:nth-child(5) { animation-delay: 0.4s; }
+      @keyframes bdBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+      [data-composition-id="gsap-grid"] .progress-bars { width: 70%; display: flex; flex-direction: column; gap: 6px; }
+      [data-composition-id="gsap-grid"] .pb { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
+      [data-composition-id="gsap-grid"] .pb-fill { height: 100%; border-radius: 3px; animation: pbFill 2.5s ease-in-out infinite; }
+      [data-composition-id="gsap-grid"] .pf1 { background: rgba(51,255,51,0.5); width: 80%; }
+      [data-composition-id="gsap-grid"] .pf2 { background: rgba(0,200,200,0.5); width: 60%; animation-delay: 0.3s; }
+      [data-composition-id="gsap-grid"] .pf3 { background: rgba(255,180,70,0.5); width: 90%; animation-delay: 0.6s; }
+      [data-composition-id="gsap-grid"] .pf4 { background: rgba(200,0,255,0.5); width: 45%; animation-delay: 0.9s; }
+      @keyframes pbFill { 0% { transform: scaleX(0); transform-origin: left; } 50% { transform: scaleX(1); transform-origin: left; } 51% { transform-origin: right; } 100% { transform: scaleX(0); transform-origin: right; } }
+
+      [data-composition-id="gsap-grid"] .breathe-circles { position: relative; width: 60px; height: 60px; }
+      [data-composition-id="gsap-grid"] .bc {
+        position: absolute; border-radius: 50%; border: 2px solid;
+        animation: bcBreathe 3s ease-in-out infinite;
+      }
+      [data-composition-id="gsap-grid"] .bc1 { width: 60px; height: 60px; top: 0; left: 0; border-color: rgba(255,180,70,0.4); }
+      [data-composition-id="gsap-grid"] .bc2 { width: 40px; height: 40px; top: 10px; left: 10px; border-color: rgba(0,200,200,0.4); animation-delay: 0.5s; }
+      [data-composition-id="gsap-grid"] .bc3 { width: 20px; height: 20px; top: 20px; left: 20px; border-color: rgba(200,0,255,0.4); animation-delay: 1s; }
+      @keyframes bcBreathe { 0%,100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.2); opacity: 1; } }
+
+      [data-composition-id="gsap-grid"] .hexagon {
+        width: 45px; height: 52px;
+        background: rgba(0,200,170,0.4);
+        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        animation: hexRot 4s linear infinite;
+      }
+      @keyframes hexRot { to { transform: rotate(360deg); } }
+
+      [data-composition-id="gsap-grid"] .float-tri {
+        width: 0; height: 0;
+        border-left: 20px solid transparent; border-right: 20px solid transparent;
+        border-bottom: 35px solid rgba(255,100,50,0.5);
+        animation: floatT 2.5s ease-in-out infinite;
+      }
+      @keyframes floatT { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-12px) rotate(10deg); } }
+
+      [data-composition-id="gsap-grid"] .pulse-diamond {
+        width: 35px; height: 35px; background: rgba(255,200,100,0.4);
+        transform: rotate(45deg);
+        animation: pulseDia 2s ease-in-out infinite;
+      }
+      @keyframes pulseDia { 0%,100% { transform: rotate(45deg) scale(1); } 50% { transform: rotate(45deg) scale(1.3); } }
+
+      [data-composition-id="gsap-grid"] .crosshair { position: relative; width: 50px; height: 50px; }
+      [data-composition-id="gsap-grid"] .ch-h, [data-composition-id="gsap-grid"] .ch-v {
+        position: absolute; background: rgba(51,255,51,0.4);
+      }
+      [data-composition-id="gsap-grid"] .ch-h { width: 50px; height: 1px; top: 25px; left: 0; }
+      [data-composition-id="gsap-grid"] .ch-v { width: 1px; height: 50px; top: 0; left: 25px; }
+      [data-composition-id="gsap-grid"] .ch-ring {
+        position: absolute; width: 30px; height: 30px; top: 10px; left: 10px;
+        border: 1px solid rgba(51,255,51,0.3); border-radius: 50%;
+        animation: chPulse 2s ease-in-out infinite;
+      }
+      @keyframes chPulse { 0%,100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.4); opacity: 1; } }
+
+      [data-composition-id="gsap-grid"] .waveform { display: flex; gap: 2px; align-items: center; height: 50px; }
+      [data-composition-id="gsap-grid"] .wf-bar {
+        width: 3px; background: rgba(100,200,255,0.5); border-radius: 1px;
+        animation: wfPulse 1.8s ease-in-out infinite;
+      }
+      @keyframes wfPulse { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(0.3); } }
+
+      [data-composition-id="gsap-grid"] .scale-square {
+        width: 35px; height: 35px; background: rgba(0,200,200,0.4); border-radius: 4px;
+        animation: scaleSq 2s ease-in-out infinite;
+      }
+      @keyframes scaleSq { 0%,100% { transform: scale(0.6); } 50% { transform: scale(1.2); } }
+
+      [data-composition-id="gsap-grid"] .color-cycle {
+        width: 40px; height: 40px; border-radius: 50%;
+        animation: colorCyc 4s linear infinite;
+      }
+      @keyframes colorCyc {
+        0% { background: rgba(255,100,100,0.5); } 25% { background: rgba(100,255,100,0.5); }
+        50% { background: rgba(100,100,255,0.5); } 75% { background: rgba(255,200,100,0.5); }
+        100% { background: rgba(255,100,100,0.5); }
+      }
+
+      [data-composition-id="gsap-grid"] .line-draw { width: 70%; height: 70%; }
+      [data-composition-id="gsap-grid"] .line-draw svg { width: 100%; height: 100%; }
+      [data-composition-id="gsap-grid"] .ld-1 {
+        stroke-dasharray: 113; stroke-dashoffset: 113;
+        animation: ldDraw 2s ease-in-out infinite;
+      }
+      [data-composition-id="gsap-grid"] .ld-2 {
+        stroke-dasharray: 113; stroke-dashoffset: 113;
+        animation: ldDraw 2s ease-in-out 0.5s infinite;
+      }
+      @keyframes ldDraw { 0% { stroke-dashoffset: 113; } 50% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -113; } }
+
+      [data-composition-id="gsap-grid"] .type-cursor {
+        font-family: 'VT323', monospace; font-size: 36px; color: rgba(51,255,51,0.6);
+        animation: blink 1s step-end infinite;
+      }
+      @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+      /* Center label */
+      [data-composition-id="gsap-grid"] .center-label {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+        z-index: 30; text-align: center; opacity: 0;
+        background: rgba(0,0,0,0.6); backdrop-filter: blur(12px);
+        padding: 28px 48px; border-radius: 12px;
+        border: 1px solid rgba(255,180,70,0.2);
+      }
+      [data-composition-id="gsap-grid"] .center-label h2 {
+        font-family: 'IBM Plex Mono', monospace; font-size: 52px; font-weight: 700;
+        color: #FFD080;
+        text-shadow: 0 0 20px rgba(255,208,128,0.5), 4px 0 0 rgba(255,0,0,0.1), -4px 0 0 rgba(0,100,255,0.1);
+        margin: 0;
+      }
+      [data-composition-id="gsap-grid"] .cl-sub {
+        font-family: 'VT323', monospace; font-size: 22px;
+        color: rgba(255,255,255,0.35); letter-spacing: 0.2em; margin-top: 8px;
+      }
+
+      /* CRT */
+      [data-composition-id="gsap-grid"] .scanlines {
+        position: absolute; inset: 0; z-index: 80;
+        background: repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px);
+        pointer-events: none;
+      }
+      [data-composition-id="gsap-grid"] .vignette {
+        position: absolute; inset: 0; z-index: 85;
+        background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.55) 100%);
+        pointer-events: none;
+      }
+      [data-composition-id="gsap-grid"] .bleed-bottom {
+        position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; z-index: 90;
+        background: linear-gradient(90deg, rgba(255,180,70,0.4), rgba(0,200,200,0.35), rgba(200,0,255,0.4));
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const scope = document.querySelector('[data-composition-id="gsap-grid"]');
+      const q = (sel) => scope.querySelector(sel);
+      const qa = (sel) => scope.querySelectorAll(sel);
+
+      // Generate waveform bars deterministically
+      const wf = q('#waveform');
+      let seed = 77;
+      function srand() { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return (seed % 10000) / 10000; }
+      for (let i = 0; i < 20; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'wf-bar';
+        bar.style.height = (10 + srand() * 40) + 'px';
+        bar.style.animationDelay = (srand() * 1.5) + 's';
+        wf.appendChild(bar);
+      }
+
+      // Generate wave paths deterministically
+      const waves = qa('.wave');
+      waves.forEach((w, wi) => {
+        let d = 'M0,30';
+        for (let x = 0; x <= 120; x += 4) {
+          const phase = wi * 2.1;
+          const y = 30 + Math.sin((x / 15) + phase) * (10 + wi * 5);
+          d += ` L${x},${y.toFixed(1)}`;
+        }
+        w.setAttribute('d', d);
+      });
+
+      // Set up motion path dot
+      const motionDot = q('.motion-dot');
+      if (motionDot) {
+        motionDot.setAttribute('cx', '10');
+        motionDot.setAttribute('cy', '50');
+      }
+
+      // Grid cells fade in with stagger
+      const cells = qa('.cell');
+      cells.forEach((c, i) => {
+        tl.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.15 }, i * 0.03);
+      });
+
+      // Center label fades in at ~3s
+      tl.to(q('#center-label'), { opacity: 1, duration: 0.5, ease: 'power2.out' }, 3.0);
+
+      // Glow pools drift
+      tl.to(q('.g-orange'), { x: 30, y: -20, duration: 5, ease: 'none' }, 0);
+      tl.to(q('.g-cyan'), { x: -20, y: 15, duration: 5, ease: 'none' }, 0);
+
+      // Hold to end
+      tl.to({}, { duration: 0.5 }, 4.5);
+
+      window.__timelines["gsap-grid"] = tl;
+    </script>
+  </div>
+</template>

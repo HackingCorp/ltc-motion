@@ -1,0 +1,126 @@
+<template id="beat-05-template-template">
+<div data-composition-id="beat-05-template" data-start="0" data-duration="4.6" data-width="1920" data-height="1080">
+<style>
+  [data-composition-id="beat-05-template"]{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;background:#FFF7F2;font-family:'DM Sans',sans-serif}
+  [data-composition-id="beat-05-template"] .xf-b5{position:absolute;inset:0;transform-origin:center center;will-change:transform,filter,opacity}
+  [data-composition-id="beat-05-template"] .frame{position:absolute;inset:0;background:linear-gradient(180deg,#FFF7F2 0%,#FFE8EF 100%)}
+  [data-composition-id="beat-05-template"] .grid{position:absolute;inset:0;background-image:linear-gradient(to right,rgba(163,96,212,0.07) 1px,transparent 1px),linear-gradient(to bottom,rgba(163,96,212,0.07) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+  [data-composition-id="beat-05-template"] .canvas{position:absolute;left:60px;top:120px;right:420px;bottom:120px;background:#FFFFFF;border:2px dashed #A360D4;box-shadow:0 30px 60px rgba(163,96,212,0.15)}
+  [data-composition-id="beat-05-template"] .canvas::before{content:'artboard · 1920 × 1080';position:absolute;top:-34px;left:0;font-family:'DM Mono',monospace;font-size:14px;color:#A360D4;letter-spacing:0.16em;text-transform:uppercase}
+  [data-composition-id="beat-05-template"] .box{position:absolute;border:2px solid #FF4E8A;background:rgba(255,78,138,0.06);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:18px;color:#B8245A;letter-spacing:0.1em;text-transform:uppercase}
+  [data-composition-id="beat-05-template"] .box .hdl{position:absolute;width:10px;height:10px;background:#FFFFFF;border:2px solid #FF4E8A}
+  [data-composition-id="beat-05-template"] .box .hdl.tl{left:-6px;top:-6px}
+  [data-composition-id="beat-05-template"] .box .hdl.tr{right:-6px;top:-6px}
+  [data-composition-id="beat-05-template"] .box .hdl.bl{left:-6px;bottom:-6px}
+  [data-composition-id="beat-05-template"] .box .hdl.br{right:-6px;bottom:-6px}
+  [data-composition-id="beat-05-template"] .box.sel{border-color:#7A2CF0;background:rgba(122,44,240,0.08);box-shadow:0 0 0 4px rgba(122,44,240,0.15)}
+  [data-composition-id="beat-05-template"] .box.sel .hdl{border-color:#7A2CF0;background:#FFE94F}
+  [data-composition-id="beat-05-template"] .hero{position:absolute;top:150px;left:120px;right:calc(420px + 60px);font-family:'DM Sans',sans-serif;font-weight:900;font-size:180px;line-height:0.9;letter-spacing:-0.04em;color:#2A0A3A}
+  [data-composition-id="beat-05-template"] .hero .row1{color:#A360D4}
+  [data-composition-id="beat-05-template"] .hero .row1::first-letter{color:#FF4E8A}
+  [data-composition-id="beat-05-template"] .hero .row2{color:#2A0A3A}
+  [data-composition-id="beat-05-template"] .hero .row2 em{font-style:italic;font-weight:500;color:#FF4E8A}
+  [data-composition-id="beat-05-template"] .inspector{position:absolute;right:60px;top:120px;bottom:120px;width:320px;background:#FFFFFF;border:2px solid #A360D4;border-radius:14px;padding:28px;box-shadow:0 30px 60px rgba(163,96,212,0.15);box-sizing:border-box}
+  [data-composition-id="beat-05-template"] .inspector h3{margin:0 0 12px 0;font-family:'DM Mono',monospace;font-size:13px;color:#7A2CF0;letter-spacing:0.2em;text-transform:uppercase}
+  [data-composition-id="beat-05-template"] .inspector .r{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(163,96,212,0.15);font-family:'DM Mono',monospace;font-size:16px;color:#2A0A3A}
+  [data-composition-id="beat-05-template"] .inspector .r span:last-child{color:#FF4E8A;font-weight:500}
+  [data-composition-id="beat-05-template"] .sec{margin-top:22px}
+  [data-composition-id="beat-05-template"] .pill{display:inline-block;padding:6px 14px;border-radius:999px;background:#FFE8EF;color:#B8245A;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;margin:4px 4px 4px 0}
+  [data-composition-id="beat-05-template"] .pill.act{background:#7A2CF0;color:#FFF}
+  [data-composition-id="beat-05-template"] .swatch{width:24px;height:24px;border-radius:6px;display:inline-block;vertical-align:middle;margin-right:8px}
+  [data-composition-id="beat-05-template"] .corner{position:absolute;font-family:'DM Mono',monospace;font-size:16px;color:#7A2CF0;letter-spacing:0.15em;text-transform:uppercase}
+  [data-composition-id="beat-05-template"] .corner.tl{top:40px;left:60px}
+  [data-composition-id="beat-05-template"] .corner.br{bottom:40px;right:60px;color:#FF4E8A}
+  [data-composition-id="beat-05-template"] .tag{position:absolute;background:#7A2CF0;color:#FFF;padding:4px 10px;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;border-radius:4px}
+</style>
+<div class="xf-b5">
+<div class="frame">
+  <div class="grid"></div>
+  <div class="corner tl" id="b5-tl">&#9679; editor &middot; layers &middot; 05</div>
+
+  <div class="canvas" id="b5-canvas">
+    <div class="hero">
+      <div class="row1" id="b5-w-ooh">it&rsquo;s a</div>
+      <div class="row2" id="b5-w-template">template<em>,</em></div>
+      <div class="row2" id="b5-w-baby" style="font-style:italic;font-weight:500;color:#A360D4">baby.</div>
+    </div>
+
+    <div class="box" id="b5-bx1" style="left:60px;top:480px;width:280px;height:180px">
+      <span>[ hero ]</span>
+      <span class="hdl tl"></span><span class="hdl tr"></span><span class="hdl bl"></span><span class="hdl br"></span>
+    </div>
+    <div class="box sel" id="b5-bx2" style="left:380px;top:480px;width:340px;height:180px">
+      <span class="tag" id="b5-tag" style="top:-28px;left:0">component &middot; selected</span>
+      <span>[ template ]</span>
+      <span class="hdl tl"></span><span class="hdl tr"></span><span class="hdl bl"></span><span class="hdl br"></span>
+    </div>
+    <div class="box" id="b5-bx3" style="left:760px;top:480px;width:240px;height:180px">
+      <span>[ slot ]</span>
+      <span class="hdl tl"></span><span class="hdl tr"></span><span class="hdl bl"></span><span class="hdl br"></span>
+    </div>
+    <div class="box" id="b5-bx4" style="left:60px;top:700px;width:940px;height:110px">
+      <span>[ caption &middot; word-by-word ]</span>
+      <span class="hdl tl"></span><span class="hdl tr"></span><span class="hdl bl"></span><span class="hdl br"></span>
+    </div>
+  </div>
+
+  <div class="inspector" id="b5-insp">
+    <h3>Inspector</h3>
+    <div class="r"><span>type</span><span>template</span></div>
+    <div class="r"><span>w &times; h</span><span>1920 &times; 1080</span></div>
+    <div class="r"><span>fill</span><span><span class="swatch" style="background:#FFE8EF"></span>#FFE8EF</span></div>
+    <div class="r"><span>accent</span><span><span class="swatch" style="background:#FF4E8A"></span>#FF4E8A</span></div>
+    <div class="r"><span>font</span><span>DM Sans 900</span></div>
+    <div class="sec">
+      <h3>Variants</h3>
+      <span class="pill act">baby</span>
+      <span class="pill">calm</span>
+      <span class="pill">loud</span>
+      <span class="pill">dark</span>
+    </div>
+    <div class="sec">
+      <h3>Actions</h3>
+      <span class="pill" style="background:#FFE94F;color:#2A0A3A">&#8984;D duplicate</span>
+      <span class="pill">&#8984;S save</span>
+    </div>
+  </div>
+
+  <div class="corner br" id="b5-br">05 / 08 &nbsp; figma vibes</div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script>
+(function(){
+  const DUR = 4.60;
+  // Words rel to 25.82: Ooh 0.14 it's 1.06 a 1.28 template 1.38 baby 1.58 ooh 2.70 it's 2.98 a 3.08 template 3.58
+  const tl = gsap.timeline({ paused: true });
+  // Transition IN: curve-right (enters from x:-80 — matches b4's rightward exit)
+  tl.fromTo('.xf-b5', { x:-80, scale:1.04, filter:'blur(10px)', opacity:0.25 }, { x:0, scale:1, filter:'blur(0px)', opacity:1, duration:0.35, ease:'expo.out' }, 0);
+  // Transition OUT: zoom-through forward (to b6)
+  tl.to('.xf-b5', { scale:1.12, filter:'blur(10px)', opacity:0.2, duration:0.3, ease:'power2.in', overwrite:'auto' }, DUR - 0.3);
+  tl.from('#b5-tl,#b5-br', { opacity:0, duration:0.35, stagger:0.08 }, 0.1);
+  tl.from('#b5-canvas', { opacity:0, duration:0.4, ease:'power2.out' }, 0.2);
+  tl.from('#b5-insp', { x:80, opacity:0, duration:0.5, ease:'power3.out' }, 0.35);
+  // Lyric entrances
+  tl.from('#b5-w-ooh', { y:40, opacity:0, duration:0.35, ease:'power3.out' }, 0.14);
+  tl.from('#b5-w-template', { scale:0.7, opacity:0, duration:0.5, ease:'back.out(1.6)' }, 1.38);
+  tl.from('#b5-w-baby', { x:-40, opacity:0, duration:0.4, ease:'power2.out' }, 1.58);
+  // Boxes pop in one by one
+  tl.from('#b5-bx1', { scale:0.8, opacity:0, duration:0.3, ease:'back.out(1.8)' }, 0.6);
+  tl.from('#b5-bx2', { scale:0.8, opacity:0, duration:0.3, ease:'back.out(1.8)' }, 0.8);
+  tl.from('#b5-bx3', { scale:0.8, opacity:0, duration:0.3, ease:'back.out(1.8)' }, 1.0);
+  tl.from('#b5-bx4', { scaleX:0, opacity:0, duration:0.35, ease:'power3.out', transformOrigin:'left center' }, 1.2);
+  // Tag flash on second "template"
+  tl.from('#b5-tag', { scale:0, duration:0.3, ease:'back.out(2)' }, 1.5);
+  // Second "ooh it's a template" cycle — inspector pulse + box selection pop
+  tl.to('#b5-bx2', { scale:1.04, duration:0.18, ease:'power2.out', overwrite:'auto' }, 2.70);
+  tl.to('#b5-bx2', { scale:1.0, duration:0.25, ease:'power2.inOut', overwrite:'auto' }, 2.88);
+  tl.to('#b5-bx2', { scale:1.06, duration:0.2, ease:'power2.out', overwrite:'auto' }, 3.58);
+  tl.to('#b5-bx2', { scale:1.0, duration:0.3, ease:'elastic.out(1,0.5)', overwrite:'auto' }, 3.78);
+  tl.to({}, { duration: DUR }, 0);
+  window.__timelines = window.__timelines || {};
+  window.__timelines["beat-05-template"] = tl;
+})();
+</script>
+</div>
+</template>

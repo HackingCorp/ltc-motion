@@ -1,0 +1,349 @@
+<template id="letters-template">
+  <div data-composition-id="letters" data-width="1920" data-height="1080">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@700&family=JetBrains+Mono:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #050505;
+        --ink: #e8e4dc;
+        --accent: #e8a769;
+        --font-display: "Source Serif 4", serif;
+        --font-data: "JetBrains Mono", monospace;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--ink);
+      }
+
+      .scene {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+      }
+      .scene-content {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+      }
+
+      .stage {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .glow {
+        position: absolute;
+        width: 900px;
+        height: 900px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: radial-gradient(
+          circle,
+          rgba(232, 167, 105, 0.35) 0%,
+          rgba(232, 167, 105, 0.12) 40%,
+          transparent 70%
+        );
+        filter: blur(100px);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .orbit {
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        left: 50%;
+        top: 50%;
+        margin-left: -300px;
+        margin-top: -300px;
+        border: 1px solid rgba(232, 167, 105, 0.3);
+        border-radius: 50%;
+        opacity: 0;
+        transform: scale(0.5);
+        z-index: 2;
+      }
+
+      .orbit-dot-wrap {
+        position: absolute;
+        width: 0;
+        height: 0;
+        left: 50%;
+        top: 50%;
+        z-index: 3;
+      }
+      .orbit-dot {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+        left: -4px;
+        top: -304px;
+        box-shadow: 0 0 12px rgba(232, 167, 105, 0.8);
+      }
+
+      .title-wrap {
+        position: relative;
+        z-index: 4;
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .title-wrap .char {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 160px;
+        line-height: 1;
+        color: var(--ink);
+        display: inline-block;
+        letter-spacing: 0.04em;
+      }
+
+      .title-wrap .char.space {
+        width: 30px;
+      }
+
+      .accent-line-wrap {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-top: 130px;
+        transform: translateX(-50%);
+        width: 1920px;
+        height: 4px;
+        z-index: 3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .accent-line {
+        width: 100%;
+        height: 2px;
+      }
+      .accent-line svg {
+        display: block;
+        width: 100%;
+        height: 2px;
+      }
+
+      .tagline {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-top: 200px;
+        transform: translateX(-50%);
+        font-family: var(--font-data);
+        font-weight: 400;
+        font-size: 24px;
+        color: var(--accent);
+        letter-spacing: 0.15em;
+        white-space: pre;
+        z-index: 4;
+      }
+      .caret {
+        display: inline-block;
+        width: 10px;
+        color: var(--accent);
+      }
+    </style>
+
+      <div class="scene clip" id="s1" data-start="0" data-duration="4" data-track-index="0">
+        <div class="scene-content">
+          <div class="stage">
+            <div class="glow" id="glow"></div>
+
+            <div class="orbit" id="orbit"></div>
+            <div class="orbit-dot-wrap" id="orbit-dot-wrap">
+              <div class="orbit-dot"></div>
+            </div>
+
+            <div class="title-wrap" id="title">
+              <span class="char" data-i="0">H</span>
+              <span class="char" data-i="1">Y</span>
+              <span class="char" data-i="2">P</span>
+              <span class="char" data-i="3">E</span>
+              <span class="char" data-i="4">R</span>
+              <span class="char space" data-i="5"></span>
+              <span class="char" data-i="6">F</span>
+              <span class="char" data-i="7">R</span>
+              <span class="char" data-i="8">A</span>
+              <span class="char" data-i="9">M</span>
+              <span class="char" data-i="10">E</span>
+              <span class="char" data-i="11">S</span>
+            </div>
+
+            <div class="accent-line-wrap">
+              <svg viewBox="0 0 1920 2" preserveAspectRatio="none">
+                <line
+                  id="accent-line"
+                  x1="0"
+                  y1="1"
+                  x2="1920"
+                  y2="1"
+                  stroke="#e8a769"
+                  stroke-width="2"
+                  stroke-dasharray="1920"
+                  stroke-dashoffset="1920"
+                />
+              </svg>
+            </div>
+
+            <div class="tagline" id="tagline"><span id="tagline-text"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ============ LETTERS IN (0.1s) ============
+      var chars = document.querySelectorAll(".title-wrap .char");
+      // Start hidden
+      gsap.set(chars, { autoAlpha: 0 });
+      chars.forEach(function (el, i) {
+        var fromLeft = (i + 1) % 2 === 1; // H(0)->odd/left, Y(1)->even/right
+        tl.fromTo(
+          el,
+          {
+            y: 80,
+            x: fromLeft ? -30 : 30,
+            autoAlpha: 0,
+            rotation: -15,
+          },
+          {
+            y: 0,
+            x: 0,
+            autoAlpha: 1,
+            rotation: 0,
+            duration: 0.7,
+            ease: "back.out(2.0)",
+          },
+          0.1 + i * 0.06,
+        );
+      });
+
+      // ============ ACCENT LINE (1.0s) ============
+      tl.to(
+        "#accent-line",
+        { strokeDashoffset: 0, duration: 0.6, ease: "power3.out" },
+        1.0,
+      );
+
+      // ============ RADIAL GLOW BREATHE IN (1.0s) ============
+      tl.to("#glow", { opacity: 0.2, duration: 0.4, ease: "sine.inOut" }, 1.0);
+      tl.to("#glow", { opacity: 0.1, duration: 0.4, ease: "sine.inOut" }, 1.4);
+
+      // ============ ORBIT RING (1.4s) ============
+      tl.to(
+        "#orbit",
+        { scale: 1, autoAlpha: 0.3, duration: 0.5, ease: "expo.out" },
+        1.4,
+      );
+
+      // ============ ORBIT DOT (1.4s onward, 2.5s linear) ============
+      tl.fromTo(
+        "#orbit-dot-wrap",
+        { rotation: 0 },
+        { rotation: 360, duration: 2.5, ease: "none" },
+        1.4,
+      );
+
+      // ============ TAGLINE TYPE-ON (1.8s) ============
+      // "HTML in. Video out." with pauses after HTML, in., Video
+      // 0.03s per character
+      var taglineEl = document.getElementById("tagline-text");
+      var typeState = { s: "" };
+      var segments = [
+        { text: "HTML", pauseAfter: 0.2 },
+        { text: " in.", pauseAfter: 0.25 },
+        { text: " Video", pauseAfter: 0.1 },
+        { text: " out.", pauseAfter: 0 },
+      ];
+      var typeStart = 1.8;
+      var cursor = typeStart;
+      var builtSoFar = "";
+      segments.forEach(function (seg) {
+        var before = builtSoFar;
+        var after = builtSoFar + seg.text;
+        var typeDur = seg.text.length * 0.03;
+        var stateObj = { i: 0 };
+        tl.to(
+          stateObj,
+          {
+            i: seg.text.length,
+            duration: typeDur,
+            ease: "none",
+            onUpdate: function () {
+              var n = Math.round(stateObj.i);
+              taglineEl.textContent = before + seg.text.substring(0, n);
+            },
+          },
+          cursor,
+        );
+        cursor += typeDur + seg.pauseAfter;
+        builtSoFar = after;
+      });
+
+      // ============ LETTER FLOAT (subtle, after entrance) ============
+      // Force visibility before float to avoid from-tween state conflict
+      tl.set(".title-wrap .char", { autoAlpha: 1 }, 1.2);
+      chars.forEach(function (el, i) {
+        if (el.classList.contains("space")) return;
+        var dir = i % 2 === 0 ? 1 : -1;
+        tl.to(
+          el,
+          {
+            y: 2 * dir,
+            duration: 1.4,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: 1,
+            immediateRender: false,
+          },
+          1.25 + i * 0.04,
+        );
+      });
+
+      // ============ GLOW GENTLE BREATHE CONTINUED ============
+      tl.to(
+        "#glow",
+        { opacity: 0.14, duration: 1.2, ease: "sine.inOut", yoyo: true, repeat: 1 },
+        1.8,
+      );
+
+      window.__timelines["letters"] = tl;
+    </script>
+  </div>
+</template>

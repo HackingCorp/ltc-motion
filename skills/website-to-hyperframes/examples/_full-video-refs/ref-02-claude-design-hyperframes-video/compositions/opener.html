@@ -1,0 +1,416 @@
+<template id="opener-template">
+  <div data-composition-id="opener" data-width="1920" data-height="1080">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0c;
+        --bg-deep: #050507;
+        --ink: #f4f1ea;
+        --ink-dim: #b8b3a8;
+        --accent: #d97757;
+        --accent-soft: #e8a888;
+        --muted: #5a554d;
+        --font-display: "Instrument Serif", "Times New Roman", serif;
+        --font-data: "JetBrains Mono", "SF Mono", monospace;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg-deep);
+        color: var(--ink);
+      }
+
+      .scene {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: radial-gradient(ellipse at center, #0c0c10 0%, #050507 70%);
+      }
+      .scene-content {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* === Light ball — radial-gradient blob, no hard circular boundary === */
+      .ball-stage {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .ball-core {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 1) 0%,
+          rgba(255, 250, 240, 0.95) 18%,
+          rgba(255, 235, 210, 0.7) 35%,
+          rgba(255, 215, 175, 0.35) 55%,
+          rgba(217, 119, 87, 0.12) 75%,
+          rgba(217, 119, 87, 0) 100%
+        );
+        filter: blur(0.5px);
+        opacity: 0;
+        transform: scale(0.4);
+      }
+
+      /* Frame-spanning horizon glow that the dot blooms into */
+      .ball-halo {
+        position: absolute;
+        width: 140%;
+        height: 70%;
+        border-radius: 50%;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(255, 240, 220, 0.22) 0%,
+          rgba(255, 215, 175, 0.12) 18%,
+          rgba(217, 119, 87, 0.08) 38%,
+          rgba(217, 119, 87, 0.025) 65%,
+          rgba(217, 119, 87, 0) 100%
+        );
+        filter: blur(60px);
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* Wide horizontal streak that fades into the page edges */
+      .ball-flare {
+        position: absolute;
+        left: -10%;
+        width: 120%;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(255, 240, 220, 0) 20%,
+          rgba(255, 240, 220, 0.45) 50%,
+          rgba(255, 240, 220, 0) 80%,
+          transparent 100%
+        );
+        opacity: 0;
+      }
+
+      /* === Title group === */
+      .title-stage {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+      }
+
+      .title-line {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scaleX(0);
+        transform-origin: center;
+        width: 1000px;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(244, 241, 234, 0.15) 15%,
+          rgba(244, 241, 234, 0.6) 50%,
+          rgba(244, 241, 234, 0.15) 85%,
+          transparent 100%
+        );
+      }
+
+      .title-headline {
+        font-family: var(--font-display);
+        font-weight: 400;
+        font-size: 96px;
+        letter-spacing: 0.005em;
+        line-height: 1;
+        color: var(--ink);
+        white-space: nowrap;
+        position: absolute;
+        top: calc(50% - 120px);
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0;
+      }
+
+      .title-headline .ampersand {
+        font-style: italic;
+        color: var(--accent-soft);
+        margin: 0 0.2em;
+      }
+
+      .title-sub {
+        position: absolute;
+        top: calc(50% + 28px);
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: var(--font-data);
+        font-weight: 400;
+        font-size: 16px;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: var(--ink-dim);
+        opacity: 0;
+        white-space: nowrap;
+      }
+
+      .title-sub .dot {
+        display: inline-block;
+        width: 4px;
+        height: 4px;
+        background: var(--accent);
+        border-radius: 50%;
+        margin: 0 14px;
+        vertical-align: middle;
+        transform: translateY(-1px);
+      }
+
+      /* Subtle credit line at the bottom */
+      .credit {
+        position: absolute;
+        bottom: 64px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: var(--font-data);
+        font-weight: 400;
+        font-size: 12px;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: rgba(184, 179, 168, 0.55);
+        opacity: 0;
+        white-space: nowrap;
+      }
+      .credit .hl {
+        color: var(--accent-soft);
+      }
+
+      .corner-mark {
+        position: absolute;
+        font-family: var(--font-data);
+        font-size: 11px;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgba(184, 179, 168, 0.45);
+        opacity: 0;
+      }
+      .corner-mark.tl { top: 48px; left: 64px; }
+      .corner-mark.br { bottom: 48px; right: 64px; }
+
+      .grain {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 50;
+        opacity: 0.12;
+        background-image:
+          radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1.2px),
+          radial-gradient(rgba(0, 0, 0, 0.2) 1px, transparent 1.2px);
+        background-size: 3px 3px, 5px 5px;
+        background-position: 0 0, 1px 2px;
+        mix-blend-mode: overlay;
+      }
+
+      /* Soft vignette — long falloff, extends past frame edge so no oval shows */
+      .vignette {
+        position: absolute;
+        inset: -200px;
+        pointer-events: none;
+        z-index: 49;
+        background: radial-gradient(
+          ellipse at center,
+          transparent 55%,
+          rgba(0, 0, 0, 0.35) 85%,
+          rgba(0, 0, 0, 0.6) 100%
+        );
+      }
+    </style>
+
+      <!-- Single continuous scene — the entire 5s plays as one cinematic shot -->
+      <div class="scene clip" id="s1" data-start="0" data-duration="5" data-track-index="0">
+        <div class="vignette"></div>
+        <div class="grain"></div>
+
+        <div class="scene-content">
+          <!-- Light ball + halo -->
+          <div class="ball-stage">
+            <div class="ball-halo" id="halo"></div>
+            <div class="ball-core" id="core"></div>
+          </div>
+
+          <!-- Line + title -->
+          <div class="title-stage">
+            <div class="title-headline" id="headline">
+              Claude Design <span class="ampersand">×</span> HyperFrames
+            </div>
+            <div class="title-line" id="line"></div>
+            <div class="title-sub" id="sub">
+              <span id="sub-text">25 April 2026</span>
+            </div>
+            <div class="credit" id="credit">
+              This entire video was made with <span class="hl">HyperFrames</span> in Claude Design
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ============================================
+      // CINEMATIC INTRO — 5 seconds, single shot
+      // ============================================
+      // 0.0–0.15s  Tiny dot appears small
+      // 0.15–0.6s  Dot grows + glow blooms around it
+      // 0.6–0.9s   Dot fades away, only glow remains
+      // 0.85–1.15s Horizontal line emerges from center as a beam
+      // 1.0–1.7s   Title fades up just above the line
+      // 1.3–1.9s   Date appears below the line
+      // 2.2–2.7s   Bottom credit fades in
+      // 3.0–4.4s   Hold — halo breathes, headline drifts
+      // 4.4–5.0s   Quiet exit
+      // ============================================
+
+      // --- Stage 1: tiny dot appears, small ---
+      tl.fromTo("#core",
+        { opacity: 0, scale: 0.15 },
+        { opacity: 1, scale: 0.4, duration: 0.18, ease: "expo.out" },
+        0.0
+      );
+
+      // --- Stage 2: dot grows continuously, glow blooms with it ---
+      tl.to("#core", {
+        scale: 1.4,
+        duration: 0.7,
+        ease: "power1.in",
+      }, 0.18);
+
+      tl.fromTo("#halo",
+        { opacity: 0, scale: 0.4 },
+        { opacity: 1, scale: 1, duration: 0.55, ease: "sine.out" },
+        0.18
+      );
+
+      // --- Stage 3: dot keeps growing as it fades, glow remains ---
+      tl.to("#core", {
+        scale: 8,
+        opacity: 0,
+        duration: 0.4,
+        ease: "power2.in",
+      }, 0.65);
+
+      tl.to("#halo", {
+        scale: 1.25,
+        opacity: 0.85,
+        duration: 0.5,
+        ease: "power2.out",
+      }, 0.65);
+
+      // --- Stage 4: horizontal line emerges from center as a beam ---
+      tl.to("#line", {
+        scaleX: 1,
+        duration: 0.4,
+        ease: "expo.out",
+      }, 0.85);
+
+      tl.fromTo("#line",
+        { boxShadow: "0 0 0px 0px rgba(255,240,220,0)" },
+        {
+          boxShadow: "0 0 24px 1px rgba(255,240,220,0.4)",
+          duration: 0.4,
+          ease: "sine.out",
+        },
+        1.0
+      );
+
+      // --- Stage 5: title fades up just above the line (lands at 1.0s) ---
+      tl.fromTo("#headline",
+        { opacity: 0, y: 14 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          ease: "power3.out",
+        },
+        1.0
+      );
+
+      // --- Stage 6: date below the line ---
+      tl.fromTo("#sub",
+        { opacity: 0, y: 6 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: "power2.out",
+        },
+        1.3
+      );
+
+      // --- Stage 7: bottom credit ---
+      tl.fromTo("#credit",
+        { opacity: 0, y: 6 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
+        2.2
+      );
+
+      // --- Hold: halo breathes, headline drifts (3.0–4.4s) ---
+      tl.to("#halo", {
+        opacity: 0.55,
+        scale: 1.4,
+        duration: 1.4,
+        ease: "sine.inOut",
+      }, 3.0);
+
+      tl.to("#headline", {
+        y: -3,
+        duration: 1.4,
+        ease: "sine.inOut",
+      }, 3.0);
+
+      // --- Quiet exit (4.4–5.0s) ---
+      tl.to(["#headline", "#sub", "#line", "#credit"], {
+        opacity: 0,
+        duration: 0.6,
+        ease: "power2.in",
+      }, 4.4);
+
+      tl.to("#halo", {
+        opacity: 0,
+        duration: 0.6,
+        ease: "power2.in",
+      }, 4.4);
+
+      window.__timelines["opener"] = tl;
+    </script>    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/shader-transitions/dist/index.global.js"></script>
+
+  </div>
+</template>

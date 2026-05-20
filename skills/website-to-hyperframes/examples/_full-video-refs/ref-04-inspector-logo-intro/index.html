@@ -1,0 +1,1344 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920" />
+    <title>Inspector Logo Intro</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fraunces:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+      * { box-sizing: border-box; margin: 0; }
+
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #07100c;
+      }
+
+      [data-composition-id="inspector-logo-intro"] {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #07100c;
+        color: #fff8e9;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+
+      /* ── Halftone canvas ── */
+      #halftone-bg {
+        position: absolute;
+        left: -1200px;
+        top: -1100px;
+        width: 4320px;
+        height: 3300px;
+        z-index: 0;
+        transform-origin: 50% 50%;
+        will-change: transform, filter;
+      }
+
+      /* ── Green flash overlay for beat 1 ── */
+      #green-flash {
+        position: absolute;
+        inset: 0;
+        z-index: 50;
+        background: #142017;
+        will-change: opacity;
+      }
+
+      /* ── Logo ── */
+      #logo-container {
+        position: absolute;
+        z-index: 2;
+        left: 50%;
+        top: 50%;
+        will-change: transform, filter, opacity;
+      }
+
+      #logo-container img {
+        width: 1225px;
+        height: auto;
+        display: block;
+      }
+
+      /* ── Inspector text ── */
+      #inspector-text {
+        position: absolute;
+        z-index: 2;
+        left: 50%;
+        top: 50%;
+        white-space: nowrap;
+        font-size: 120px;
+        font-weight: 900;
+        letter-spacing: -0.035em;
+        color: #fff8e9;
+        will-change: transform, filter, opacity;
+        opacity: 0;
+      }
+
+      #inspector-text .letter {
+        display: inline-block;
+        position: relative;
+        will-change: transform, filter, opacity, color, font-family, font-size;
+      }
+
+      /* ── Magnifying glass ── */
+      #mag-glass {
+        position: absolute;
+        z-index: 3;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        overflow: hidden;
+        background:
+          radial-gradient(circle, rgba(69,216,110,0.18) 1.2px, transparent 1.2px),
+          radial-gradient(circle, rgba(25,183,213,0.12) 1px, transparent 1px),
+          radial-gradient(circle at 30% 40%, rgba(69,216,110,0.06), transparent 60%),
+          #080f0b;
+        background-size: 10px 10px, 14px 14px, 100% 100%, 100% 100%;
+        background-position: 0 0, 5px 5px, 0 0, 0 0;
+        will-change: transform, opacity;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #mag-text-clone {
+        position: absolute;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        font-weight: 800;
+        font-size: 288px;
+        color: #fff8e9;
+        white-space: nowrap;
+        z-index: 1;
+      }
+
+      #mag-overlay {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 2;
+        background:
+          radial-gradient(circle at 32% 28%, rgba(255,255,255,0.22), transparent 45%),
+          radial-gradient(circle at 22% 18%, rgba(255,255,255,0.35), transparent 12%),
+          radial-gradient(circle at center, transparent 65%, rgba(0,0,0,0.4) 100%);
+        box-shadow:
+          inset 0 0 0 3px rgba(255,248,233,0.55),
+          inset 0 0 0 5px rgba(7,16,12,0.5),
+          inset 0 0 1px 6px rgba(4,8,6,0.3),
+          0 16px 50px rgba(0,0,0,0.5);
+      }
+
+      #mag-ring {
+        position: absolute;
+        inset: -1px;
+        border-radius: 50%;
+        border: 4px solid rgba(255,248,233,0.6);
+        pointer-events: none;
+        z-index: 3;
+      }
+
+      #mag-handle {
+        position: absolute;
+        bottom: -32px;
+        right: -32px;
+        width: 12px;
+        height: 48px;
+        background: rgba(255,248,233,0.55);
+        border-radius: 6px;
+        transform: rotate(-45deg);
+        transform-origin: top center;
+        z-index: 4;
+      }
+
+      /* ── Cursor ── */
+      #cursor {
+        position: absolute;
+        z-index: 10;
+        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
+        will-change: transform, opacity;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #cursor svg {
+        width: 32px;
+        height: 38px;
+      }
+
+      /* ── Selection highlight ── */
+      #selection-highlight {
+        position: absolute;
+        z-index: 2;
+        background: rgba(25,183,213,0.28);
+        border: 1px solid rgba(25,183,213,0.45);
+        border-radius: 4px;
+        will-change: transform, opacity;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* ── Inspector panel ── */
+      #inspector-panel {
+        position: absolute;
+        z-index: 5;
+        right: -460px;
+        top: 0;
+        bottom: 0;
+        width: 440px;
+        background: #111b15;
+        border-left: 1px solid rgba(255,248,233,0.08);
+        border-radius: 24px 0 0 24px;
+        padding: 32px 24px;
+        font-size: 13px;
+        color: rgba(255,248,233,0.6);
+        will-change: transform;
+      }
+
+      .panel-section {
+        margin-bottom: 24px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid rgba(255,248,233,0.06);
+      }
+
+      .panel-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255,248,233,0.3);
+        margin-bottom: 10px;
+      }
+
+      .panel-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+
+      .panel-field {
+        flex: 1;
+        padding: 8px 10px;
+        background: rgba(255,248,233,0.04);
+        border: 1px solid rgba(255,248,233,0.08);
+        border-radius: 10px;
+        font-size: 13px;
+        color: rgba(255,248,233,0.7);
+        font-family: 'IBM Plex Mono', monospace;
+      }
+
+      .panel-field .fl {
+        font-size: 10px;
+        color: rgba(255,248,233,0.3);
+        margin-right: 4px;
+      }
+
+      #color-swatch {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,248,233,0.12);
+        background: #fff8e9;
+        will-change: background-color;
+      }
+
+      .font-dropdown {
+        padding: 8px 12px;
+        background: rgba(255,248,233,0.04);
+        border: 1px solid rgba(255,248,233,0.08);
+        border-radius: 10px;
+        font-size: 13px;
+        color: rgba(255,248,233,0.7);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .font-dropdown::after {
+        content: '▾';
+        font-size: 12px;
+        color: rgba(255,248,233,0.3);
+      }
+
+      #size-field {
+        border-color: rgba(255,248,233,0.08);
+        will-change: border-color;
+      }
+
+      /* ── Color picker overlay ── */
+      #color-picker {
+        position: absolute;
+        z-index: 6;
+        right: 460px;
+        top: 50%;
+        width: 280px;
+        background: #0a0a0a;
+        border: 1px solid rgba(255,248,233,0.1);
+        border-radius: 18px;
+        padding: 22px;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+
+      .picker-gradient {
+        width: 100%;
+        height: 120px;
+        border-radius: 10px;
+        background: linear-gradient(to bottom, transparent, black), linear-gradient(to right, white, #19b7d5);
+        margin-bottom: 14px;
+        border: 1px solid rgba(255,248,233,0.08);
+        position: relative;
+      }
+
+      #picker-circle {
+        position: absolute;
+        left: 18%;
+        top: 12%;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid white;
+        box-shadow: 0 0 4px rgba(0,0,0,0.5);
+      }
+
+      .hue-bar {
+        height: 14px;
+        border-radius: 7px;
+        background: linear-gradient(to right, red, yellow, lime, cyan, blue, magenta, red);
+        margin-bottom: 14px;
+        position: relative;
+      }
+
+      #hue-thumb {
+        position: absolute;
+        left: 53%;
+        top: -3px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #19b7d5;
+        border: 2px solid white;
+        box-shadow: 0 0 4px rgba(0,0,0,0.5);
+        transform: translateX(-50%);
+      }
+
+      .hex-field {
+        padding: 10px 12px;
+        background: rgba(255,248,233,0.04);
+        border: 1px solid rgba(255,248,233,0.08);
+        border-radius: 10px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 15px;
+        color: rgba(255,248,233,0.8);
+      }
+
+      /* ── Font list overlay ── */
+      #font-list {
+        position: absolute;
+        z-index: 6;
+        right: 460px;
+        top: 50%;
+        width: 320px;
+        background: #0d1510;
+        border: 1px solid rgba(255,248,233,0.1);
+        border-radius: 18px;
+        overflow: hidden;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+
+      .font-list-header {
+        padding: 16px 16px 10px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255,248,233,0.3);
+      }
+
+      .font-search {
+        margin: 0 16px 10px;
+        padding: 8px 12px;
+        background: rgba(255,248,233,0.04);
+        border: 1px solid rgba(255,248,233,0.08);
+        border-radius: 10px;
+        font-size: 12px;
+        color: rgba(255,248,233,0.25);
+        font-family: Inter, sans-serif;
+      }
+
+      .font-tabs {
+        display: flex;
+        gap: 6px;
+        padding: 0 16px 10px;
+      }
+
+      .font-tab {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        color: rgba(255,248,233,0.4);
+        background: rgba(255,248,233,0.04);
+        border: 1px solid rgba(255,248,233,0.06);
+      }
+
+      .font-option {
+        padding: 12px 16px;
+        font-size: 14px;
+        color: rgba(255,248,233,0.5);
+        border-bottom: 1px solid rgba(255,248,233,0.04);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .font-option .font-source {
+        font-size: 9px;
+        letter-spacing: 0.08em;
+        color: rgba(255,248,233,0.2);
+        text-transform: uppercase;
+      }
+
+      .font-option.current {
+        background: rgba(69,216,110,0.08);
+        color: #45d86e;
+      }
+
+      .font-option.current .font-source {
+        color: rgba(69,216,110,0.5);
+      }
+
+      .font-option.highlight {
+        background: rgba(255,248,233,0.06);
+        color: #fff8e9;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-composition-id="inspector-logo-intro" data-width="1920" data-height="1080" data-duration="12.75" data-start="0">
+
+      <!-- Halftone canvas background -->
+      <canvas id="halftone-bg" class="clip" data-start="0" data-duration="12.75" data-track-index="0"></canvas>
+
+      <!-- Green flash overlay (beat 1) -->
+      <div id="green-flash" class="clip" data-start="0" data-duration="1.33" data-track-index="1"></div>
+
+      <!-- Logo -->
+      <div id="logo-container" class="clip" data-start="0.42" data-duration="5.0" data-track-index="2">
+        <img src="assets/hf-logo.svg" alt="HyperFrames" />
+      </div>
+
+      <!-- Inspector text -->
+      <div id="inspector-text" class="clip" data-start="1.42" data-duration="10.83" data-track-index="3">
+        <span class="letter" id="l-I">I</span><span class="letter" id="l-n">n</span><span class="letter" id="l-s">s</span><span class="letter" id="l-p">p</span><span class="letter" id="l-e">e</span><span class="letter" id="l-c">c</span><span class="letter" id="l-t">t</span><span class="letter" id="l-o">o</span><span class="letter" id="l-r">r</span>
+      </div>
+
+      <!-- Magnifying glass -->
+      <div id="mag-glass" class="clip" data-start="2.75" data-duration="2.0" data-track-index="4">
+        <div id="mag-text-clone">Inspector</div>
+        <div id="mag-overlay"></div>
+        <div id="mag-ring"></div>
+        <div id="mag-handle"></div>
+      </div>
+
+      <!-- Selection highlight -->
+      <div id="selection-highlight" class="clip" data-start="5.58" data-duration="6.67" data-track-index="5"></div>
+
+      <!-- Cursor -->
+      <div id="cursor" class="clip" data-start="5.58" data-duration="6.67" data-track-index="6">
+        <svg viewBox="0 0 28 34" fill="none">
+          <path d="M2 1L2 25.5L8.5 19.5L14.5 31L18.5 29L12.5 17.5L21 17.5L2 1Z" fill="white" stroke="black" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <!-- Inspector panel -->
+      <div id="inspector-panel" class="clip" data-start="6.92" data-duration="5.33" data-track-index="7">
+        <div class="panel-section">
+          <div class="panel-label">Document</div>
+          <div style="font-size:16px; font-weight:700; color:#fff8e9; margin-bottom:4px;">Inspector</div>
+          <div style="font-size:11px; color:rgba(255,248,233,0.3);">#text-layer</div>
+        </div>
+        <div class="panel-section">
+          <div class="panel-label">Layout</div>
+          <div class="panel-row">
+            <div class="panel-field"><span class="fl">X</span> 192px</div>
+            <div class="panel-field"><span class="fl">Y</span> 420px</div>
+          </div>
+          <div class="panel-row">
+            <div class="panel-field"><span class="fl">W</span> 1344px</div>
+            <div class="panel-field"><span class="fl">H</span> 156px</div>
+          </div>
+        </div>
+        <div class="panel-section">
+          <div class="panel-label">Color</div>
+          <div class="panel-row" style="align-items:center; gap:12px;">
+            <div id="color-swatch"></div>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; position:relative;">
+              <span id="cl-0" style="position:relative;">rgb(255,248,233)</span>
+              <span id="cl-1" style="position:absolute; left:0; top:0; opacity:0;">rgb(142,216,220)</span>
+              <span id="cl-2" style="position:absolute; left:0; top:0; opacity:0;">rgb(76,200,217)</span>
+              <span id="cl-3" style="position:absolute; left:0; top:0; opacity:0;">rgb(25,183,213)</span>
+            </span>
+          </div>
+        </div>
+        <div class="panel-section">
+          <div class="panel-label">Font</div>
+          <div class="font-dropdown" id="font-display" style="position:relative;">
+            <span id="fd-inter" style="position:relative;">Inter</span>
+            <span id="fd-fraunces" style="position:absolute; left:12px; top:8px; opacity:0;">Fraunces</span>
+            <span id="fd-plex" style="position:absolute; left:12px; top:8px; opacity:0;">IBM Plex Mono</span>
+            <span id="fd-georgia" style="position:absolute; left:12px; top:8px; opacity:0;">Georgia</span>
+          </div>
+        </div>
+        <div class="panel-section">
+          <div class="panel-label">Size</div>
+          <div class="panel-field" id="size-field" style="position:relative;"><span class="fl">Size</span>
+            <span id="sv-120" style="position:relative;">120px</span>
+            <span id="sv-sel" style="position:absolute; right:10px; top:8px; opacity:0; background:rgba(25,183,213,0.3); border-radius:3px; padding:0 2px;">120</span>
+            <span id="sv-caret" style="position:absolute; right:10px; top:6px; opacity:0; color:#19b7d5;">|</span>
+            <span id="sv-3a" style="position:absolute; right:10px; top:8px; opacity:0;">3<span style="color:#19b7d5;">|</span></span>
+            <span id="sv-36" style="position:absolute; right:10px; top:8px; opacity:0;">36<span style="color:#19b7d5;">|</span></span>
+            <span id="sv-360" style="position:absolute; right:10px; top:8px; opacity:0;">360px</span>
+            <span id="sv-4a" style="position:absolute; right:10px; top:8px; opacity:0;">4<span style="color:#19b7d5;">|</span></span>
+            <span id="sv-48" style="position:absolute; right:10px; top:8px; opacity:0;">48px</span>
+            <span id="sv-3b" style="position:absolute; right:10px; top:8px; opacity:0;">3<span style="color:#19b7d5;">|</span></span>
+            <span id="sv-30" style="position:absolute; right:10px; top:8px; opacity:0;">30<span style="color:#19b7d5;">|</span></span>
+            <span id="sv-300" style="position:absolute; right:10px; top:8px; opacity:0;">300px</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Color picker -->
+      <div id="color-picker" class="clip" data-start="7.92" data-duration="1.33" data-track-index="8">
+        <div style="font-size:15px; font-weight:700; color:#fff8e9; margin-bottom:14px;">Stroke color</div>
+        <div class="picker-gradient">
+          <div id="picker-circle"></div>
+        </div>
+        <div class="hue-bar">
+          <div id="hue-thumb"></div>
+        </div>
+        <div style="font-size:10px; letter-spacing:0.08em; color:rgba(255,248,233,0.3); text-transform:uppercase; margin-bottom:6px;">HEX</div>
+        <div class="hex-field" style="position:relative;">
+          <span id="hx-0" style="position:relative;">#FFF8E9</span>
+          <span id="hx-1" style="position:absolute; left:12px; top:10px; opacity:0;">#8ED8DC</span>
+          <span id="hx-2" style="position:absolute; left:12px; top:10px; opacity:0;">#4CC8D9</span>
+          <span id="hx-3" style="position:absolute; left:12px; top:10px; opacity:0;">#19B7D5</span>
+        </div>
+      </div>
+
+      <!-- Font list -->
+      <div id="font-list" class="clip" data-start="9.25" data-duration="1.33" data-track-index="9">
+        <div class="font-list-header">Font Family</div>
+        <div class="font-search">Search fonts</div>
+        <div class="font-tabs">
+          <div class="font-tab">Local</div>
+          <div class="font-tab">Import</div>
+        </div>
+        <div class="font-option" id="fo-inter" style="font-family:Inter,sans-serif;"><span>Inter</span><span class="font-source" id="fs-inter">Current</span></div>
+        <div class="font-option" id="fo-fraunces" style="font-family:Fraunces,serif;"><span>Fraunces</span><span class="font-source" id="fs-fraunces">Google</span></div>
+        <div class="font-option" id="fo-plex" style="font-family:'IBM Plex Mono',monospace;"><span>IBM Plex Mono</span><span class="font-source" id="fs-plex">Google</span></div>
+        <div class="font-option" id="fo-georgia" style="font-family:Georgia,serif;"><span>Georgia</span><span class="font-source" id="fs-georgia">Google</span></div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/CustomEase.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+
+      (function () {
+        const root = document.querySelector('[data-composition-id="inspector-logo-intro"]');
+        const canvas = document.getElementById("halftone-bg");
+        const ctx = canvas.getContext("2d");
+
+        // ═══════════════════════════════════════════
+        //  Halftone rendering (from parent project)
+        // ═══════════════════════════════════════════
+
+        function rand(seed) {
+          let t = seed + 0x6d2b79f5;
+          return function () {
+            t += 0x6d2b79f5;
+            let r = Math.imul(t ^ (t >>> 15), 1 | t);
+            r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
+            return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+
+        function clamp(v, mn, mx) { return Math.max(mn, Math.min(mx, v)); }
+        function mixC(a, b, t) { return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t]; }
+
+        function smoothstep(e0, e1, v) {
+          const t = clamp((v - e0) / (e1 - e0), 0, 1);
+          return t * t * (3 - 2 * t);
+        }
+        function hash2(ix, iy) {
+          let n = ix * 374761393 + iy * 668265263;
+          n = (n ^ (n >>> 13)) * 1274126177;
+          return ((n ^ (n >>> 16)) >>> 0) / 4294967295;
+        }
+        function valueNoise(x, y) {
+          const ix = Math.floor(x), iy = Math.floor(y);
+          const fx = smoothstep(0, 1, x - ix), fy = smoothstep(0, 1, y - iy);
+          return (hash2(ix,iy)*(1-fx)+hash2(ix+1,iy)*fx)*(1-fy) +
+                 (hash2(ix,iy+1)*(1-fx)+hash2(ix+1,iy+1)*fx)*fy;
+        }
+        function fbm(x, y) {
+          let value = 0, amp = 0.56, total = 0, px = x, py = y;
+          for (let i = 0; i < 4; i++) {
+            value += valueNoise(px, py) * amp;
+            total += amp;
+            const rx = px * 1.62 + py * 0.42, ry = py * 1.48 - px * 0.36;
+            px = rx + 13.7; py = ry - 8.9;
+            amp *= 0.52;
+          }
+          return value / total;
+        }
+        function gradientMass(x, y, cx, cy, rx, ry) {
+          const dx = (x - cx) / rx, dy = (y - cy) / ry;
+          return Math.exp(-(dx * dx + dy * dy));
+        }
+
+        const bgState = {
+          phase: 0, flow: 0, density: 1.02, radius: 1.0,
+          lift: 0.03, centerX: 0.5, centerY: 0.53,
+          palette: 0.46, wash: 0.14, warp: 0.22,
+          shapeScale: 0.24, ribbonScale: 0.06,
+          blend: 0, ribbon: 0, massShiftY: 0
+        };
+
+        const REST_LIFT = 0.09;
+        const REST_WASH = 0.12;
+        const REST_PALETTE = 0.16;
+        const REST_SHAPE = 0.14;
+        const REST_RIBBON = 0.05;
+
+        function shaderField(x, y, s, mass) {
+          const t = s.phase;
+          const warpA = (fbm(x*2.3+t*0.24, y*1.8-t*0.16)-0.5)*s.warp;
+          const warpB = (fbm(x*1.7-t*0.12+4.6, y*2.15+t*0.2)-0.5)*s.warp;
+          const ux = x+warpA+Math.sin(y*Math.PI*2.1+t*0.9)*0.035;
+          const uy = y+warpB+Math.cos(x*Math.PI*1.55-t*0.75)*0.03;
+          const massA = gradientMass(ux,uy,mass.AX,mass.AY,0.36,0.48);
+          const massB = gradientMass(ux,uy,mass.BX,mass.BY,0.3,0.46);
+          const massC = gradientMass(ux,uy,mass.CX,mass.CY,0.54,0.22);
+          const ribbon = smoothstep(0.18,0.88,Math.sin((ux*1.12-uy*0.22+s.ribbon)*Math.PI*2));
+          const nested = fbm(ux*2.2+massA*0.7+t*0.12, uy*2.0+massB*0.7-t*0.1);
+          const shape = clamp(massA*0.5+massB*0.38+massC*0.24+ribbon*0.18+nested*0.22, 0, 1);
+          const hue = clamp(shape*0.65+ribbon*0.2+nested*0.28+s.palette*0.3, 0, 1);
+          return { shape, hue, ribbon, nested };
+        }
+
+        function paintShaderWash(ctx, w, h, s, mass) {
+          const green=[69,216,110], cyan=[25,183,213], amber=[241,182,74];
+          const rgba = (c,a) => `rgba(${c[0]|0},${c[1]|0},${c[2]|0},${a.toFixed(3)})`;
+          const softEllipse = (cx,cy,rx,ry,color,alpha) => {
+            ctx.save(); ctx.translate(cx,cy); ctx.scale(rx,ry);
+            const g = ctx.createRadialGradient(0,0,0.08,0,0,1);
+            g.addColorStop(0,rgba(color,alpha));
+            g.addColorStop(0.52,rgba(color,alpha*0.42));
+            g.addColorStop(1,rgba(color,0));
+            ctx.fillStyle=g; ctx.beginPath(); ctx.arc(0,0,1,0,Math.PI*2); ctx.fill();
+            ctx.restore();
+          };
+          ctx.save();
+          ctx.globalCompositeOperation="screen";
+          ctx.filter=`blur(${28+s.blend*18}px)`;
+          softEllipse(mass.AX*w, mass.AY*h, w*(0.32+s.blend*0.08), h*0.42, green, 0.18+s.blend*0.10);
+          softEllipse(mass.BX*w, mass.BY*h, w*0.30, h*(0.40+s.blend*0.06), cyan, 0.15+s.blend*0.09);
+          softEllipse(mass.CX*w, mass.CY*h, w*0.46, h*0.20, amber, 0.09+s.blend*0.05);
+          const ribbonY = h*(0.5+Math.sin(s.phase*0.72)*0.16);
+          const rb = ctx.createLinearGradient(0,0,w,0);
+          rb.addColorStop(0,rgba(green,0));
+          rb.addColorStop(0.28,rgba(green,0.12+s.blend*0.05));
+          rb.addColorStop(0.58,rgba(cyan,0.13+s.blend*0.06));
+          rb.addColorStop(0.86,rgba(amber,0.07+s.blend*0.03));
+          rb.addColorStop(1,rgba(cyan,0));
+          ctx.strokeStyle=rb;
+          ctx.lineWidth=h*(0.18+s.blend*0.08);
+          ctx.lineCap="round";
+          ctx.beginPath();
+          ctx.moveTo(-w*0.14, ribbonY+Math.sin(s.phase*0.9)*h*0.08);
+          ctx.bezierCurveTo(w*0.2, ribbonY-h*0.24, w*0.62, ribbonY+h*0.26, w*1.14, ribbonY-Math.cos(s.phase*0.7)*h*0.10);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        function drawHalftone() {
+          const state = bgState;
+          const w = 1600, h = 1220;
+          canvas.width = w; canvas.height = h;
+          canvas.style.width = "4320px"; canvas.style.height = "3300px";
+
+          const random = rand(9400);
+          const colors = [[69,216,110],[25,183,213],[255,248,233],[241,182,74],[92,132,99]];
+          const dark = [5,12,10], light = [244,239,226];
+
+          const s = {
+            phase:state.phase, flow:state.flow, density:state.density, radius:state.radius,
+            lift:state.lift+REST_LIFT, centerX:state.centerX, centerY:state.centerY,
+            palette:clamp(state.palette+REST_PALETTE,0,1), wash:state.wash+REST_WASH,
+            warp:state.warp, shapeScale:state.shapeScale+REST_SHAPE,
+            ribbonScale:state.ribbonScale+REST_RIBBON, blend:state.blend, ribbon:state.ribbon,
+            massShiftY:state.massShiftY||0
+          };
+
+          const mass = {
+            AX: -0.20-s.flow*0.045+Math.sin(s.phase*0.55)*0.06,
+            AY: 0.46+s.massShiftY+Math.sin(s.phase*0.62+1.1)*0.10,
+            BX: 1.08-s.flow*0.055+Math.cos(s.phase*0.48+2.3)*0.06,
+            BY: 0.56+s.massShiftY+Math.cos(s.phase*0.52+0.4)*0.10,
+            CX: 0.58-s.flow*0.030+Math.sin(s.phase*0.36+1.4)*0.18,
+            CY: 0.38+s.massShiftY+Math.cos(s.phase*0.34+0.8)*0.08
+          };
+
+          const spacing = 5.15 / s.density;
+          const radius = 1.02 * s.radius;
+
+          const bg = ctx.createLinearGradient(0,0,w,h);
+          bg.addColorStop(0,"#142017"); bg.addColorStop(0.52,"#0d1510"); bg.addColorStop(1,"#060b09");
+          ctx.fillStyle=bg; ctx.fillRect(0,0,w,h);
+          paintShaderWash(ctx,w,h,s,mass);
+
+          const cx = w*s.centerX, cy = h*s.centerY;
+          const maxD = Math.hypot(w*0.5, h*0.5);
+
+          for (let y=-spacing; y<h+spacing; y+=spacing) {
+            const row = y/h;
+            for (let x=-spacing; x<w+spacing; x+=spacing) {
+              const col = x/w;
+              const dist = Math.hypot(x-cx, y-cy)/maxD;
+              const field = shaderField(col, row, s, mass);
+              const shape = field.shape;
+              const centerDark = clamp(1-dist*2.25,0,1)*0.62;
+              const topLight = clamp(1-row*1.6,0,1);
+              const noise = random();
+              let energy = 0.18+topLight*0.18+shape*(0.54+s.blend*0.26)+s.lift-centerDark*0.36;
+              energy = clamp(energy+(noise-0.5)*0.025, 0.05, 0.98);
+
+              const colorSeed = field.hue*3.2+s.palette*1.4+row*0.42;
+              const colorIndex = ((Math.floor(colorSeed)%colors.length)+colors.length)%colors.length;
+              const tonal = mixC(dark, light, energy);
+              const fieldColor = mixC(colors[colorIndex], colors[(colorIndex+1)%colors.length], smoothstep(0.24,0.78,field.ribbon));
+              const color = mixC(tonal, fieldColor, 0.36+shape*0.34+s.wash*0.24);
+              const alpha = clamp(0.18+energy*0.72+s.blend*0.12, 0.14, 0.98);
+              const sizeBase = 0.40+energy*1.10+shape*s.shapeScale+field.ribbon*s.ribbonScale;
+              const size = radius*clamp(sizeBase+(noise-0.5)*0.045, 0.32, 4.4);
+
+              ctx.fillStyle=`rgba(${color[0]|0},${color[1]|0},${color[2]|0},${alpha.toFixed(3)})`;
+              ctx.beginPath();
+              ctx.arc(x+(noise-0.5)*0.12, y, size, 0, Math.PI*2);
+              ctx.fill();
+            }
+          }
+
+          if (s.blend > 0.01) {
+            ctx.fillStyle=`rgba(69,216,110,${(0.08*s.blend).toFixed(3)})`;
+            ctx.fillRect(0,0,w,h);
+            ctx.fillStyle=`rgba(25,183,213,${(0.07*s.blend).toFixed(3)})`;
+            ctx.fillRect(w*0.18,0,w*0.82,h);
+          }
+
+          const vignette = ctx.createRadialGradient(cx,cy,h*0.05,cx,cy,maxD*0.92);
+          vignette.addColorStop(0,"rgba(0,0,0,0.10)");
+          vignette.addColorStop(0.46,"rgba(0,0,0,0.03)");
+          vignette.addColorStop(1,"rgba(0,0,0,0.40)");
+          ctx.fillStyle=vignette; ctx.fillRect(0,0,w,h);
+        }
+
+        // Initial draw — resting field (green flash covers this)
+        Object.assign(bgState, {
+          density: 0.94, radius: 1.0, blend: 0, shapeScale: 0.24,
+          ribbonScale: 0.06, warp: 0.22, lift: 0.03, wash: 0.06, palette: 0.4,
+          phase: 0, flow: 0, ribbon: 0, massShiftY: 0
+        });
+        drawHalftone();
+
+        // ═══════════════════════════════════════════
+        //  Spring physics helper
+        // ═══════════════════════════════════════════
+
+        function springEase(stiffness, damping) {
+          const points = [];
+          let pos = 0, vel = 0;
+          const dt = 1/120;
+          const mass = 1;
+          for (let i = 0; i < 240; i++) {
+            const force = -stiffness * (pos - 1) - damping * vel;
+            vel += (force / mass) * dt;
+            pos += vel * dt;
+            points.push(pos);
+          }
+          const values = points.map((p, i) => `${i / (points.length - 1)},${clamp(p, -0.2, 1.3)}`).join(" ");
+          return values;
+        }
+
+        // Register spring eases
+        try {
+          CustomEase.create("springHard", springEase(180, 14));
+          CustomEase.create("springSoft", springEase(120, 18));
+          CustomEase.create("springHeavy", springEase(80, 22));
+        } catch(e) {
+          // Fallback if CustomEase not available
+        }
+
+        // ── Deterministic noise for magnifying glass jitter (ported from Remotion) ──
+        function hash1(n) {
+          const s = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+          return s - Math.floor(s);
+        }
+        function valueNoise(x, seed) {
+          const i = Math.floor(x);
+          const f = x - i;
+          const a = hash1(i + seed);
+          const b = hash1(i + 1 + seed);
+          const u = 0.5 - 0.5 * Math.cos(f * Math.PI);
+          return a * (1 - u) + b * u;
+        }
+        function fbm(x, seed) {
+          let sum = 0, amp = 1, freq = 1, norm = 0;
+          for (let i = 0; i < 4; i++) {
+            sum += valueNoise(x * freq, seed + i * 17) * amp;
+            norm += amp;
+            amp *= 0.5;
+            freq *= 2;
+          }
+          return sum / norm;
+        }
+
+        // ── Magnification constants ──
+        const MAG_SCALE = 2.4;
+        const MAG_R = 110; // glass radius (half of 220px)
+        const TEXT_X = 1123; // Inspector text left in composition space (beat 4)
+        const TEXT_Y = 507;
+
+        // Pre-compute matched keyframes for glass + magnified text clone
+        // Text spans ~58% to ~87% of frame. Sweep from 90% to 55%.
+        const SWEEP_START = 90;
+        const SWEEP_END = 55;
+        const SWEEP_TOP = 54;
+
+        function buildMagKeyframes(numKeys, scanDur) {
+          const glassKF = [];
+          const cloneKF = [];
+          for (let i = 1; i <= numKeys; i++) {
+            const p = i / numKeys;
+            const nt = p * 4.0;
+            const jx = (fbm(nt, 0) * 2 - 1) * 4;
+            const jy = (fbm(nt, 101) * 2 - 1) * 1.5;
+            const gl = SWEEP_START + (SWEEP_END - SWEEP_START) * p + jx;
+            const gt = SWEEP_TOP + jy;
+            const gxPx = gl / 100 * 1920;
+            const gyPx = gt / 100 * 1080;
+            const dur = scanDur / numKeys;
+            glassKF.push({ left: gl + "%", top: gt + "%", duration: dur, ease: "none" });
+            cloneKF.push({
+              x: MAG_R - (gxPx - TEXT_X) * MAG_SCALE,
+              y: MAG_R - (gyPx - TEXT_Y) * MAG_SCALE,
+              duration: dur, ease: "none"
+            });
+          }
+          return { glassKF, cloneKF };
+        }
+
+        // ═══════════════════════════════════════════
+        //  GSAP Timeline — 0.6x speed (all times × 1.667)
+        // ═══════════════════════════════════════════
+
+        const tl = gsap.timeline({ paused: true });
+        const DUR = 12.75;
+
+        const letters = document.querySelectorAll("#inspector-text .letter");
+        const letterT = document.getElementById("l-t");
+
+        // ═══════════════════════════════════════════
+        //  Master continuous motion (runs full duration)
+        // ═══════════════════════════════════════════
+        tl.to(bgState, {
+          flow: 1.15, phase: 0.88, ribbon: 0.97,
+          duration: DUR, ease: "none",
+          onUpdate: drawHalftone
+        }, 0);
+
+        // ─── Beat 1: Dark green reveals halftone (0–1.0s) ───
+        tl.set("#green-flash", { opacity: 1 }, 0);
+        tl.to("#green-flash", {
+          opacity: 0, duration: 1.0, ease: "springSoft"
+        }, 0);
+
+        tl.set("#halftone-bg", {
+          x: 40, y: 20, scale: 1.04,
+          filter: "hue-rotate(0deg) saturate(1.04) blur(0px)"
+        }, 0);
+
+        tl.to(bgState, {
+          density: 1.02, wash: 0.14, palette: 0.46,
+          duration: 1.33, ease: "sine.inOut"
+        }, 0);
+
+        // ─── Beat 2: Logo Fly-Through (0.42–1.42s) ───
+        tl.set("#logo-container", {
+          xPercent: -50, yPercent: -50, scale: 0.05, opacity: 0, filter: "blur(16px)"
+        }, 0);
+        tl.to("#logo-container", {
+          opacity: 0.3, duration: 0.08, ease: "none"
+        }, 0.42);
+
+        tl.to("#logo-container", {
+          xPercent: -50, yPercent: -50, scale: 1.0, opacity: 1,
+          filter: "blur(0px)",
+          duration: 1.0, ease: "springHard"
+        }, 0.42);
+
+        // Chromatic fringe flash at peak velocity
+        tl.fromTo("#logo-container", {
+          filter: "blur(0px)"
+        }, {
+          filter: "blur(0px) drop-shadow(3px 0 0 rgba(25,183,213,0.4)) drop-shadow(-3px 0 0 rgba(217,119,87,0.3))",
+          duration: 0.13, ease: "none"
+        }, 0.67);
+        tl.to("#logo-container", {
+          filter: "blur(0px)",
+          duration: 0.25, ease: "springSoft"
+        }, 0.80);
+
+        // BG bloom on logo impact (two-phase)
+        tl.to(bgState, {
+          blend: 0.42, radius: 1.1, shapeScale: 0.38,
+          density: 1.05, lift: 0.07,
+          duration: 0.60, ease: "springSoft"
+        }, 0.58);
+        tl.to(bgState, {
+          blend: 0, radius: 1.0, shapeScale: 0.24,
+          density: 1.02, lift: 0.03,
+          duration: 0.87, ease: "springHeavy"
+        }, 1.18);
+
+        tl.to("#halftone-bg", {
+          scale: 1.08, filter: "hue-rotate(4deg) saturate(1.12) blur(0px)",
+          duration: 0.60, ease: "springSoft"
+        }, 0.58);
+        tl.to("#halftone-bg", {
+          scale: 1.04, filter: "hue-rotate(0deg) saturate(1.08) blur(0px)",
+          duration: 0.87, ease: "springHeavy"
+        }, 1.18);
+
+        // ─── Beat 3: Logo slides left + Inspector enters (1.42–2.75s) ───
+        tl.to("#halftone-bg", {
+          x: -10, duration: 1.33, ease: "sine.inOut"
+        }, 1.42);
+
+        tl.to(bgState, {
+          centerX: 0.52, centerY: 0.55,
+          duration: 1.33, ease: "sine.inOut"
+        }, 1.42);
+
+        // Logo scales down and slides left
+        tl.to("#logo-container", {
+          xPercent: -50, yPercent: -50,
+          scale: 0.57, x: -435,
+          duration: 1.33, ease: "springSoft"
+        }, 0.92);
+
+        // Inspector text enters
+        tl.set("#inspector-text", {
+          opacity: 1,
+          xPercent: -50, yPercent: -50,
+          x: 435, y: 40
+        }, 2.08);
+
+        letters.forEach((letter, i) => {
+          tl.fromTo(letter, {
+            opacity: 0, x: 40, filter: "blur(4px)"
+          }, {
+            opacity: 1, x: 0, filter: "blur(0px)",
+            duration: 0.83, ease: "springHeavy"
+          }, 2.17 + i * 0.067);
+        });
+
+        // ─── Beat 4: Magnifying glass scan (2.75–4.75s) ───
+        tl.to("#halftone-bg", {
+          filter: "hue-rotate(-4deg) saturate(1.06) blur(0px)",
+          duration: 1.67, ease: "sine.inOut"
+        }, 2.75);
+
+        tl.to(bgState, {
+          centerX: 0.48, centerY: 0.52, palette: 0.5,
+          duration: 2.0, ease: "sine.inOut"
+        }, 2.75);
+
+        // Build matched keyframes for glass sweep + magnified clone position
+        const { glassKF, cloneKF } = buildMagKeyframes(12, 1.33);
+
+        // Initial state — glass enters from right of text
+        const initGxPx = SWEEP_START / 100 * 1920;
+        const initGyPx = SWEEP_TOP / 100 * 1080;
+        tl.set("#mag-glass", { left: SWEEP_START + "%", top: SWEEP_TOP + "%", xPercent: -50, yPercent: -50, scale: 0, opacity: 1 }, 2.75);
+        tl.set("#mag-text-clone", {
+          x: MAG_R - (initGxPx - TEXT_X) * MAG_SCALE,
+          y: MAG_R - (initGyPx - TEXT_Y) * MAG_SCALE
+        }, 2.75);
+
+        // Glass scales in
+        tl.to("#mag-glass", {
+          scale: 1, xPercent: -50, yPercent: -50,
+          duration: 0.50, ease: "springSoft"
+        }, 2.75);
+
+        // Sweep: glass moves right→left with fbm jitter, clone tracks inversely
+        tl.to("#mag-glass", { keyframes: glassKF }, 2.92);
+        tl.to("#mag-text-clone", { keyframes: cloneKF }, 2.92);
+
+        // Lens drops out with gravity
+        tl.to("#mag-glass", {
+          top: "120%", scale: 0.3, opacity: 0,
+          duration: 0.50, ease: "power2.in"
+        }, 4.25);
+
+        // ─── Beat 5: Zoom in on Inspector (4.58–5.58s) ───
+        tl.to(bgState, {
+          blend: 0.42, radius: 1.1, shapeScale: 0.38,
+          lift: 0.07, wash: 0.2, warp: 0.27,
+          duration: 0.60, ease: "springSoft"
+        }, 4.58);
+        tl.to(bgState, {
+          blend: 0, radius: 1.0, shapeScale: 0.24,
+          lift: 0.03, wash: 0.14, warp: 0.22,
+          duration: 0.87, ease: "springHeavy"
+        }, 5.18);
+
+        tl.to("#halftone-bg", {
+          scale: 1.12,
+          filter: "hue-rotate(-6deg) saturate(1.18) blur(2px)",
+          duration: 0.60, ease: "springSoft"
+        }, 4.58);
+        tl.to("#halftone-bg", {
+          scale: 1.06,
+          filter: "hue-rotate(0deg) saturate(1.08) blur(0px)",
+          duration: 0.87, ease: "springHeavy"
+        }, 5.18);
+
+        // Logo exits left
+        tl.to("#logo-container", {
+          xPercent: -50, yPercent: -50,
+          x: -1200, opacity: 0, filter: "blur(12px)",
+          duration: 0.83, ease: "springSoft"
+        }, 4.0);
+
+        // Inspector text zooms to fill frame
+        tl.to("#inspector-text", {
+          fontSize: "180px",
+          xPercent: -50, yPercent: -50,
+          x: 0, y: 40,
+          duration: 1.0, ease: "springHeavy"
+        }, 4.83);
+
+        // ─── Beat 6: Cursor enters + selects "t" (5.58–6.92s) ───
+        tl.to("#halftone-bg", {
+          x: -15, duration: 1.67, ease: "sine.inOut"
+        }, 5.58);
+
+        tl.to(bgState, {
+          centerX: 0.51, centerY: 0.54,
+          duration: 1.67, ease: "sine.inOut"
+        }, 5.58);
+
+        tl.set("#cursor", { left: "8%", top: "88%", opacity: 0 }, 5.58);
+        tl.to("#cursor", { opacity: 1, duration: 0.08 }, 5.58);
+
+        tl.to("#cursor", {
+          left: "35%", top: "55%",
+          duration: 0.25, ease: "springSoft"
+        }, 5.62);
+        tl.to("#cursor", {
+          left: "59.5%", top: "43.7%",
+          duration: 0.33, ease: "springSoft"
+        }, 5.87);
+
+        tl.set("#selection-highlight", {
+          left: "58.3%", top: "44.3%", width: "0%", height: "0%", opacity: 0
+        }, 6.25);
+        tl.to("#selection-highlight", {
+          opacity: 1, width: "4.5%", height: "18%",
+          duration: 0.42, ease: "springSoft"
+        }, 6.30);
+
+        tl.to("#cursor", {
+          left: "61.5%", top: "61.7%",
+          duration: 0.42, ease: "springSoft"
+        }, 6.30);
+
+        // ─── Beat 7: Inspector panel slides in (6.92–7.92s) ───
+        tl.to("#halftone-bg", {
+          x: 10, duration: 0.75, ease: "sine.inOut"
+        }, 6.92);
+
+        tl.to("#inspector-panel", {
+          right: 0, duration: 1.0, ease: "springSoft"
+        }, 6.92);
+
+        tl.to("#inspector-text", {
+          x: -90, duration: 0.83, ease: "springSoft"
+        }, 6.92);
+        tl.to("#selection-highlight", {
+          x: -90, duration: 0.83, ease: "springSoft"
+        }, 6.92);
+
+        tl.to("#cursor", {
+          left: "72%", top: "55%", x: 0, y: 0,
+          duration: 0.67, ease: "springSoft"
+        }, 7.08);
+
+        // ─── Beat 8: Color picker (7.92–9.25s) ───
+        tl.to("#cursor", {
+          left: "79.3%", top: "30%",
+          duration: 0.33, ease: "springSoft"
+        }, 7.92);
+
+        tl.set("#color-picker", { yPercent: -50, scale: 0.9 }, 7.92);
+        tl.to("#color-picker", {
+          opacity: 1, scale: 1, yPercent: -50,
+          duration: 0.42, ease: "springSoft"
+        }, 8.08);
+
+        tl.to("#cursor", {
+          left: "66%", top: "42%",
+          duration: 0.25, ease: "springSoft"
+        }, 8.25);
+        tl.to("#picker-circle", {
+          left: "22%", top: "18%",
+          duration: 0.25, ease: "springSoft"
+        }, 8.25);
+
+        tl.to("#cursor", {
+          left: "72%", top: "43.5%",
+          duration: 0.58, ease: "springSoft"
+        }, 8.50);
+        tl.to("#picker-circle", {
+          left: "78%", top: "28%",
+          duration: 0.58, ease: "springSoft"
+        }, 8.50);
+
+        tl.to(letterT, { color: "#8ed8dc", duration: 0.20, ease: "none" }, 8.50);
+        tl.to(letterT, { color: "#4cc8d9", duration: 0.20, ease: "none" }, 8.70);
+        tl.to(letterT, { color: "#19b7d5", duration: 0.18, ease: "none" }, 8.90);
+
+        tl.to("#color-swatch", { backgroundColor: "#8ed8dc", duration: 0.20, ease: "none" }, 8.50);
+        tl.to("#color-swatch", { backgroundColor: "#4cc8d9", duration: 0.20, ease: "none" }, 8.70);
+        tl.to("#color-swatch", { backgroundColor: "#19b7d5", duration: 0.18, ease: "none" }, 8.90);
+
+        tl.set("#hx-0", { opacity: 0 }, 8.50);
+        tl.set("#hx-1", { opacity: 1 }, 8.50);
+        tl.set("#cl-0", { opacity: 0 }, 8.50);
+        tl.set("#cl-1", { opacity: 1 }, 8.50);
+        tl.set("#hx-1", { opacity: 0 }, 8.70);
+        tl.set("#hx-2", { opacity: 1 }, 8.70);
+        tl.set("#cl-1", { opacity: 0 }, 8.70);
+        tl.set("#cl-2", { opacity: 1 }, 8.70);
+        tl.set("#hx-2", { opacity: 0 }, 8.90);
+        tl.set("#hx-3", { opacity: 1 }, 8.90);
+        tl.set("#cl-2", { opacity: 0 }, 8.90);
+        tl.set("#cl-3", { opacity: 1 }, 8.90);
+
+        tl.to("#hue-thumb", {
+          left: "53%", backgroundColor: "#19b7d5",
+          duration: 0.58, ease: "springSoft"
+        }, 8.50);
+
+        tl.to("#color-picker", {
+          opacity: 0, scale: 0.9, yPercent: -50,
+          duration: 0.25, ease: "springSoft"
+        }, 9.00);
+
+        // ─── Beat 9: Font cycling (9.25–10.58s) ───
+        tl.to("#cursor", {
+          left: "88.5%", top: "40%",
+          duration: 0.33, ease: "springSoft"
+        }, 9.17);
+
+        tl.set("#font-list", { yPercent: -50, scale: 0.95 }, 9.33);
+        tl.to("#font-list", {
+          opacity: 1, scale: 1, yPercent: -50,
+          duration: 0.33, ease: "springSoft"
+        }, 9.33);
+
+        const fontGreen = "#45d86e";
+        const fontGreenBg = "rgba(69,216,110,0.08)";
+        const fontGreenSrc = "rgba(69,216,110,0.5)";
+        const fontDefault = "rgba(255,248,233,0.5)";
+        const fontDefaultBg = "transparent";
+        const fontDefaultSrc = "rgba(255,248,233,0.2)";
+
+        tl.set("#fo-inter", { backgroundColor: fontGreenBg, color: fontGreen }, 9.33);
+        tl.set("#fs-inter", { color: fontGreenSrc }, 9.33);
+
+        // Click Fraunces
+        tl.to("#cursor", {
+          left: "63%", top: "53.3%",
+          duration: 0.25, ease: "springSoft"
+        }, 9.53);
+        tl.set("#fo-inter", { backgroundColor: fontDefaultBg, color: fontDefault }, 9.63);
+        tl.set("#fs-inter", { color: fontDefaultSrc }, 9.63);
+        tl.set("#fo-fraunces", { backgroundColor: fontGreenBg, color: fontGreen }, 9.63);
+        tl.set("#fs-fraunces", { color: fontGreenSrc }, 9.63);
+        tl.to(letterT, { fontFamily: "Fraunces, Georgia, serif", duration: 0.01 }, 9.63);
+        tl.set("#fd-inter", { opacity: 0 }, 9.63);
+        tl.set("#fd-fraunces", { opacity: 1 }, 9.63);
+
+        // Click IBM Plex Mono
+        tl.to("#cursor", {
+          left: "63%", top: "57.2%",
+          duration: 0.17, ease: "springSoft"
+        }, 9.80);
+        tl.set("#fo-fraunces", { backgroundColor: fontDefaultBg, color: fontDefault }, 9.90);
+        tl.set("#fs-fraunces", { color: fontDefaultSrc }, 9.90);
+        tl.set("#fo-plex", { backgroundColor: fontGreenBg, color: fontGreen }, 9.90);
+        tl.set("#fs-plex", { color: fontGreenSrc }, 9.90);
+        tl.to(letterT, { fontFamily: "'IBM Plex Mono', monospace", duration: 0.01 }, 9.90);
+        tl.set("#fd-fraunces", { opacity: 0 }, 9.90);
+        tl.set("#fd-plex", { opacity: 1 }, 9.90);
+
+        // Click Georgia
+        tl.to("#cursor", {
+          left: "63%", top: "61.2%",
+          duration: 0.17, ease: "springSoft"
+        }, 10.07);
+        tl.set("#fo-plex", { backgroundColor: fontDefaultBg, color: fontDefault }, 10.17);
+        tl.set("#fs-plex", { color: fontDefaultSrc }, 10.17);
+        tl.set("#fo-georgia", { backgroundColor: fontGreenBg, color: fontGreen }, 10.17);
+        tl.set("#fs-georgia", { color: fontGreenSrc }, 10.17);
+        tl.to(letterT, { fontFamily: "Georgia, serif", duration: 0.01 }, 10.17);
+        tl.set("#fd-plex", { opacity: 0 }, 10.17);
+        tl.set("#fd-georgia", { opacity: 1 }, 10.17);
+
+        // Back to IBM Plex Mono (final)
+        tl.to("#cursor", {
+          left: "63%", top: "57.2%",
+          duration: 0.17, ease: "springSoft"
+        }, 10.23);
+        tl.set("#fo-georgia", { backgroundColor: fontDefaultBg, color: fontDefault }, 10.30);
+        tl.set("#fs-georgia", { color: fontDefaultSrc }, 10.30);
+        tl.set("#fo-plex", { backgroundColor: fontGreenBg, color: fontGreen }, 10.30);
+        tl.set("#fs-plex", { color: fontGreenSrc }, 10.30);
+        tl.to(letterT, { fontFamily: "'IBM Plex Mono', monospace", duration: 0.01 }, 10.30);
+        tl.set("#fd-georgia", { opacity: 0 }, 10.30);
+        tl.set("#fd-plex", { opacity: 1 }, 10.30);
+
+        tl.to("#font-list", {
+          opacity: 0, scale: 0.95, yPercent: -50,
+          duration: 0.25, ease: "springSoft"
+        }, 10.37);
+
+        // ─── Beat 10: Size typing (10.58–11.88s, 1.3s) ───
+        // Cursor moves to size field
+        tl.to("#cursor", {
+          left: "88.6%", top: "49.2%",
+          duration: 0.25, ease: "springSoft"
+        }, 10.58);
+
+        // Field activates on click
+        tl.to("#size-field", {
+          borderColor: "rgba(25,183,213,0.5)",
+          duration: 0.01
+        }, 10.85);
+
+        // Select "120" — show highlighted text
+        tl.set("#sv-120", { opacity: 0 }, 10.92);
+        tl.set("#sv-sel", { opacity: 1 }, 10.92);
+
+        // Delete selection — show caret
+        tl.set("#sv-sel", { opacity: 0 }, 11.05);
+        tl.set("#sv-caret", { opacity: 1 }, 11.05);
+
+        // Type "4"
+        tl.set("#sv-caret", { opacity: 0 }, 11.12);
+        tl.set("#sv-4a", { opacity: 1 }, 11.12);
+        tl.to(letterT, { scale: 0.33, duration: 0.06, ease: "none" }, 11.12);
+
+        // Type "48" — t shrinks small
+        tl.set("#sv-4a", { opacity: 0 }, 11.22);
+        tl.set("#sv-48", { opacity: 1 }, 11.22);
+        tl.to(letterT, { scale: 0.4, duration: 0.12, ease: "springHeavy" }, 11.22);
+
+        // Hold small — then select all + delete
+        tl.set("#sv-48", { opacity: 0 }, 11.45);
+        tl.set("#sv-caret", { opacity: 1 }, 11.45);
+
+        // Type "3"
+        tl.set("#sv-caret", { opacity: 0 }, 11.52);
+        tl.set("#sv-3a", { opacity: 1 }, 11.52);
+        tl.to(letterT, { scale: 0.25, duration: 0.06, ease: "none" }, 11.52);
+
+        // Type "36"
+        tl.set("#sv-3a", { opacity: 0 }, 11.62);
+        tl.set("#sv-36", { opacity: 1 }, 11.62);
+
+        // Type "360" — t scales to 3.0x BIG
+        tl.set("#sv-36", { opacity: 0 }, 11.72);
+        tl.set("#sv-360", { opacity: 1 }, 11.72);
+        tl.to(letterT, { scale: 3.0, duration: 0.15, ease: "springHeavy" }, 11.72);
+
+        // Deactivate field
+        tl.to("#size-field", {
+          borderColor: "rgba(255,248,233,0.08)",
+          duration: 0.01
+        }, 11.88);
+
+        // Ambient drift during interactive section
+        tl.to("#halftone-bg", {
+          x: 5, duration: 4.33, ease: "sine.inOut"
+        }, 7.33);
+        tl.to(bgState, {
+          centerX: 0.49, centerY: 0.52, palette: 0.48,
+          duration: 4.33, ease: "sine.inOut"
+        }, 7.33);
+
+        // ─── Beat 11: Drag off + transition (11.88–12.75s) ───
+        tl.to("#halftone-bg", {
+          x: -120, scale: 1.1,
+          filter: "hue-rotate(4deg) saturate(1.14) blur(2px)",
+          duration: 0.60, ease: "springSoft"
+        }, 11.78);
+        tl.to(bgState, {
+          blend: 0.42, radius: 1.1, shapeScale: 0.38,
+          lift: 0.07, wash: 0.2,
+          duration: 0.60, ease: "springSoft"
+        }, 11.78);
+
+        tl.to("#halftone-bg", {
+          x: -180, scale: 1.06,
+          filter: "hue-rotate(0deg) saturate(1.08) blur(0px)",
+          duration: 0.37, ease: "springHeavy"
+        }, 12.38);
+        tl.to(bgState, {
+          blend: 0, radius: 1.0, shapeScale: 0.24,
+          lift: 0.03, wash: 0.14,
+          duration: 0.37, ease: "springHeavy"
+        }, 12.38);
+
+        tl.to("#cursor", {
+          left: "-10%", duration: 0.50, ease: "springSoft"
+        }, 11.88);
+        tl.to("#inspector-text", {
+          xPercent: -50, yPercent: -50, x: -2000,
+          filter: "blur(8px)",
+          duration: 0.58, ease: "springSoft"
+        }, 11.88);
+        tl.to("#selection-highlight", {
+          opacity: 0, duration: 0.25
+        }, 11.88);
+        tl.to("#inspector-panel", {
+          right: -460, duration: 0.50, ease: "springSoft"
+        }, 11.88);
+        tl.to("#cursor", {
+          opacity: 0, duration: 0.25
+        }, 12.20);
+
+        // Register timeline
+        window.__timelines["inspector-logo-intro"] = tl;
+        console.log("[inspector-logo-intro] timeline registered, duration:", DUR);
+      })();
+    </script>
+  </body>
+</html>

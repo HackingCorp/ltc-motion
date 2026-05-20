@@ -1,0 +1,275 @@
+<template id="deploy-cta-template">
+  <div data-composition-id="deploy-cta" data-width="1920" data-height="1080" data-start="0">
+
+    <!-- Radial burst -->
+    <div class="burst"></div>
+
+    <!-- Conic rays -->
+    <div class="rays" id="rays"></div>
+
+    <!-- Noise particles -->
+    <div class="noise-field" id="noise"></div>
+
+    <!-- Content -->
+    <div class="content">
+      <!-- Dual logo lockup -->
+      <div class="lockup" id="lockup">
+        <div class="logo-icon logo-hf"><div class="icon-text">&lt;/&gt;</div></div>
+        <div class="logo-x">&times;</div>
+        <div class="logo-icon logo-nous"><div class="icon-text">NOUS</div><div class="icon-sub">RESEARCH</div></div>
+      </div>
+
+      <div class="brand-labels" id="brand-labels">
+        <div class="brand-label bl-hf">HYPERFRAMES</div>
+        <div class="brand-label bl-nous">HERMES AGENT</div>
+      </div>
+
+      <!-- Install command -->
+      <div class="install-cmd" id="install-cmd">
+        <span class="prompt">$ </span><span class="cmd" id="cmd-text"></span><span class="cursor" id="cursor">_</span>
+      </div>
+
+      <!-- Slash demo -->
+      <div class="slash-demo" id="slash-demo">
+        <span class="slash">/hyperframes</span> <span class="natural">create a product launch video</span>
+      </div>
+
+      <!-- Bottom meta -->
+      <div class="bottom-meta" id="bottom-meta">
+        <div class="line1">
+          <span class="g">OPEN SOURCE</span> <span class="dim">&bull;</span>
+          <span class="g">MIT LICENSE</span> <span class="dim">&bull;</span>
+          <span class="g">AGENTSKILLS.IO</span>
+        </div>
+        <div class="line2">WORKS WITH 35+ AGENTS &bull; CLAUDE CODE &bull; COPILOT &bull; CURSOR &bull; GEMINI CLI</div>
+      </div>
+    </div>
+
+    <!-- CRT -->
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    <div class="bleed-top"></div>
+    <div class="bleed-bottom"></div>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+      [data-composition-id="deploy-cta"] {
+        width: 1920px; height: 1080px; position: relative; overflow: hidden;
+        background: #000;
+      }
+
+      [data-composition-id="deploy-cta"] .burst {
+        position: absolute; top: 42%; left: 50%; transform: translate(-50%,-50%);
+        width: 2400px; height: 2400px; z-index: 1;
+        background: radial-gradient(ellipse at center,
+          rgba(255,200,100,0.08) 0%, rgba(200,150,80,0.05) 8%,
+          rgba(150,80,200,0.03) 18%, rgba(0,100,150,0.02) 30%, transparent 50%);
+      }
+
+      [data-composition-id="deploy-cta"] .rays {
+        position: absolute; top: 42%; left: 50%; transform: translate(-50%,-50%);
+        width: 2400px; height: 2400px; z-index: 2;
+        background: conic-gradient(from 0deg,
+          transparent 0deg, rgba(255,200,100,0.012) 1.5deg, transparent 3deg,
+          transparent 10deg, rgba(0,150,200,0.008) 11.5deg, transparent 13deg,
+          transparent 20deg, rgba(200,100,255,0.01) 21.5deg, transparent 23deg,
+          transparent 30deg, rgba(255,150,80,0.008) 31.5deg, transparent 33deg,
+          transparent 40deg, rgba(0,200,150,0.01) 41.5deg, transparent 43deg,
+          transparent 50deg, rgba(255,80,150,0.008) 51.5deg, transparent 53deg,
+          transparent 60deg, rgba(100,150,255,0.012) 61.5deg, transparent 63deg,
+          transparent 90deg, rgba(0,200,200,0.008) 91.5deg, transparent 93deg,
+          transparent 120deg, rgba(200,150,255,0.01) 121.5deg, transparent 123deg,
+          transparent 150deg, rgba(255,50,150,0.008) 151.5deg, transparent 153deg,
+          transparent 180deg, rgba(0,200,100,0.012) 181.5deg, transparent 183deg,
+          transparent 210deg, rgba(255,200,0,0.008) 211.5deg, transparent 213deg,
+          transparent 240deg, rgba(50,200,255,0.01) 241.5deg, transparent 243deg,
+          transparent 270deg, rgba(200,50,255,0.012) 271.5deg, transparent 273deg,
+          transparent 300deg, rgba(255,100,0,0.008) 301.5deg, transparent 303deg,
+          transparent 330deg, rgba(0,100,200,0.01) 331.5deg, transparent 333deg,
+          transparent 360deg);
+      }
+
+      [data-composition-id="deploy-cta"] .noise-field { position: absolute; inset: 0; z-index: 3; }
+      [data-composition-id="deploy-cta"] .noise-dot { position: absolute; border-radius: 50%; }
+
+      [data-composition-id="deploy-cta"] .content {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+        z-index: 20; display: flex; flex-direction: column; align-items: center;
+        gap: 0; width: 900px;
+      }
+
+      [data-composition-id="deploy-cta"] .lockup {
+        display: flex; align-items: center; gap: 48px; margin-bottom: 32px; opacity: 0;
+      }
+
+      [data-composition-id="deploy-cta"] .logo-icon {
+        width: 130px; height: 130px; border-radius: 22px;
+        display: flex; align-items: center; justify-content: center; flex-direction: column;
+        position: relative;
+      }
+      [data-composition-id="deploy-cta"] .logo-hf {
+        background: rgba(20,15,5,0.8);
+        border: 1px solid rgba(255,180,70,0.3);
+        box-shadow: 0 0 50px rgba(255,180,70,0.15), 0 0 100px rgba(255,150,50,0.06);
+      }
+      [data-composition-id="deploy-cta"] .logo-hf .icon-text {
+        font-family: 'IBM Plex Mono', monospace; font-size: 44px; font-weight: 700;
+        color: #FFD080;
+        text-shadow: 0 0 20px rgba(255,208,128,0.5), 3px 0 0 rgba(255,0,0,0.1), -3px 0 0 rgba(0,100,255,0.1);
+      }
+
+      [data-composition-id="deploy-cta"] .logo-nous {
+        background: rgba(5,10,25,0.8);
+        border: 1px solid rgba(0,120,255,0.3);
+        box-shadow: 0 0 50px rgba(0,120,255,0.15), 0 0 100px rgba(0,80,200,0.06);
+        gap: 2px;
+      }
+      [data-composition-id="deploy-cta"] .logo-nous .icon-text {
+        font-family: 'VT323', monospace; font-size: 34px; color: #88BBFF;
+        letter-spacing: 0.12em;
+        text-shadow: 0 0 20px rgba(136,187,255,0.5);
+      }
+      [data-composition-id="deploy-cta"] .logo-nous .icon-sub {
+        font-family: 'VT323', monospace; font-size: 13px;
+        color: rgba(136,187,255,0.35); letter-spacing: 0.18em;
+      }
+      [data-composition-id="deploy-cta"] .logo-x {
+        font-family: 'VT323', monospace; font-size: 36px; color: rgba(255,255,255,0.1);
+      }
+
+      [data-composition-id="deploy-cta"] .brand-labels {
+        display: flex; gap: 100px; margin-bottom: 40px; opacity: 0;
+      }
+      [data-composition-id="deploy-cta"] .brand-label {
+        font-family: 'VT323', monospace; font-size: 20px; letter-spacing: 0.15em;
+        text-align: center; width: 130px;
+      }
+      [data-composition-id="deploy-cta"] .bl-hf { color: rgba(255,208,128,0.55); }
+      [data-composition-id="deploy-cta"] .bl-nous { color: rgba(136,187,255,0.55); }
+
+      [data-composition-id="deploy-cta"] .install-cmd {
+        font-family: 'IBM Plex Mono', monospace; font-size: 26px; font-weight: 600;
+        padding: 16px 36px;
+        background: rgba(0,15,0,0.5);
+        border: 1px solid rgba(51,255,51,0.18); border-radius: 4px;
+        margin-bottom: 14px; opacity: 0;
+        box-shadow: 0 0 30px rgba(51,255,51,0.04);
+      }
+      [data-composition-id="deploy-cta"] .prompt { color: rgba(51,255,51,0.35); }
+      [data-composition-id="deploy-cta"] .cmd { color: rgba(0,220,170,0.8); text-shadow: 0 0 8px rgba(0,220,170,0.2); }
+      [data-composition-id="deploy-cta"] .cursor {
+        color: rgba(51,255,51,0.6);
+        animation: cursorBlink 1s step-end infinite;
+      }
+      @keyframes cursorBlink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+      [data-composition-id="deploy-cta"] .slash-demo {
+        font-family: 'IBM Plex Mono', monospace; font-size: 18px;
+        margin-bottom: 48px; opacity: 0;
+      }
+      [data-composition-id="deploy-cta"] .slash { color: rgba(255,180,70,0.55); }
+      [data-composition-id="deploy-cta"] .natural { color: rgba(255,255,255,0.2); }
+
+      [data-composition-id="deploy-cta"] .bottom-meta { text-align: center; opacity: 0; }
+      [data-composition-id="deploy-cta"] .bottom-meta .line1 {
+        font-family: 'VT323', monospace; font-size: 21px;
+        letter-spacing: 0.15em; margin-bottom: 8px;
+      }
+      [data-composition-id="deploy-cta"] .line1 .g { color: rgba(51,255,51,0.45); }
+      [data-composition-id="deploy-cta"] .line1 .dim { color: rgba(255,255,255,0.1); }
+      [data-composition-id="deploy-cta"] .bottom-meta .line2 {
+        font-family: 'VT323', monospace; font-size: 17px;
+        color: rgba(255,255,255,0.1); letter-spacing: 0.1em;
+      }
+
+      /* CRT */
+      [data-composition-id="deploy-cta"] .scanlines {
+        position: absolute; inset: 0; z-index: 80;
+        background: repeating-linear-gradient(to bottom, transparent 0px, transparent 1.5px, rgba(0,0,0,0.15) 1.5px, rgba(0,0,0,0.15) 3px);
+        pointer-events: none;
+      }
+      [data-composition-id="deploy-cta"] .vignette {
+        position: absolute; inset: 0; z-index: 85;
+        background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.6) 100%);
+        pointer-events: none;
+      }
+      [data-composition-id="deploy-cta"] .bleed-top {
+        position: absolute; top: 0; left: 0; width: 100%; height: 3px; z-index: 90;
+        background: linear-gradient(90deg, rgba(0,120,255,0.4), rgba(255,180,70,0.3), rgba(0,200,200,0.4));
+      }
+      [data-composition-id="deploy-cta"] .bleed-bottom {
+        position: absolute; bottom: 0; left: 0; width: 100%; height: 5px; z-index: 90;
+        background: linear-gradient(90deg, rgba(200,0,200,0.4), rgba(0,200,200,0.35), rgba(255,180,70,0.4), rgba(0,120,255,0.35));
+        box-shadow: 0 0 16px rgba(200,0,200,0.15);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const scope = document.querySelector('[data-composition-id="deploy-cta"]');
+      const q = (sel) => scope.querySelector(sel);
+      const qa = (sel) => scope.querySelectorAll(sel);
+
+      // Generate noise particles
+      const field = q('#noise');
+      let seed = 77;
+      function srand() { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return (seed % 10000) / 10000; }
+      const colors = ['255,200,100','100,180,255','200,100,255','0,200,170','255,100,150','150,255,100'];
+      for (let i = 0; i < 100; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'noise-dot';
+        const x = srand() * 1920, y = srand() * 1080, sz = 1 + srand() * 2.5;
+        const c = colors[Math.floor(srand() * colors.length)];
+        const op = 0.08 + srand() * 0.2;
+        dot.style.cssText = 'left:'+x+'px;top:'+y+'px;width:'+sz+'px;height:'+sz+'px;background:rgba('+c+','+op+');box-shadow:0 0 '+(sz*3)+'px rgba('+c+','+(op*0.4)+');';
+        field.appendChild(dot);
+      }
+
+      // Rays rotate
+      tl.to(q('#rays'), { rotation: 30, duration: 5, ease: 'none' }, 0);
+
+      // Logos fade in
+      tl.to(q('#lockup'), { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0.2);
+      tl.to(q('#brand-labels'), { opacity: 1, duration: 0.4 }, 0.6);
+
+      // Install command types out
+      tl.to(q('#install-cmd'), { opacity: 1, duration: 0.2 }, 1.0);
+      const cmdStr = 'hermes skills install hyperframes';
+      const cmdEl = q('#cmd-text');
+      const proxy = { len: 0 };
+      tl.to(proxy, {
+        len: cmdStr.length,
+        duration: 1.2,
+        ease: 'steps(' + cmdStr.length + ')',
+        onUpdate: function() {
+          const l = Math.round(proxy.len);
+          const typed = cmdStr.substring(0, l);
+          const argStart = typed.indexOf('hyperframes');
+          if (argStart >= 0) {
+            cmdEl.innerHTML = '<span style="color:rgba(0,220,170,0.8);text-shadow:0 0 8px rgba(0,220,170,0.2)">' + typed.substring(0, argStart) + '</span><span style="color:#FFD080;text-shadow:0 0 10px rgba(255,208,128,0.25)">' + typed.substring(argStart) + '</span>';
+          } else {
+            cmdEl.innerHTML = '<span style="color:rgba(0,220,170,0.8);text-shadow:0 0 8px rgba(0,220,170,0.2)">' + typed + '</span>';
+          }
+        }
+      }, 1.2);
+
+      // Hide cursor after typing
+      tl.to(q('#cursor'), { opacity: 0, duration: 0.1 }, 2.5);
+
+      // Slash demo
+      tl.to(q('#slash-demo'), { opacity: 1, duration: 0.3 }, 2.8);
+
+      // Bottom meta
+      tl.to(q('#bottom-meta'), { opacity: 1, duration: 0.4 }, 3.5);
+
+      // Hold
+      tl.to({}, { duration: 1.0 }, 4.0);
+
+      window.__timelines["deploy-cta"] = tl;
+    </script>
+  </div>
+</template>

@@ -2,19 +2,19 @@
 
 > **READ THIS BEFORE PICKING UP THE EXAMPLES LIBRARY WORK.** This is the second handoff in the series.
 > - `HANDOFF.md` covers pipeline-quality v2-v9 work through May 18.
-> - **This doc** covers the example library work (May 19, batches 7-17 + 18 workflow audit + 19 full-video refs).
-> - `HANDOFF-full-video-refs.md` covers the batch 19 lift plan in detail (Verse asset IDs, source dir layout, recovery instructions).
+> - **This doc** covers the example library work (May 19, batches 7-17 + 18 workflow audit + 19-20 full-video refs).
+> - `HANDOFF-full-video-refs.md` covers the batch 19 + 20 lift plans in detail (Verse asset IDs, source dir layout, recovery instructions).
 
 ---
 
 ## TL;DR
 
-**What got built across batches 7-19:**
+**What got built across batches 7-20:**
 
 - **81 production-grade example scenes** at `skills/website-to-hyperframes/examples/` (sections 01-13). Standalone-renderable, lint-clean, snapshot-verified, composed 100% from HTML/CSS/SVG/GSAP/Canvas. Grand Tour reel at **9:22**.
 - **3-mode skill wiring** active across SKILL.md, step-3-storyboard, step-5-build, beat-builder-guide (batches 7-9).
 - **Workflow audit (batch 18, commit `851d62fc`)** — inverted the default visual strategy from "use captured assets" to "compose load-bearing visuals + assets-as-accents." Collapsed `step-1-design.md` from 615 → 157 lines. Added the manifesto in `SKILL.md` Step -1: "stop scrollers / alive every frame / physical world / go viral / get everything yourself."
-- **3 full-video references (batch 19)** — `examples/_full-video-refs/` now contains 3 real production launch reels (launch-video-2, claude-design-hyperframes-video, hermes-hyperframes) as a second tier teaching grammar (multi-beat assembly) on top of the 81 single-scene vocabulary.
+- **6 full-video references (batches 19 + 20)** — `examples/_full-video-refs/` is a second tier teaching grammar (multi-beat assembly) on top of the 81 single-scene vocabulary. **Tier A** (full 40s+ launch reels): launch-video-2, claude-design-hyperframes-video, hermes-hyperframes, fadeglow-music-video-v4. **Tier B** (10-15s short-form / single-mode refs): inspector-logo-intro, webgl-textures-playground. Together they cover 6 distinct architectural patterns (stacked sub-comps / clip stitching / single-comp-many-beats / single-comp-no-beats / sequential slots / shader-as-the-beat).
 
 **Why:** `HANDOFF.md` Recommendation 1 said skill prose was exhausted as a lever (11 eval branches all produced slideshow videos regardless of prose changes). Recommendation 2 said: **show, don't tell** — build production-grade reference examples agents can use. This library is that.
 
@@ -28,9 +28,54 @@
 - **step-5-build.md**: mode-aware build process; explicit "fresh ≠ paste, recombine ≠ frankenstein".
 - **beat-builder-guide.md**: 3-mode table is the FIRST mandatory read; "non-negotiable in every mode: customize."
 
-**Branch:** `feat/pipeline-quality-v2` (continued from prior session). **24 commits** total this session.
+**Branch:** `feat/pipeline-quality-v2` (continued from prior session). **28 commits** total this session.
 
 **Library is internally consistent.** Every scene appears in (a) its section README, (b) the master lookup table in `examples/README.md`, (c) the rendered MP4 list, and (d) the Verse asset ID table below. The technique-pick checklist in step-3 has reliable coverage — an agent can find any of the 81 scenes from the lookup table without grepping the directory.
+
+### What batch 20 added (3 more full-video refs — short-form + music-video + shader-as-the-beat)
+
+After batch 19 shipped 3 full-video refs (launch-video-2 / claude-design / hermes), three more production projects were surveyed in `~/Downloads/Archive` and `~/Downloads/Archive 2` and lifted into the `_full-video-refs/` tier. Each fills a distinct architectural pattern that the first 3 didn't cover:
+
+- **ref-04 inspector-logo-intro** (12.77s, 1344-line single composition). **Pattern: single composition, no sub-comps.** Halftone-canvas BG + 5 mini-beats inside one timeline (logo flash → reverse stroke → magnifying glass enter → inspector panel + cycling values → color picker hover). Source for the cycling-spans pattern that ships in `04-13-design-inspector`. Demonstrates production-density mini-reveal arc that doesn't need HyperShader. Track-index hygiene table (`#halftone-bg` track 0 through `#color-picker` track 8) included in the ref README. Verse: `e0474ffa-9c3b-4f50-b8aa-03c92ba72bf2`.
+- **ref-05 fadeglow-music-video-v4** (41.6s, 8 sequential beats). **Pattern: music-video grammar — no narration, music-driven cuts.** 8 sub-comp slots all on track 1 (no overlap), one music track, no captions, no SFX. Beat durations vary 2.11s → 9.74s driven by the song, not by script airtime. Warm cream + red + amber palette + CRT scanlines + kinetic typography across 8 distinct beats. Closer beat (`beat-08-div-timeline.html`) is the canonical "code editor on left + gradient canvas with kinetic text on right" pattern with rainbow gradient sweep fill. Fills the missing music-video mode in the library (everything else was product-marketing-skewed). Verse: `5eee1ed3-3255-473b-a0e0-f488eda984df`.
+- **ref-06 webgl-textures-playground** (12.0s, single Three.js + HTML overlay composition). **Pattern: shader-as-the-beat.** Three.js fullscreen plane running a custom domain-warp FBM + cosine-palette + iridescent-sweep fragment shader, with kinetic typography overlay using `mix-blend-mode: screen` so the text glows through the colored shader. Demonstrates the **seekable WebGL pattern** (`gsap.ticker.add()` reading `tl.time()`, NOT `requestAnimationFrame`) at scene scale — without it, the snapshot/render CLI shows a frozen first-frame. Library had shaders as transitions and shaders as layer effects, but nothing for "shader IS the load-bearing visual for the whole beat." This is it. Verse: `094d6602-c8cf-4c08-99a0-80345a60958f`.
+
+**Architectural pattern coverage now at 6 (was 3):**
+
+| # | Pattern | Demonstrated in |
+|---|---------|----------------|
+| 1 | Stacked live sub-comps (multi-act) | ref-01 launch-video-2 |
+| 2 | Pre-rendered clip stitching | ref-02 claude-design |
+| 3 | Single composition with many beats | ref-03 hermes |
+| 4 | Single composition (no beats) | ref-04 inspector-logo-intro |
+| 5 | Sequential sub-comp slots, same track | ref-05 fadeglow music video |
+| 6 | Three.js shader + HTML overlay | ref-06 webgl-textures |
+| (gap) | HyperShader.init() orchestrated multi-beat | — none yet, ref-07 candidate |
+
+Tier README updated to **Tier A** (full launch reels, 40s+) + **Tier B** (short-form / single-mode references, 10-15s). Disk cost stayed under 2.5MB total across all 6 refs. Gallery patched to show 6 ref cards. `HANDOFF-full-video-refs.md` updated with all 6 Verse asset IDs in the recovery section.
+
+### What batch 19 added (3 full-video refs — launch-video grammar)
+
+The 81 single-scene examples teach **vocabulary** (what an individual beat or technique looks like). They don't teach **grammar** — how 4-10 beats assemble into a 40-second video with HyperShader transitions or clip stitching, narration sync, intro hook, CTA close. Batch 19 lifted 3 real production launch reels into a new `_full-video-refs/` tier:
+
+- **ref-01 launch-video-2** (41.8s, 4 acts as stacked `<div>` slots with live sub-comps). Novelty: Act-1's 4-panel AI-agent IDE quartet (Claude Code + Cursor + Codex + Gemini CLI). Verse: `fb0a115b-81e6-4e3f-acae-6dbe8ef3def7`.
+- **ref-02 claude-design-hyperframes-video** (43.5s, 10 pre-rendered MP4 clips stitched + captions + music + 6 SFX). Notable for `claude-ui.html` (1209 lines), `dashboard.html` (1525 lines), `grid.html` (1621 lines) — heavy hand-composed UI per beat. Verse: `0e1f0a40-351d-4a2d-9b18-139c095a42dd`.
+- **ref-03 hermes-hyperframes** (41.0s, 1080×1080 square format, single 1367-line `parade.html` w/ 20 internal beats + Lottie captions sub-comp). VHS + CRT + Lottie. Verse: `51dbc7ce-42df-4a94-84ef-a10c302b4a2f`.
+
+Tier README at `examples/_full-video-refs/README.md` lists architectural patterns at a glance + how-to-study per ref + what's deliberately NOT bundled (audio files, brand-clip MP4s, transcript.json — listen/watch on Verse instead). Each ref has its own README with BEAT MAP + closest single-scene refs + asset-deps callout. `HANDOFF-full-video-refs.md` at repo root has the recovery plan (Verse asset IDs, source dir paths, re-render instructions).
+
+### What batch 18 added (workflow audit — invert the default visual strategy)
+
+The 11 prior pipeline-eval branches (HANDOFF.md lines 953-1062) all produced screenshot-slideshow videos despite the library + 3-mode wiring existing. Audited the steps 0-3 of the workflow to find why: the prose committed agents to "pull captured screenshots" before the 3-mode framework could redirect. Surgical edits inverted the default:
+
+- **SKILL.md** Step -1 manifesto added at top: "stop scrollers / alive every frame / physical world / go viral / get everything yourself / composed-primary / assets decorate" — the user's verbatim keywords condensed into a 7-line manifesto that frames the rest of the workflow.
+- **step-1-design.md** collapsed from 615 → 157 lines. Kept: Visual Theme (1 paragraph), Quick Reference table, Iteration Guide. Dropped: 8-section structure, 6 worked examples, depth-elevation tables, "what makes a great DESIGN.md" criteria — all were committing agents to over-specify before the storyboard step.
+- **step-3-storyboard.md** — line 243 ("Use captured screenshots over CSS recreations") deleted and replaced with "Compose the load-bearing visuals yourself..." Asset Audit reframed to accent-only. Beat template `### Assets` renamed to `### Composition + Accents`. Added "Opener default: fast intro to stop the scrollers."
+- **step-2-brief.md** — Question 3 reframed to compose-first options.
+
+The framing the user explicitly corrected: NOT "build everything yourself + don't use assets at all" but rather **composed-primary, assets-as-accents** — load-bearing visuals composed from divs/SVG/CSS/GSAP, assets used as decoration on top. The audit reflects that framing.
+
+Commit: `851d62fc`.
 
 ### What batch 17 added (2 more scenes)
 

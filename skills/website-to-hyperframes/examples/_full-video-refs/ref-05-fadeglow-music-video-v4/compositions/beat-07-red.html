@@ -1,0 +1,81 @@
+<template id="beat-07-red-template">
+<div data-composition-id="beat-07-red" data-start="0" data-duration="2.11" data-width="1920" data-height="1080">
+<style>
+  [data-composition-id="beat-07-red"]{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:'Archivo',sans-serif}
+  [data-composition-id="beat-07-red"] .xf-b7{position:absolute;inset:0;transform-origin:center center;will-change:transform,filter,opacity}
+  [data-composition-id="beat-07-red"] .frame{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%, #FF3B2F 0%, #E1231A 48%, #9E0E0A 100%);overflow:hidden}
+  [data-composition-id="beat-07-red"] .grain{position:absolute;inset:0;background-image:radial-gradient(rgba(0,0,0,0.1) 0.6px,transparent 0.9px);background-size:3px 3px;mix-blend-mode:multiply;opacity:0.5;pointer-events:none}
+  [data-composition-id="beat-07-red"] .beam{position:absolute;top:-200px;left:50%;width:1600px;height:1800px;background:radial-gradient(ellipse at 50% 0%, rgba(255,240,210,0.35), transparent 55%);pointer-events:none;transform:translateX(-50%)}
+  [data-composition-id="beat-07-red"] .circ{position:absolute;border-radius:50%}
+  [data-composition-id="beat-07-red"] .c1{width:380px;height:380px;background:#0E0E0E;top:80px;left:80px}
+  [data-composition-id="beat-07-red"] .c2{width:240px;height:240px;background:#FFE94F;bottom:120px;right:140px;border:12px solid #0E0E0E}
+  [data-composition-id="beat-07-red"] .c3{width:520px;height:260px;background:#0E0E0E;border-radius:260px 260px 0 0;bottom:0;left:0}
+  [data-composition-id="beat-07-red"] .barh{position:absolute;background:#0E0E0E;height:14px}
+  [data-composition-id="beat-07-red"] .b1{top:680px;right:0;width:520px}
+  [data-composition-id="beat-07-red"] .b2{top:720px;right:0;width:320px;background:#FFE94F;height:8px}
+  [data-composition-id="beat-07-red"] .word{position:absolute;top:50%;left:50%;font-family:'Anton',sans-serif;font-size:860px;line-height:0.82;letter-spacing:-0.04em;color:#FDF5E3;text-shadow:14px 14px 0 #0E0E0E;z-index:5;transform:translate(-50%,-50%)}
+  [data-composition-id="beat-07-red"] .sub{position:absolute;top:50%;left:50%;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:28px;letter-spacing:0.3em;text-transform:uppercase;color:#FDF5E3;z-index:6;transform:translate(-50%,calc(-50% + 420px))}
+  [data-composition-id="beat-07-red"] .sub span{background:#0E0E0E;padding:6px 14px;margin:0 6px}
+  [data-composition-id="beat-07-red"] .sub .yellow{background:#FFE94F;color:#0E0E0E}
+  [data-composition-id="beat-07-red"] .hud{position:absolute;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:18px;letter-spacing:0.2em;text-transform:uppercase;color:#FDF5E3;z-index:7}
+  [data-composition-id="beat-07-red"] .hud.tl{top:48px;left:72px}
+  [data-composition-id="beat-07-red"] .hud.tr{top:48px;right:72px;text-align:right}
+  [data-composition-id="beat-07-red"] .hud.bl{bottom:48px;left:72px}
+  [data-composition-id="beat-07-red"] .hud.br{bottom:48px;right:72px;text-align:right;color:#FFE94F}
+  [data-composition-id="beat-07-red"] .go{position:absolute;top:50%;left:50%;font-family:'Archivo',sans-serif;font-weight:900;font-size:120px;letter-spacing:-0.04em;color:#FFE94F;text-shadow:8px 8px 0 #0E0E0E;z-index:6;transform:translate(-50%,calc(-50% - 360px)) rotate(-3deg)}
+  [data-composition-id="beat-07-red"] .reg{position:absolute;top:280px;left:560px;width:120px;height:120px;border:8px solid #FDF5E3;border-radius:50%}
+  [data-composition-id="beat-07-red"] .reg::before,[data-composition-id="beat-07-red"] .reg::after{content:'';position:absolute;background:#FDF5E3}
+  [data-composition-id="beat-07-red"] .reg::before{left:50%;top:-20px;bottom:-20px;width:4px;margin-left:-2px}
+  [data-composition-id="beat-07-red"] .reg::after{top:50%;left:-20px;right:-20px;height:4px;margin-top:-2px}
+</style>
+<div class="xf-b7">
+<div class="frame" id="b7-frame">
+  <div class="beam" id="b7-beam"></div>
+  <div class="circ c1" id="b7-c1"></div>
+  <div class="circ c2" id="b7-c2"></div>
+  <div class="circ c3" id="b7-c3"></div>
+  <div class="barh b1" id="b7-b1"></div>
+  <div class="barh b2" id="b7-b2"></div>
+  <div class="grain"></div>
+  <div class="hud tl" id="b7-tl">&#9650; spotlight &middot; trigger 33.94s</div>
+  <div class="hud tr" id="b7-tr">#E1231A</div>
+  <div class="go" id="b7-go">go ahead<span style="font-style:italic">.</span></div>
+  <div class="word" id="b7-word">RED<span style="color:#FFE94F">.</span></div>
+  <div class="sub" id="b7-sub"><span>want this spotlight?</span><span class="yellow">RED</span></div>
+  <div class="reg" id="b7-reg"></div>
+  <div class="hud bl" id="b7-bl">color &middot; background &middot; spotlight</div>
+  <div class="hud br" id="b7-br">07 / 08 &nbsp; bauhaus red</div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script>
+(function(){
+  const DUR = 2.11;
+  // Words rel to 33.80: Want 0.0 this 0.14 spotlight 0.54 Red 0.94 Go 1.54 ahead 1.74
+  const tl = gsap.timeline({ paused: true });
+  // Transition IN: zoom-through SHORT (matches b6 forward push, compressed for 2.11s beat)
+  tl.fromTo('.xf-b7', { scale:0.86, filter:'blur(12px)', opacity:0.15 }, { scale:1, filter:'blur(0px)', opacity:1, duration:0.25, ease:'expo.out' }, 0);
+  // Transition OUT: curve-left (to b8)
+  tl.to('.xf-b7', { x:-80, scale:0.94, filter:'blur(8px)', opacity:0.25, duration:0.25, ease:'power2.in', overwrite:'auto' }, DUR - 0.25);
+  tl.from('#b7-frame', { scale:1.2, duration:0.4, ease:'power3.out' }, 0);
+  tl.from('#b7-beam', { opacity:0, scaleY:0, duration:0.5, ease:'power2.out', transformOrigin:'top center' }, 0.05);
+  tl.from('#b7-sub', { y:40, opacity:0, duration:0.3, ease:'power3.out' }, 0.0);
+  tl.from('#b7-word', { scale:0.4, opacity:0, duration:0.35, ease:'back.out(2)' }, 0.94);
+  tl.from('#b7-go', { y:-40, opacity:0, rotation:0, duration:0.35, ease:'back.out(1.8)' }, 1.54);
+  tl.from('#b7-c1', { scale:0, opacity:0, duration:0.35, ease:'back.out(1.6)' }, 0.1);
+  tl.from('#b7-c2', { scale:0, opacity:0, duration:0.35, ease:'back.out(1.6)' }, 0.2);
+  tl.from('#b7-c3', { scaleY:0, opacity:0, duration:0.4, ease:'power3.out', transformOrigin:'bottom center' }, 0.15);
+  tl.from('#b7-b1', { scaleX:0, duration:0.3, ease:'power3.out', transformOrigin:'right center' }, 0.3);
+  tl.from('#b7-b2', { scaleX:0, duration:0.3, ease:'power3.out', transformOrigin:'right center' }, 0.4);
+  tl.from('#b7-reg', { scale:0, opacity:0, duration:0.3, ease:'back.out(2)' }, 0.5);
+  tl.from('#b7-tl,#b7-tr,#b7-bl,#b7-br', { opacity:0, duration:0.3, stagger:0.06 }, 0.2);
+  // Pulsate RED once more on "ahead"
+  tl.to('#b7-word', { scale:1.06, duration:0.2, ease:'power2.out' }, 1.74);
+  tl.to('#b7-word', { scale:1.0, duration:0.25, ease:'power2.inOut' }, 1.94);
+  tl.to({}, { duration: DUR }, 0);
+  window.__timelines = window.__timelines || {};
+  window.__timelines["beat-07-red"] = tl;
+})();
+</script>
+</div>
+</template>

@@ -1,0 +1,252 @@
+<template id="boot-sequence-template">
+  <div data-composition-id="boot-sequence" data-width="1920" data-height="1080" data-start="0">
+
+    <!-- VHS noise bands -->
+    <div class="noise-band nb-1"></div>
+    <div class="noise-band nb-2"></div>
+    <div class="noise-band nb-3"></div>
+
+    <!-- Main terminal content -->
+    <div class="terminal">
+      <div class="boot-header">
+        <span class="sys">NOUS RESEARCH SYSTEMS</span><span class="dim"> (C) 2024-2026</span><br>
+        <span class="dim">HERMES BIOS v3.7.1 — Neural Coprocessor Firmware</span>
+      </div>
+
+      <div class="boot-lines">
+        <div class="bl" id="bl-1"><span class="dim">Checking neural memory..........</span> <span class="ok">2000000K OK</span></div>
+        <div class="bl" id="bl-2"><span class="dim">Detecting tool subsystems.......</span> <span class="ok">[ 61 tools registered ]</span></div>
+        <div class="bl" id="bl-3"><span class="dim">Scanning skill libraries........</span> <span class="ok">[ 666 skills indexed ]</span></div>
+        <div class="bl" id="bl-4"><span class="dim">Initializing language core......</span> <span class="ok">[ claude-opus-4-6 online ]</span></div>
+        <div class="bl" id="bl-5"><span class="dim">Terminal backend................</span> <span class="ok">[ PTY multiplexer active ]</span></div>
+        <div class="bl" id="bl-6"><span class="dim">Skills hub connected............</span> <span class="ok">[ agentskills.io ]</span></div>
+      </div>
+
+      <!-- Skill detection flash -->
+      <div class="detect-flash" id="detect-flash"></div>
+
+      <div class="skill-block" id="skill-block">
+        <div class="skill-header" id="skill-header">
+          <span class="warn">[ NEW SKILL DETECTED ]</span>
+        </div>
+
+        <div class="skill-name" id="skill-name">
+          <span class="hf-name">HYPERFRAMES</span>
+        </div>
+
+        <div class="skill-meta" id="skill-meta">
+          <span class="arg">v1.0.0</span><span class="dim"> • HTML-to-video rendering framework • MIT</span><br>
+          <span class="dim">source: </span><span class="ok">heygen/hyperframes</span><span class="dim"> • </span><span class="arg">creative / media</span>
+        </div>
+
+        <div class="skill-validate" id="skill-validate">
+          <div class="sv-line" id="sv-1"><span class="dim">Validating SKILL.md............</span> <span class="ok">[ PASSED ]</span></div>
+          <div class="sv-line" id="sv-2"><span class="dim">Registering slash command.......</span> <span class="ok">[ /hyperframes ]</span></div>
+        </div>
+
+        <div class="module-header" id="mod-header"><span class="dim">Loading modules:</span></div>
+
+        <div class="module-grid" id="mod-grid">
+          <div class="mod" id="m-1"><span class="mod-name">compositions</span><span class="mod-ok">OK</span></div>
+          <div class="mod" id="m-2"><span class="mod-name">gsap-engine</span><span class="mod-ok">OK</span></div>
+          <div class="mod" id="m-3"><span class="mod-name">captions</span><span class="mod-ok">OK</span></div>
+          <div class="mod" id="m-4"><span class="mod-name">rendering</span><span class="mod-ok">OK</span></div>
+          <div class="mod" id="m-5"><span class="mod-name">studio</span><span class="mod-ok">OK</span></div>
+          <div class="mod" id="m-6"><span class="mod-name">templates</span><span class="mod-ok">OK</span></div>
+          <div class="mod" id="m-7"><span class="mod-name">registry</span><span class="mod-ok">OK</span></div>
+          <div class="mod" id="m-8"><span class="mod-name">cli</span><span class="mod-ok">OK</span></div>
+          <div class="mod" id="m-9"><span class="mod-name">lint+validate</span><span class="mod-ok">OK</span></div>
+        </div>
+
+        <div class="install-line" id="install-line">
+          <span class="ok-bright">SKILL INSTALLED ✓</span><br>
+          <span class="dim">Hermes Agent v1.0.0 • Nous Research</span><br>
+          <span class="dim">667 skills • /hyperframes ready</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CRT overlays -->
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    <div class="bleed-top"></div>
+    <div class="bleed-bottom"></div>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+      [data-composition-id="boot-sequence"] {
+        width: 1920px; height: 1080px; position: relative; overflow: hidden;
+        background: #000; font-family: 'VT323', monospace;
+      }
+
+      [data-composition-id="boot-sequence"] .noise-band {
+        position: absolute; left: 0; width: 100%; z-index: 5;
+        pointer-events: none; opacity: 0;
+      }
+      [data-composition-id="boot-sequence"] .nb-1 {
+        top: 15%; height: 60px;
+        background: linear-gradient(180deg, transparent, rgba(255,180,70,0.06), rgba(255,100,50,0.04), transparent);
+      }
+      [data-composition-id="boot-sequence"] .nb-2 {
+        top: 45%; height: 80px;
+        background: linear-gradient(180deg, transparent, rgba(0,200,200,0.05), rgba(0,150,255,0.04), transparent);
+      }
+      [data-composition-id="boot-sequence"] .nb-3 {
+        top: 72%; height: 50px;
+        background: linear-gradient(180deg, transparent, rgba(200,0,200,0.05), rgba(255,50,150,0.03), transparent);
+      }
+
+      [data-composition-id="boot-sequence"] .terminal {
+        position: absolute; left: 80px; top: 60px; z-index: 10;
+        width: 1200px;
+      }
+
+      [data-composition-id="boot-sequence"] .boot-header {
+        font-size: 22px; line-height: 1.4; margin-bottom: 16px; opacity: 0;
+      }
+      [data-composition-id="boot-sequence"] .sys {
+        color: #33FF33;
+        text-shadow: 0 0 8px rgba(51,255,51,0.4), 3px 0 0 rgba(255,0,0,0.08), -3px 0 0 rgba(0,100,255,0.08);
+      }
+      [data-composition-id="boot-sequence"] .dim { color: rgba(51,255,51,0.35); }
+      [data-composition-id="boot-sequence"] .ok {
+        color: #33FF33; text-shadow: 0 0 6px rgba(51,255,51,0.3);
+      }
+      [data-composition-id="boot-sequence"] .ok-bright {
+        color: #33FF33; font-size: 26px;
+        text-shadow: 0 0 12px rgba(51,255,51,0.5), 0 0 30px rgba(51,255,51,0.2);
+      }
+      [data-composition-id="boot-sequence"] .warn {
+        color: #FFB446;
+        text-shadow: 0 0 10px rgba(255,180,70,0.5), 4px 0 0 rgba(255,0,0,0.1), -4px 0 0 rgba(0,100,255,0.1);
+      }
+      [data-composition-id="boot-sequence"] .arg { color: #FFD080; }
+      [data-composition-id="boot-sequence"] .hf-name {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 48px; font-weight: 700; color: #FFD080;
+        text-shadow: 0 0 20px rgba(255,208,128,0.5), 0 0 60px rgba(255,180,70,0.2),
+          4px 0 0 rgba(255,0,0,0.12), -4px 0 0 rgba(0,100,255,0.12);
+      }
+
+      [data-composition-id="boot-sequence"] .bl {
+        font-size: 21px; line-height: 1.5; opacity: 0;
+      }
+      [data-composition-id="boot-sequence"] .boot-lines { margin-bottom: 20px; }
+
+      [data-composition-id="boot-sequence"] .detect-flash {
+        position: absolute; inset: 0; z-index: 15;
+        background: rgba(255,180,70,0.15); opacity: 0; pointer-events: none;
+      }
+
+      [data-composition-id="boot-sequence"] .skill-block { opacity: 0; }
+      [data-composition-id="boot-sequence"] .skill-header {
+        font-size: 28px; margin-bottom: 12px; opacity: 0;
+      }
+      [data-composition-id="boot-sequence"] .skill-name {
+        margin-bottom: 8px; opacity: 0;
+      }
+      [data-composition-id="boot-sequence"] .skill-meta {
+        font-size: 20px; line-height: 1.5; margin-bottom: 16px; opacity: 0;
+      }
+      [data-composition-id="boot-sequence"] .sv-line {
+        font-size: 21px; line-height: 1.5; opacity: 0;
+      }
+      [data-composition-id="boot-sequence"] .skill-validate { margin-bottom: 12px; }
+      [data-composition-id="boot-sequence"] .module-header {
+        font-size: 20px; margin-bottom: 8px; opacity: 0;
+      }
+
+      [data-composition-id="boot-sequence"] .module-grid {
+        display: grid; grid-template-columns: repeat(3, 200px);
+        gap: 4px 32px; margin-bottom: 16px;
+      }
+      [data-composition-id="boot-sequence"] .mod {
+        font-size: 19px; display: flex; justify-content: space-between;
+        opacity: 0;
+      }
+      [data-composition-id="boot-sequence"] .mod-name { color: rgba(51,255,51,0.5); }
+      [data-composition-id="boot-sequence"] .mod-ok {
+        color: #33FF33; text-shadow: 0 0 6px rgba(51,255,51,0.4);
+      }
+
+      [data-composition-id="boot-sequence"] .install-line {
+        font-size: 22px; line-height: 1.5; opacity: 0;
+      }
+
+      /* CRT */
+      [data-composition-id="boot-sequence"] .scanlines {
+        position: absolute; inset: 0; z-index: 80;
+        background: repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px);
+        pointer-events: none;
+      }
+      [data-composition-id="boot-sequence"] .vignette {
+        position: absolute; inset: 0; z-index: 85;
+        background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.6) 100%);
+        pointer-events: none;
+      }
+      [data-composition-id="boot-sequence"] .bleed-top {
+        position: absolute; top: 0; left: 0; width: 100%; height: 3px; z-index: 90;
+        background: linear-gradient(90deg, rgba(0,120,255,0.4), rgba(255,180,70,0.3), rgba(0,200,200,0.4));
+      }
+      [data-composition-id="boot-sequence"] .bleed-bottom {
+        position: absolute; bottom: 0; left: 0; width: 100%; height: 5px; z-index: 90;
+        background: linear-gradient(90deg, rgba(200,0,200,0.4), rgba(0,200,200,0.35), rgba(255,180,70,0.4), rgba(0,120,255,0.35));
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const scope = document.querySelector('[data-composition-id="boot-sequence"]');
+      const q = (sel) => scope.querySelector(sel);
+      const qa = (sel) => scope.querySelectorAll(sel);
+
+      // Noise bands drift continuously
+      tl.to(qa('.noise-band'), { opacity: 1, duration: 0.3 }, 0);
+      tl.to(q('.nb-1'), { y: 120, duration: 7, ease: 'none' }, 0);
+      tl.to(q('.nb-2'), { y: -80, duration: 7, ease: 'none' }, 0);
+      tl.to(q('.nb-3'), { y: 60, duration: 7, ease: 'none' }, 0);
+
+      // Boot header appears
+      tl.to(q('.boot-header'), { opacity: 1, duration: 0.1 }, 0.1);
+
+      // Boot lines fire rapidly
+      const bootLines = qa('.bl');
+      bootLines.forEach((bl, i) => {
+        tl.to(bl, { opacity: 1, duration: 0.05 }, 0.3 + i * 0.25);
+      });
+
+      // Detection flash at ~2s
+      tl.to(q('#detect-flash'), { opacity: 1, duration: 0.08 }, 2.0);
+      tl.to(q('#detect-flash'), { opacity: 0, duration: 0.3 }, 2.15);
+
+      // Skill block appears
+      tl.to(q('#skill-block'), { opacity: 1, duration: 0.1 }, 2.3);
+      tl.to(q('#skill-header'), { opacity: 1, duration: 0.15 }, 2.4);
+      tl.to(q('#skill-name'), { opacity: 1, duration: 0.2 }, 2.7);
+      tl.to(q('#skill-meta'), { opacity: 1, duration: 0.2 }, 3.0);
+
+      // Validation lines
+      tl.to(q('#sv-1'), { opacity: 1, duration: 0.1 }, 3.4);
+      tl.to(q('#sv-2'), { opacity: 1, duration: 0.1 }, 3.7);
+
+      // Module header + grid
+      tl.to(q('#mod-header'), { opacity: 1, duration: 0.1 }, 4.0);
+      const mods = qa('.mod');
+      mods.forEach((m, i) => {
+        tl.to(m, { opacity: 1, duration: 0.05 }, 4.2 + i * 0.15);
+      });
+
+      // Install confirmation
+      tl.to(q('#install-line'), { opacity: 1, duration: 0.2 }, 5.8);
+
+      // Hold to end
+      tl.to({}, { duration: 0.5 }, 6.5);
+
+      window.__timelines["boot-sequence"] = tl;
+    </script>
+  </div>
+</template>

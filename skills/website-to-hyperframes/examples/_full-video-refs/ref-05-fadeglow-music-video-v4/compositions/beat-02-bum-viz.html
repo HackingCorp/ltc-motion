@@ -1,0 +1,133 @@
+<template id="beat-02-bum-viz-template">
+<div data-composition-id="beat-02-bum-viz" data-start="0" data-duration="9.74" data-width="1920" data-height="1080">
+<style>
+  [data-composition-id="beat-02-bum-viz"]{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;background:#FFFFFF;font-family:'Bricolage Grotesque',sans-serif}
+  [data-composition-id="beat-02-bum-viz"] .xf-b2{position:absolute;inset:0;transform-origin:center center;will-change:transform,filter,opacity}
+  [data-composition-id="beat-02-bum-viz"] .rule{position:absolute;left:0;right:0;height:4px;background:#000}
+  [data-composition-id="beat-02-bum-viz"] .rule.top{top:96px}[data-composition-id="beat-02-bum-viz"] .rule.bot{bottom:96px}
+  [data-composition-id="beat-02-bum-viz"] .mono{font-family:'Space Mono',monospace;font-weight:700;letter-spacing:0.04em;text-transform:uppercase}
+  [data-composition-id="beat-02-bum-viz"] .hud{position:absolute;font-size:20px;font-family:'Space Mono',monospace;font-weight:700;letter-spacing:0.04em;text-transform:uppercase}
+  [data-composition-id="beat-02-bum-viz"] .hud.tl{top:30px;left:48px}
+  [data-composition-id="beat-02-bum-viz"] .hud.tr{top:30px;right:48px;text-align:right}
+  [data-composition-id="beat-02-bum-viz"] .hud.bl{bottom:30px;left:48px}
+  [data-composition-id="beat-02-bum-viz"] .hud.br{bottom:30px;right:48px;text-align:right}
+  [data-composition-id="beat-02-bum-viz"] .dot{display:inline-block;width:10px;height:10px;background:#FF2D7A;border-radius:50%;margin:0 10px 2px 0;vertical-align:middle;box-shadow:0 0 0 3px rgba(255,45,122,0.25)}
+  [data-composition-id="beat-02-bum-viz"] .bars{position:absolute;left:48px;right:48px;top:130px;bottom:360px;display:flex;align-items:flex-end;gap:6px;transform-origin:center bottom}
+  [data-composition-id="beat-02-bum-viz"] .bar{flex:1;background:#FF2D7A;border:3px solid #000;border-bottom:none;box-shadow:6px 0 0 #000;transform-origin:bottom}
+  [data-composition-id="beat-02-bum-viz"] .bar.pk{background:#1E1E1E}
+  [data-composition-id="beat-02-bum-viz"] .center{position:absolute;left:48px;right:48px;bottom:130px;height:210px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+  [data-composition-id="beat-02-bum-viz"] .bum{font-size:220px;font-weight:800;line-height:0.82;letter-spacing:-0.04em;color:#1E1E1E;position:relative}
+  [data-composition-id="beat-02-bum-viz"] .bum.b{color:#FF2D7A;transform:translateY(-14px) rotate(-2deg)}
+  [data-composition-id="beat-02-bum-viz"] .bum.c{color:#FFE94F;-webkit-text-stroke:4px #000;transform:translateY(10px) rotate(1.5deg);text-shadow:8px 8px 0 #000}
+  [data-composition-id="beat-02-bum-viz"] .bum.d{color:#1E1E1E;transform:rotate(-1deg)}
+  [data-composition-id="beat-02-bum-viz"] .beatgrid{position:absolute;left:48px;right:48px;top:110px;display:flex;gap:4px;height:12px}
+  [data-composition-id="beat-02-bum-viz"] .beatgrid span{flex:1;background:#EAEAEA;border-radius:2px;opacity:0}
+  [data-composition-id="beat-02-bum-viz"] .beatgrid span.on{background:#FF2D7A}
+  [data-composition-id="beat-02-bum-viz"] .beatgrid span.dn{background:#1E1E1E}
+  [data-composition-id="beat-02-bum-viz"] .bigbpm{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Space Mono',monospace;font-size:36px;font-weight:700;color:rgba(0,0,0,0.05);letter-spacing:0.3em;text-transform:uppercase;pointer-events:none;z-index:0}
+  [data-composition-id="beat-02-bum-viz"] .peakchip{position:absolute;top:40px;left:50%;background:#FFE94F;border:3px solid #000;padding:8px 26px;font-family:'Space Mono',monospace;font-weight:700;font-size:18px;letter-spacing:0.3em;text-transform:uppercase;box-shadow:6px 6px 0 #000;transform:translateX(-50%)}
+</style>
+<div class="xf-b2">
+  <div class="rule top" id="b2-rt"></div><div class="rule bot" id="b2-rb"></div>
+  <div class="peakchip" id="b2-chip">PEAK &middot; BUM CHANT &middot; 09.7s</div>
+  <div class="hud tl" id="b2-tl"><span class="dot"></span>ANALYZER //LIVE</div>
+  <div class="hud tr" id="b2-tr">BPM <span style="font-size:28px">124.3</span> &nbsp; PEAK <span id="b2-peak">0.00</span></div>
+  <div class="hud bl" id="b2-bl">ch. LOW &middot; MID &middot; HIGH &nbsp; <span style="color:#FF2D7A">&#9679;</span> kick &nbsp; <span style="color:#1E1E1E">&#9679;</span> snare</div>
+  <div class="hud br" id="b2-br">02 / 08 &nbsp; VIZ HERO</div>
+
+  <div class="bigbpm">bum bum bum bum bum bum bum bum bum bum bum bum</div>
+
+  <div class="beatgrid" id="bg"></div>
+
+  <div class="bars" id="bars"></div>
+
+  <div class="center">
+    <span class="bum a" id="bum-a">BUM</span>
+    <span class="bum b" id="bum-b">BUM</span>
+    <span class="bum c" id="bum-c">BUM</span>
+    <span class="bum d" id="bum-d">BUM</span>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script>
+(function(){
+  const DUR = 9.74;
+  const root = document.querySelector('[data-composition-id="beat-02-bum-viz"]');
+  const heights=[62,78,44,88,96,54,72,90,64,82,46,94,70,58,86,68,92,80,50,74,64,88,78,86,54,70,62,82,48,66,58,80,72,44,64];
+  const bars=root.querySelector('#bars');
+  heights.forEach((h,i)=>{const d=document.createElement('div');d.className='bar'+(h>85?' pk':'');d.style.height=h+'%';d.id='bar-'+i;bars.appendChild(d);});
+  const bg=root.querySelector('#bg');
+  const pattern=[1,0,0,2,0,1,0,0,2,1,0,0,2,0,1,0,0,2,0,0,1,0,0,2];
+  pattern.forEach((v,i)=>{const s=document.createElement('span');if(v===1)s.className='on';if(v===2)s.className='dn';s.id='bg-'+i;bg.appendChild(s);});
+
+  const tl = gsap.timeline({ paused: true });
+  // Transition IN (zoom-through from b1's forward push)
+  tl.fromTo('.xf-b2', { scale:0.88, filter:'blur(10px)', opacity:0.2 }, { scale:1, filter:'blur(0px)', opacity:1, duration:0.3, ease:'expo.out' }, 0);
+  // Transition OUT (curve-UP to b3 — same upward momentum on both sides of cut)
+  tl.to('.xf-b2', { y:-100, scale:0.94, filter:'blur(8px)', opacity:0.25, duration:0.3, ease:'power2.in', overwrite:'auto' }, DUR - 0.3);
+  // Entrance
+  tl.from('#b2-rt', { scaleX:0, duration:0.5, ease:'power3.out', transformOrigin:'left center' }, 0.1);
+  tl.from('#b2-rb', { scaleX:0, duration:0.5, ease:'power3.out', transformOrigin:'right center' }, 0.1);
+  tl.from('#b2-chip', { y:-40, opacity:0, duration:0.4, ease:'back.out(2)' }, 0.25);
+  tl.from('#b2-tl', { x:-30, opacity:0, duration:0.35, ease:'power2.out' }, 0.3);
+  tl.from('#b2-tr', { x:30, opacity:0, duration:0.35, ease:'power2.out' }, 0.3);
+  tl.from('#b2-bl', { y:30, opacity:0, duration:0.35, ease:'power2.out' }, 0.4);
+  tl.from('#b2-br', { y:30, opacity:0, duration:0.35, ease:'power2.out' }, 0.4);
+  // Bars: initial pop from bottom, staggered
+  tl.from('#bars .bar', { scaleY:0, duration:0.5, ease:'back.out(1.4)', stagger:{ each:0.012, from:'center' } }, 0.2);
+
+  // Idle per-bar micro-motion — top of bar breathes up/down while base stays rigid.
+  // Animates `height` (in %) directly; bars are flex-items aligned to bottom so the
+  // top edge is what moves. Coexists with bum pulses (which drive scaleY).
+  const IDLE_START = 0.80;
+  const IDLE_END = DUR - 0.35;
+  heights.forEach((baseH, i) => {
+    const amp = 4 + (i * 7) % 8;                      // 4-11% height delta
+    const halfCycle = 0.55 + ((i * 3) % 9) * 0.04;   // 0.55-0.87s per half
+    const phase = ((i * 0.19) % halfCycle);          // stagger starts
+    const start = IDLE_START + phase;
+    const span = IDLE_END - start;
+    if (span <= halfCycle * 2) return;
+    const repeat = Math.max(1, Math.floor(span / halfCycle) - 1);
+    // Alternate first half direction so neighbouring bars don't move in lockstep
+    const target = (i % 2 === 0) ? Math.max(20, baseH - amp) : Math.min(100, baseH + amp);
+    tl.to('#bar-' + i, { height: target + '%', duration: halfCycle, ease:'sine.inOut', yoyo:true, repeat:repeat }, start);
+  });
+  // BUM quads initial hide
+  tl.from('#bum-a,#bum-b,#bum-c,#bum-d', { y:60, opacity:0, duration:0.45, ease:'power3.out', stagger:0.08 }, 0.5);
+
+  // Vocal-stem onset detection (librosa on isolated vocals.wav, window 4.60-14.80)
+  // — each entry is a literal syllable attack in the "bum bum bum" chant.
+  const bumsAbs = [4.913,5.111,5.25,5.54,6.492,6.806,7.479,7.77,8.269,9.047,9.36,9.685,9.848,10.161,10.3,10.614,11.554,11.879,12.831,13.458];
+  // Phrase heads (first bum of each bar-like cluster) — hit these harder.
+  const downbeatsAbs = [4.913,6.492,7.77,9.047,10.614,11.554,12.831];
+  const OFFSET = 4.84;
+  const bums = bumsAbs.map(t => +(t - OFFSET).toFixed(3));
+  const downbeatSet = new Set(downbeatsAbs.map(t => +(t - OFFSET).toFixed(3)));
+  const bumIds = ['#bum-a','#bum-b','#bum-c','#bum-d'];
+  bums.forEach((t, i) => {
+    const isDown = downbeatSet.has(t);
+    // Pulse all bars scaleY briefly per beat — downbeats hit harder
+    const dip = isDown ? 0.62 : 0.82;
+    tl.to('#bars .bar', { scaleY: dip, duration:0.06, ease:'power2.out', overwrite:'auto' }, t);
+    tl.to('#bars .bar', { scaleY: 1, duration:0.28, ease:'elastic.out(1,0.55)', overwrite:'auto' }, t+0.06);
+    // Flash the corresponding BUM word (rotate through 4 positions; downbeat gets bigger pop)
+    const bid = bumIds[i % 4];
+    const popScale = isDown ? 1.28 : 1.14;
+    tl.to(bid, { scale: popScale, duration:0.08, ease:'power2.out', overwrite:'auto' }, t);
+    tl.to(bid, { scale: 1.0, duration:0.22, ease:'power2.inOut', overwrite:'auto' }, t+0.08);
+    // Beat grid tick
+    const gi = Math.min(Math.floor(t / DUR * pattern.length), pattern.length-1);
+    tl.to('#bg-'+gi, { opacity:1, duration:0.15 }, t);
+    // Peak readout (deterministic)
+    const v = (0.62 + ((i*11)%40)/100).toFixed(2);
+    tl.call(()=>{ const el=root.querySelector('#b2-peak'); if(el) el.textContent=v; }, null, t);
+  });
+
+  tl.to({}, { duration: DUR }, 0);
+  window.__timelines = window.__timelines || {};
+  window.__timelines["beat-02-bum-viz"] = tl;
+})();
+</script>
+</div>
+</template>

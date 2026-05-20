@@ -1,0 +1,78 @@
+<template id="a3-beat-05-template">
+  <div
+    data-composition-id="a3-beat-05"
+    data-width="1920"
+    data-height="1080"
+    data-start="0"
+    data-duration="1.4"
+  >
+    <video id="a3-beat-05-video" src="compositions/act-3-clips/a3-05-spotify.mp4" muted playsinline
+           data-start="0" data-duration="1.4" data-track-index="1"></video>
+    <div class="cap">spotify.com</div>
+
+    <style>
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("../../fonts/JetBrainsMono-Variable.woff2") format("woff2-variations");
+        font-weight: 100 800;
+        font-display: block;
+      }
+      [data-composition-id="a3-beat-05"] {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000;
+      }
+      [data-composition-id="a3-beat-05"] video {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        object-fit: cover;
+      }
+      [data-composition-id="a3-beat-05"] .cap {
+        position: absolute;
+        left: 48px;
+        bottom: 48px;
+        padding: 10px 20px;
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 28px;
+        font-weight: 500;
+        color: #f7f8f8;
+        background: rgba(0, 0, 0, 0.55);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        letter-spacing: 0.01em;
+        opacity: 0;
+        z-index: 10;
+      }
+      [data-composition-id="a3-beat-05"] .cap::before {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: #00c3ff;
+        border-radius: 50%;
+        margin-right: 12px;
+        transform: translateY(-2px);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var root = document.querySelector(`[data-composition-id="a3-beat-05"]`);
+        var cap = root.querySelector(".cap");
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+        var dur = 1.4;
+        tl.fromTo(cap, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.12);
+        tl.to(cap, { opacity: 0, duration: 0.15, ease: "power1.in" }, dur - 0.25);
+        window.__timelines["a3-beat-05"] = tl;
+      })();
+    </script>
+  </div>
+</template>

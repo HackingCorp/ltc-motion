@@ -1,0 +1,63 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Beat 3 · CRT thesis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@500;700&display=swap">
+<style>
+  html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#0A1530}
+  .frame{position:relative;width:1920px;height:1080px;background:radial-gradient(ellipse at center,#142B66 0%,#0A1530 55%,#050B1C 100%);font-family:'VT323',monospace}
+  .scan{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(255,255,255,0.02) 0 2px,rgba(0,0,0,0.18) 2px 4px);mix-blend-mode:screen}
+  .vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,0.7) 100%)}
+  .crt{position:absolute;left:120px;right:120px;top:80px;bottom:140px;border-radius:80px/45px;border:3px solid rgba(255,180,70,0.25);box-shadow:0 0 120px rgba(255,180,70,0.1) inset,0 0 40px rgba(0,200,255,0.07) inset;overflow:hidden}
+  .hud{position:absolute;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:20px;letter-spacing:0.12em;text-transform:uppercase;color:#FFB446;text-shadow:0 0 10px rgba(255,180,70,0.55)}
+  .hud.tl{top:50px;left:80px}
+  .hud.tr{top:50px;right:80px;text-align:right}
+  .hud.bl{bottom:50px;left:80px;color:#22DDAA;text-shadow:0 0 10px rgba(34,221,170,0.6)}
+  .hud.br{bottom:50px;right:80px;text-align:right;color:#E9EDFF;text-shadow:0 0 8px rgba(200,220,255,0.6)}
+  .dim{opacity:0.5}
+  .term{position:absolute;top:120px;left:100px;font-family:'VT323',monospace;font-size:40px;color:#22DDAA;text-shadow:0 0 10px #22DDAA;line-height:1.4}
+  .term .prompt{color:#FFB446;text-shadow:0 0 8px #FFB446}
+  .hero{position:absolute;top:300px;left:0;right:0;text-align:center;font-family:'VT323',monospace;font-size:150px;line-height:1;color:#FFE1A8;text-shadow:0 0 20px rgba(255,180,70,0.7),0 0 40px rgba(255,100,60,0.3);letter-spacing:0.01em}
+  .hero .row1{display:block}
+  .hero .row2{display:block;color:#FF7A50;text-shadow:0 0 22px rgba(255,100,60,0.9)}
+  .hero .row3{display:block;color:#FFE1A8}
+  .hero .zap{color:#22DDAA;text-shadow:0 0 20px #22DDAA}
+  .cursor{display:inline-block;width:40px;height:100px;background:#FFE1A8;vertical-align:-14px;margin-left:10px;box-shadow:0 0 20px rgba(255,225,168,0.8)}
+  .miniwin{position:absolute;right:140px;bottom:180px;width:360px;height:220px;background:#0E1B3E;border:2px solid #FFB446;box-shadow:0 0 20px rgba(255,180,70,0.4)}
+  .miniwin .tt{background:#FFB446;color:#0A1530;font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:14px;padding:6px 10px;letter-spacing:0.15em;text-transform:uppercase}
+  .miniwin .body{padding:18px;color:#E9EDFF;font-family:'VT323',monospace;font-size:26px;line-height:1.2;text-shadow:0 0 6px rgba(200,220,255,0.5)}
+  .pulse{position:absolute;top:50%;left:50%;width:1400px;height:1400px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,180,70,0.08),transparent 65%);pointer-events:none}
+  .glitch{position:absolute;left:0;right:0;top:420px;height:6px;background:linear-gradient(90deg,transparent,rgba(34,221,170,0.6),transparent);mix-blend-mode:screen}
+</style></head>
+<body>
+<div class="frame">
+  <div class="pulse"></div>
+  <div class="crt">
+    <div class="hud tl">▮ CRT &middot; CH 03 &middot; 5.2s</div>
+    <div class="hud tr"><span class="dim">sync</span> ■ 60Hz</div>
+    <div class="term"><span class="prompt">&gt;</span> view-source: <span class="dim">./you.mp4</span>&nbsp;<span style="color:#E9EDFF">_</span></div>
+
+    <div class="hero">
+      <span class="row1">THIS VIDEO</span>
+      <span class="row2">you&rsquo;re watching right now</span>
+      <span class="row3">AIN&rsquo;T NOTHING BUT</span>
+      <span class="row3" style="font-size:220px;display:block;margin-top:10px"><span class="zap">&lt;</span>HTML<span class="zap">&gt;</span><span class="cursor"></span></span>
+    </div>
+
+    <div class="glitch"></div>
+
+    <div class="miniwin">
+      <div class="tt">■ ■ ■  inspector</div>
+      <div class="body">
+        &lt;video src=<span style="color:#FFB446">"self"</span>&gt;<br>
+        &nbsp;&nbsp;just.html<br>
+        &lt;/video&gt;
+      </div>
+    </div>
+
+    <div class="hud bl">▷ playback 00:17.4 / 00:20.9</div>
+    <div class="hud br">03 / 08 &nbsp; thesis</div>
+  </div>
+  <div class="scan"></div>
+  <div class="vignette"></div>
+</div>
+</body></html>

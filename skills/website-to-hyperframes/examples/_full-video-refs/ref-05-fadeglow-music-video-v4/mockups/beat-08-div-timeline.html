@@ -1,0 +1,101 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Beat 8 · div + timeline · render it fresh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#F6F1E7;font-family:'Inter',sans-serif}
+  .frame{position:relative;width:1920px;height:1080px;background:linear-gradient(180deg,#FBF6EC 0%,#F2E7D3 100%)}
+  .chrome{position:absolute;left:40px;right:40px;top:40px;bottom:40px;background:#FFF8EB;border-radius:22px;box-shadow:0 40px 80px rgba(80,40,10,0.12),0 0 0 1px rgba(80,40,10,0.08);overflow:hidden}
+  .titlebar{height:52px;background:#EFE3CC;display:flex;align-items:center;padding:0 22px;gap:10px;border-bottom:1px solid rgba(80,40,10,0.08)}
+  .titlebar .dot{width:14px;height:14px;border-radius:50%}
+  .titlebar .d1{background:#FF7A5C}.titlebar .d2{background:#FFC94A}.titlebar .d3{background:#7BC96F}
+  .titlebar .tt{margin-left:22px;font-family:'JetBrains Mono',monospace;font-size:15px;color:#6B4A22;letter-spacing:0.06em}
+  .titlebar .tt em{color:#B8320E;font-style:normal;font-weight:700}
+  .titlebar .state{margin-left:auto;display:flex;gap:10px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#6B4A22;letter-spacing:0.14em;text-transform:uppercase}
+  .titlebar .state .pill{background:#B8320E;color:#FFF8EB;padding:4px 12px;border-radius:999px}
+  .split{position:absolute;top:52px;left:0;right:0;bottom:140px;display:flex}
+  .editor{flex:1;padding:48px 56px;background:#FFF8EB;border-right:1px solid rgba(80,40,10,0.08);overflow:hidden;position:relative}
+  .gutter{position:absolute;top:48px;left:20px;font-family:'JetBrains Mono',monospace;font-size:18px;line-height:1.65;color:#B8A07A;letter-spacing:0.02em;user-select:none}
+  .code{font-family:'JetBrains Mono',monospace;font-size:22px;line-height:1.65;color:#2A1A05;margin-left:30px}
+  .code .kw{color:#B8320E;font-weight:500}
+  .code .tag{color:#146A7A;font-weight:500}
+  .code .attr{color:#8A5EB8}
+  .code .val{color:#D97706}
+  .code .str{color:#2A8F3C}
+  .code .comm{color:#A88A5F;font-style:italic}
+  .code .hl{background:#FFE8A6;padding:2px 4px;border-radius:4px;box-shadow:0 0 0 2px rgba(184,50,14,0.25)}
+  .preview{flex:1.15;padding:48px 56px;position:relative;display:flex;align-items:center;justify-content:center;background:
+    radial-gradient(circle at 50% 40%, #FFEFC3 0%, #FFF8EB 60%)
+  }
+  .preview .canv{position:relative;width:780px;height:440px;border-radius:16px;background:linear-gradient(135deg,#FF6BA8 0%, #FFB84A 50%, #34D4A0 100%);box-shadow:0 40px 80px rgba(80,40,10,0.18), 0 0 0 1px rgba(80,40,10,0.06)}
+  .canv .word{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Inter',sans-serif;font-weight:800;font-size:120px;letter-spacing:-0.03em;color:#2A0A3A;line-height:0.9;text-align:center}
+  .canv .word em{display:block;font-style:italic;font-weight:500;font-size:52px;color:#FFF;margin-top:14px;letter-spacing:0}
+  .canv .badge{position:absolute;top:18px;left:18px;background:#FFF;padding:6px 12px;border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#B8320E;letter-spacing:0.18em;text-transform:uppercase;font-weight:700}
+  .canv .mini{position:absolute;bottom:18px;right:18px;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(42,10,58,0.55);letter-spacing:0.16em;text-transform:uppercase}
+  .fresh{position:absolute;top:40px;right:40px;font-family:'Inter',sans-serif;font-weight:800;font-size:56px;color:#B8320E;letter-spacing:-0.02em;transform:rotate(-4deg)}
+  .fresh em{font-style:italic}
+  .spark{position:absolute;width:18px;height:18px;background:#B8320E;transform:rotate(45deg)}
+  .timeline{position:absolute;bottom:0;left:0;right:0;height:140px;background:#EFE3CC;border-top:1px solid rgba(80,40,10,0.08);padding:20px 56px 0}
+  .tl-head{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:13px;color:#6B4A22;letter-spacing:0.14em;text-transform:uppercase}
+  .tl-track{margin-top:14px;position:relative;height:40px;background:#DFD1B3;border-radius:6px;overflow:hidden}
+  .tl-clip{position:absolute;top:0;bottom:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:#FFF8EB;font-weight:700}
+  .tl-clip.a{left:0;width:48%;background:linear-gradient(90deg,#B8320E,#D97706)}
+  .tl-clip.b{left:48%;width:20%;background:#146A7A}
+  .tl-clip.c{left:68%;width:14%;background:#8A5EB8}
+  .tl-clip.d{left:82%;width:18%;background:#34D4A0;color:#2A1A05}
+  .tl-play{position:absolute;left:92%;top:-8px;bottom:-8px;width:3px;background:#B8320E;box-shadow:0 0 0 4px rgba(184,50,14,0.18)}
+  .tl-play::before{content:'';position:absolute;top:-8px;left:-8px;width:19px;height:19px;background:#B8320E;border-radius:50%;border:3px solid #FFF8EB}
+  .tl-sec{margin-top:10px;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8A6A3A;letter-spacing:0.1em}
+  .hud{position:absolute;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;letter-spacing:0.2em;text-transform:uppercase;color:#6B4A22;z-index:9}
+  .hud.br{bottom:12px;right:22px;color:#B8320E}
+</style></head>
+<body>
+<div class="frame">
+  <div class="chrome">
+    <div class="titlebar">
+      <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+      <span class="tt">hyperframe · <em>fadeglow.html</em> · render 08/08</span>
+      <span class="state"><span>● live</span><span class="pill">rendering</span></span>
+    </div>
+    <div class="split">
+      <div class="editor">
+        <div class="gutter">01<br>02<br>03<br>04<br>05<br>06<br>07<br>08<br>09<br>10<br>11<br>12<br>13<br>14</div>
+        <pre class="code"><span class="comm">// it&rsquo;s just a div and a timeline, baby</span>
+<span class="kw">&lt;</span><span class="tag">div</span> <span class="attr">data-start</span>=<span class="str">"36.6"</span> <span class="attr">data-duration</span>=<span class="str">"4.4"</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;</span><span class="tag hl">div</span> <span class="attr">class</span>=<span class="str">"render"</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;</span><span class="tag">h1</span><span class="kw">&gt;</span>edit the code<span class="kw">&lt;/</span><span class="tag">h1</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;</span><span class="tag">h2</span><span class="kw">&gt;</span>render it fresh<span class="kw">&lt;/</span><span class="tag">h2</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;/</span><span class="tag">div</span><span class="kw">&gt;</span>
+<span class="kw">&lt;/</span><span class="tag">div</span><span class="kw">&gt;</span>
+
+<span class="kw">&lt;</span><span class="tag">audio</span> <span class="attr">src</span>=<span class="str">"bgmusic.mp3"</span> <span class="attr">data-start</span>=<span class="str">"0"</span><span class="kw">/&gt;</span>
+
+<span class="comm">// &mdash; done. 41.56s. open source.</span></pre>
+      </div>
+      <div class="preview">
+        <div class="fresh">fresh<em>!</em></div>
+        <div class="spark" style="top:180px;right:120px"></div>
+        <div class="spark" style="top:140px;right:260px;width:10px;height:10px"></div>
+        <div class="spark" style="top:220px;right:180px;width:6px;height:6px;background:#D97706"></div>
+        <div class="canv">
+          <span class="badge">● rendered</span>
+          <div class="word">edit the code<em>render it fresh.</em></div>
+          <span class="mini">1920 × 1080 · 30fps · mp4</span>
+        </div>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="tl-head"><span>timeline · 41.56s</span><span>playhead 40.8s</span></div>
+      <div class="tl-track">
+        <div class="tl-clip a">intro · bum · thesis · every fade · template</div>
+        <div class="tl-clip b">change</div>
+        <div class="tl-clip c">red</div>
+        <div class="tl-clip d">div + timeline · fresh</div>
+        <div class="tl-play"></div>
+      </div>
+      <div class="tl-sec"><span>00:00</span><span>00:10</span><span>00:20</span><span>00:30</span><span>00:41.56</span></div>
+    </div>
+    <div class="hud br">08 / 08 &nbsp; closer</div>
+  </div>
+</div>
+</body></html>

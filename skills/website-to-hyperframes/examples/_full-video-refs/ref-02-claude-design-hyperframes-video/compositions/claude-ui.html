@@ -1,0 +1,1209 @@
+<template id="claude-ui-template">
+  <div data-composition-id="claude-ui" data-width="1920" data-height="1080">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tiempos+Headline:wght@500&family=Styrene+B:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-app: #faf9f6;
+        --bg-left: #f5f1ea;
+        --bg-canvas: #f8f6f1;
+        --grid: rgba(60, 50, 30, 0.06);
+        --ink: #1d1c19;
+        --ink-soft: #5a564e;
+        --ink-faint: #8b8579;
+        --rule: rgba(0, 0, 0, 0.08);
+        --send: #e8a48a;
+        --send-active: #d97757;
+        --pill-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.05);
+        --font-serif: "Fraunces", "Tiempos Headline", "Times New Roman", serif;
+        --font-sans: "Inter", "Styrene B", -apple-system, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px; height: 1080px; overflow: hidden;
+        background: var(--bg-app); color: var(--ink);
+        font-family: var(--font-sans);
+      }
+
+      .scene {
+        position: absolute; top: 0; left: 0;
+        width: 1920px; height: 1080px; overflow: hidden;
+      }
+      .scene-content { width: 100%; height: 100%; position: relative; z-index: 1; }
+
+      /* === App shell === */
+      .app {
+        position: absolute; inset: 0;
+        display: grid; grid-template-columns: 540px 1fr;
+        background: var(--bg-app);
+      }
+
+      .scene-content {
+        transform-origin: 0 0;
+        will-change: transform;
+      }
+
+      /* --- Top bar (two rows: chrome + sub-toolbar) --- */
+      .topbar {
+        position: absolute; top: 0; left: 0; right: 0; height: 52px;
+        background: var(--bg-app);
+        display: flex; align-items: center;
+        z-index: 10;
+      }
+      .topbar-left {
+        width: 576px; height: 100%;
+        display: flex; align-items: center; padding: 0 18px; gap: 12px;
+      }
+      .logo {
+        width: 22px; height: 22px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .logo svg { width: 22px; height: 22px; }
+      .project-name {
+        font-family: var(--font-sans); font-size: 14px; color: var(--ink); font-weight: 500;
+      }
+      .topbar-tabs {
+        flex: 1; height: 100%;
+        display: flex; align-items: center; padding: 0 12px; gap: 4px;
+      }
+      .top-tab {
+        height: 32px; padding: 0 14px 0 12px;
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 13px; color: var(--ink-soft);
+        border-radius: 8px;
+        font-family: var(--font-sans);
+      }
+      .top-tab.active {
+        background: #fff;
+        color: var(--ink);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.06);
+      }
+      .top-tab .close-x {
+        width: 14px; height: 14px;
+        display: inline-flex; align-items: center; justify-content: center;
+        color: var(--ink-faint); font-size: 13px; margin-left: 4px;
+      }
+      .top-tab .tab-icon { opacity: 0.7; display: inline-flex; }
+      .topbar-right {
+        display: flex; align-items: center; gap: 12px; padding: 0 18px;
+      }
+      .present-btn {
+        font-size: 13px; color: var(--ink-soft);
+        padding: 6px 10px; border-radius: 6px;
+      }
+      .share-btn {
+        background: #1d1c19; color: #fff; padding: 6px 16px;
+        border-radius: 7px; font-size: 13px; font-weight: 500;
+      }
+      .avatar-u {
+        width: 26px; height: 26px; border-radius: 50%;
+        background: #ede8df; color: #1d1c19;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 12px; font-weight: 600;
+      }
+
+      /* Sub-toolbar */
+      .subbar {
+        position: absolute; top: 52px; left: 0; right: 0; height: 44px;
+        display: flex; align-items: center;
+        z-index: 9;
+        border-bottom: 1px solid var(--rule);
+      }
+      .subbar-left {
+        width: 576px; height: 100%;
+        display: flex; align-items: center; padding: 0 18px; gap: 22px;
+      }
+      .left-tab-v2 {
+        font-size: 13px; color: var(--ink);
+        padding-bottom: 12px; margin-top: 12px;
+        border-bottom: 1.5px solid transparent;
+      }
+      .left-tab-v2.active { border-color: var(--ink); }
+      .left-tab-v2.muted { color: var(--ink-faint); }
+      .plus-btn-v2 {
+        margin-left: auto;
+        font-size: 14px; color: var(--ink-faint);
+      }
+      .subbar-right {
+        flex: 1; height: 100%;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 18px;
+      }
+      .subbar-icon-btn {
+        width: 26px; height: 26px;
+        display: inline-flex; align-items: center; justify-content: center;
+        color: var(--ink-soft);
+      }
+      .subbar-actions { display: flex; align-items: center; gap: 20px; }
+      .subbar-action {
+        font-size: 13px; color: var(--ink-soft);
+        display: inline-flex; align-items: center; gap: 6px;
+      }
+
+      /* Left panel pushed down by 96px (topbar 52 + subbar 44) */
+      .left {
+        position: absolute; top: 96px; left: 0; bottom: 0; width: 576px;
+        background: var(--bg-left);
+        display: flex; flex-direction: column;
+        border-right: 1px solid var(--rule);
+      }
+      .left-tabs { display: none; }
+
+      .start-context {
+        flex: 1;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 0 28px; gap: 22px;
+        margin-bottom: 80px;
+      }
+      .start-title {
+        font-family: var(--font-serif); font-size: 30px; font-weight: 500;
+        color: var(--ink); letter-spacing: -0.01em;
+      }
+      .start-sub {
+        font-size: 14px; color: var(--ink-soft); margin-top: 8px;
+      }
+      .ctx-pill {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 8px 18px 8px 8px; background: #fff; border-radius: 999px;
+        font-size: 14px; color: var(--ink);
+        box-shadow: var(--pill-shadow);
+      }
+      .ctx-pill .ico {
+        width: 26px; height: 26px; border-radius: 50%;
+        display: inline-flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 13px; font-weight: 600;
+      }
+      .ico.b { background: #d97757; }
+      .ico.n { background: #5a8c4a; }
+      .ico.f { background: #c87a8c; }
+
+      /* --- Composer (textarea) --- */
+      .composer-wrap {
+        position: absolute; left: 16px; right: 16px; bottom: 16px;
+        background: linear-gradient(180deg, rgba(245,241,234,0) 0%, rgba(245,241,234,1) 30%);
+        padding-top: 60px;
+      }
+      /* --- Composer (matches attached ref) --- */
+      .composer {
+        background: #fff; border-radius: 14px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 30px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.06);
+        padding: 18px 18px 14px;
+        position: relative;
+      }
+      .composer-input {
+        font-size: 14px; color: var(--ink); min-height: 60px;
+        line-height: 1.5;
+      }
+      .file-chip {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 8px 5px 12px; margin-bottom: 14px;
+        border: 1px solid var(--rule); border-radius: 999px;
+        background: #fff;
+        font-size: 13px; color: var(--ink);
+        opacity: 0;
+      }
+      .file-chip .x {
+        width: 16px; height: 16px; display: inline-flex;
+        align-items: center; justify-content: center;
+        color: var(--ink-soft); cursor: pointer;
+        font-size: 13px;
+      }
+      .chat-file-chip {
+        display: inline-flex; align-items: center;
+        padding: 5px 12px; margin-top: 8px;
+        border: 1px solid var(--rule); border-radius: 999px;
+        background: rgba(255,255,255,0.6);
+        font-size: 13px; color: var(--ink);
+        opacity: 0;
+      }
+      .drag-file {
+        position: absolute; left: 0; top: 0;
+        width: 84px; height: 96px;
+        z-index: 90; pointer-events: none;
+        opacity: 0; will-change: transform;
+        filter: drop-shadow(0 12px 24px rgba(0,0,0,0.25));
+      }
+      .drag-file .doc {
+        width: 70px; height: 88px; background: #fff;
+        border: 1px solid #e0ddd6; border-radius: 4px;
+        position: relative; padding: 8px 6px;
+      }
+      .drag-file .doc::before, .drag-file .doc::after,
+      .drag-file .doc .l1, .drag-file .doc .l2, .drag-file .doc .l3, .drag-file .doc .l4 {
+        content: ""; display: block; height: 2px; background: #cfc9bd;
+        margin: 3px 0; border-radius: 1px;
+      }
+      .drag-file .doc::before { width: 80%; }
+      .drag-file .doc::after { width: 60%; }
+      .drag-file .doc .l1 { width: 90%; }
+      .drag-file .doc .l2 { width: 75%; }
+      .drag-file .doc .l3 { width: 85%; }
+      .drag-file .doc .l4 { width: 50%; }
+      .drag-file .plus-badge {
+        position: absolute; right: 0; bottom: 0;
+        width: 26px; height: 26px; border-radius: 50%;
+        background: #16a34a; color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 18px; font-weight: 600; line-height: 1;
+        border: 2px solid #fff;
+      }
+      .composer-input.empty #composer-placeholder { color: #a5a198; font-weight: 400; }
+      .typing-cursor {
+        display: inline-block; width: 1.5px; height: 14px;
+        background: var(--ink); vertical-align: middle;
+        margin-left: 1px; transform: translateY(-2px);
+        opacity: 1;
+      }
+      .composer-bottom {
+        display: flex; align-items: center; gap: 6px; margin-top: 22px;
+      }
+      .icon-btn {
+        width: 34px; height: 34px;
+        display: inline-flex; align-items: center; justify-content: center;
+        border: 1px solid var(--rule); border-radius: 8px;
+        color: #4a4640; background: #fff;
+      }
+      .icon-btn svg { width: 16px; height: 16px; }
+      .import-pill {
+        font-size: 13px; padding: 6px 14px; border-radius: 7px;
+        border: 1px solid var(--rule); color: var(--ink); background: #fff;
+      }
+      .send-btn {
+        margin-left: auto;
+        display: inline-flex; align-items: center; gap: 6px;
+        background: #e8a48a; color: #fff;
+        padding: 7px 16px 7px 13px; border-radius: 8px;
+        font-size: 13px; font-weight: 500;
+        opacity: 0.75;
+      }
+      .send-btn .arrow { display:inline-block; font-size: 12px; }
+
+      /* --- Right (canvas) panel --- */
+      .right {
+        position: absolute; top: 96px; left: 576px; right: 0; bottom: 0;
+        background: var(--bg-canvas);
+        background-image:
+          linear-gradient(var(--grid) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+        background-size: 60px 60px;
+        background-position: -1px -1px;
+      }
+      .right-header { display: none; }
+
+      .canvas-empty {
+        position: absolute; inset: 56px 0 0 0;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+      }
+      .creations-text {
+        font-family: var(--font-serif);
+        font-size: 28px; color: var(--ink-soft); font-weight: 500;
+      }
+      .start-sketch {
+        margin-top: 18px;
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 10px 18px; border-radius: 10px;
+        background: #fff; box-shadow: var(--pill-shadow);
+        font-size: 14px; color: var(--ink);
+      }
+
+      .drop-here {
+        position: absolute; left: 0; right: 0; bottom: 0; height: 80px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        background: linear-gradient(180deg, rgba(248,246,241,0) 0%, rgba(248,246,241,1) 60%);
+        font-size: 13px; color: var(--ink-soft); gap: 4px;
+      }
+      .drop-here .label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em; color: var(--ink-faint); }
+
+      /* --- Generated artboard (fills the right canvas entirely) --- */
+      .artboard {
+        position: absolute;
+        inset: 0;
+        background: #000;
+        overflow: hidden;
+        opacity: 0;
+        z-index: 5;
+      }
+      .letterbox-top, .letterbox-bottom {
+        position: absolute; left: 0; right: 0; height: 36px;
+        background: #000; z-index: 4;
+      }
+      .letterbox-top { top: 0; }
+      .letterbox-bottom { bottom: 56px; }
+      .artboard-label {
+        position: absolute; top: 20px; left: 28px;
+        font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.18em;
+        color: rgba(255,255,255,0.5);
+        z-index: 3;
+      }
+      .video-shimmer {
+        position: absolute; inset: 0;
+        background:
+          radial-gradient(ellipse 60% 100% at 50% 100%, rgba(80, 60, 200, 0.35) 0%, transparent 70%),
+          radial-gradient(ellipse 80% 50% at 50% 0%, rgba(40, 30, 80, 0.5) 0%, transparent 70%),
+          #050510;
+      }
+
+      /* === Cinematic mini-video inside the letterboxed area === */
+      .v-stage {
+        position: absolute; left: 0; right: 0; top: 36px; bottom: 56px;
+        overflow: hidden;
+        background: #050510;
+      }
+      .v-stars {
+        position: absolute; inset: 0;
+        background-image:
+          radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,0.5), transparent),
+          radial-gradient(1px 1px at 28% 62%, rgba(255,255,255,0.4), transparent),
+          radial-gradient(1.5px 1.5px at 44% 28%, rgba(255,255,255,0.6), transparent),
+          radial-gradient(1px 1px at 58% 78%, rgba(255,255,255,0.4), transparent),
+          radial-gradient(1px 1px at 72% 22%, rgba(255,255,255,0.5), transparent),
+          radial-gradient(1.5px 1.5px at 84% 52%, rgba(255,255,255,0.6), transparent),
+          radial-gradient(1px 1px at 92% 84%, rgba(255,255,255,0.45), transparent),
+          radial-gradient(1px 1px at 8% 88%, rgba(255,255,255,0.4), transparent),
+          radial-gradient(1px 1px at 38% 8%, rgba(255,255,255,0.5), transparent);
+      }
+      .v-fog {
+        position: absolute; inset: 0;
+        background:
+          radial-gradient(ellipse 70% 50% at 50% 70%, rgba(120, 90, 230, 0.25) 0%, transparent 60%),
+          radial-gradient(ellipse 40% 30% at 50% 30%, rgba(180, 150, 255, 0.18) 0%, transparent 70%);
+        opacity: 0;
+      }
+      .v-beam {
+        position: absolute; left: 50%; top: 0; bottom: 0;
+        width: 4px; margin-left: -2px;
+        background: linear-gradient(to bottom, transparent 0%, #fff 50%, transparent 100%);
+        box-shadow:
+          0 0 30px 6px rgba(180, 200, 255, 0.9),
+          0 0 80px 20px rgba(140, 170, 255, 0.6),
+          0 0 160px 40px rgba(120, 150, 240, 0.35);
+        transform-origin: 50% 50%;
+        transform: scaleY(0);
+      }
+      .v-beam-flash {
+        position: absolute; left: 50%; bottom: 18%;
+        width: 800px; height: 800px;
+        margin-left: -400px; margin-bottom: -400px;
+        background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(180,200,255,0.4) 30%, transparent 60%);
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .v-title-wrap {
+        position: absolute; left: 0; right: 0; top: 26%;
+        display: flex; flex-direction: column; align-items: center; gap: 16px;
+        z-index: 5;
+      }
+      .v-eyebrow {
+        font-family: var(--font-mono); font-size: 14px;
+        letter-spacing: 0.4em; color: rgba(180, 200, 255, 0.85);
+        text-transform: uppercase;
+        opacity: 0;
+      }
+      .v-title {
+        font-family: var(--font-serif); font-weight: 500;
+        font-size: 96px; color: #fff; letter-spacing: -0.02em;
+        line-height: 1.05; text-align: center;
+        text-shadow: 0 0 40px rgba(140, 170, 255, 0.4);
+      }
+      .v-title .word {
+        display: inline-block; opacity: 0;
+        transform: translateY(20px);
+      }
+      .v-sub {
+        font-family: var(--font-sans); font-weight: 400;
+        font-size: 22px; color: rgba(255,255,255,0.65);
+        letter-spacing: 0.02em;
+        opacity: 0;
+        margin-top: 18px;
+      }
+
+      /* Product mockup that rises from the bottom */
+      .v-mockup {
+        position: absolute; left: 50%; bottom: -40px;
+        width: 70%; height: 50%;
+        transform: translateX(-50%) translateY(60px);
+        opacity: 0;
+      }
+      .v-mockup-frame {
+        position: absolute; inset: 0;
+        background: linear-gradient(180deg, #1a1a2a 0%, #0d0d18 100%);
+        border-radius: 14px 14px 0 0;
+        border: 1px solid rgba(180, 200, 255, 0.3);
+        border-bottom: none;
+        box-shadow:
+          0 -10px 60px rgba(140, 170, 255, 0.3),
+          0 0 0 1px rgba(255,255,255,0.08) inset;
+        overflow: hidden;
+        padding: 14px 16px;
+      }
+      .v-mockup-bar {
+        height: 18px; display: flex; gap: 6px; margin-bottom: 14px;
+      }
+      .v-mockup-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: rgba(255,255,255,0.18);
+      }
+      .v-mockup-grid {
+        display: grid; grid-template-columns: 140px 1fr 200px;
+        gap: 10px; height: calc(100% - 32px);
+      }
+      .v-mockup-col {
+        background: rgba(255,255,255,0.04);
+        border-radius: 6px;
+        padding: 10px;
+        display: flex; flex-direction: column; gap: 6px;
+      }
+      .v-mockup-row {
+        height: 8px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 2px;
+      }
+      .v-mockup-row.short { width: 60%; }
+      .v-mockup-row.tag { width: 40%; background: rgba(140, 170, 255, 0.4); }
+      .v-mockup-card {
+        height: 64px; background: rgba(255,255,255,0.05);
+        border-radius: 6px; padding: 8px;
+        display: flex; flex-direction: column; gap: 4px;
+      }
+
+      /* Floor reflection of the beam */
+      .v-beam-floor {
+        position: absolute; left: 0; right: 0; bottom: 0; height: 30%;
+        background: linear-gradient(to top, rgba(140, 170, 255, 0.25) 0%, transparent 100%);
+        opacity: 0;
+        pointer-events: none;
+      }
+      .video-stage {
+        position: absolute; left: 0; right: 0; top: 36px; bottom: 56px;
+        display: flex; align-items: center; justify-content: center;
+        flex-direction: column; gap: 18px;
+      }
+      .video-orb {
+        width: 220px; height: 220px; border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #ffd5b8 0%, #d97757 40%, #6b3a28 90%);
+        box-shadow: 0 0 160px rgba(217,119,87,0.55);
+        transform: scale(0);
+      }
+      .video-headline {
+        font-family: var(--font-serif); font-weight: 500;
+        font-size: 72px; color: #fff; opacity: 0;
+        letter-spacing: -0.02em; text-align: center;
+        max-width: 80%;
+      }
+      .video-progress {
+        position: absolute; left: 0; right: 0; bottom: 0; height: 4px;
+        background: rgba(255,255,255,0.08);
+      }
+      .video-progress-bar {
+        height: 100%; background: #d97757;
+        transform: scaleX(0); transform-origin: left center;
+      }
+
+      /* --- Flying message (text style, not bubble) --- */
+      .fly-msg {
+        position: absolute; left: 28px;
+        max-width: 460px;
+        font-family: var(--font-sans);
+        font-size: 15px; line-height: 1.5; color: var(--ink);
+        opacity: 0; pointer-events: none;
+        z-index: 20;
+      }
+      .fly-msg .who {
+        font-weight: 700; margin-bottom: 4px; display: block;
+      }
+      .fly-msg .body { color: #2c2a26; }
+
+      /* --- Claude streaming response (scrollable chat list) --- */
+      .chat-stream {
+        position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+        padding: 28px 28px 24px;
+        font-family: var(--font-sans);
+        font-size: 15px; line-height: 1.55; color: var(--ink);
+        overflow: hidden;
+      }
+      .chat-stream .who { font-weight: 700; display: block; margin-bottom: 6px; }
+      .chat-stream .body { color: #2c2a26; }
+      .chat-stream .body b, .chat-stream .body strong { font-weight: 700; color: var(--ink); }
+      .chat-block { margin-bottom: 18px; opacity: 0; }
+      .notice-pill {
+        background: #eaf2fb; color: #2563a6;
+        padding: 12px 14px 12px 14px;
+        border-radius: 10px; font-size: 14px;
+        display: flex; gap: 8px; align-items: flex-start;
+      }
+      .notice-pill .info-i {
+        width: 16px; height: 16px; border-radius: 50%;
+        border: 1.4px solid #2563a6; display:inline-flex;
+        align-items:center; justify-content:center; flex-shrink:0;
+        font-size: 11px; font-weight: 600; margin-top: 1px;
+      }
+      .claude-typing-cursor {
+        display: inline-block; width: 8px; height: 14px;
+        background: var(--ink); vertical-align: -2px;
+        margin-left: 2px;
+      }
+      .claude-tool {
+        padding: 11px 14px; border-radius: 10px;
+        border: 1px solid var(--rule);
+        font-size: 14px; color: var(--ink-soft);
+        display: flex; align-items: center; gap: 8px;
+        background: rgba(255,255,255,0.5);
+      }
+      .claude-tool .bolt { color: #d97757; font-size: 13px; }
+      .claude-tool .chev { margin-left: auto; color: var(--ink-faint); }
+
+      /* --- Cursor --- */
+      .cursor {
+        position: absolute; left: 0; top: 0;
+        width: 22px; height: 28px;
+        z-index: 100;
+        pointer-events: none;
+        will-change: transform;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.18));
+      }
+      .cursor-ring {
+        position: absolute; left: 0; top: 0;
+        width: 22px; height: 22px; border-radius: 50%;
+        border: 2px solid #d97757;
+        transform: scale(0);
+        opacity: 0;
+      }
+
+      /* --- Player bar --- */
+      .player-bar {
+        position: absolute; left: 0; right: 0; bottom: 0; height: 56px;
+        background: #000; display: flex; align-items: center;
+        padding: 0 16px; gap: 16px; z-index: 10;
+        opacity: 0;
+      }
+      .play-btn {
+        width: 28px; height: 28px; display: inline-flex;
+        align-items: center; justify-content: center;
+        color: #fff;
+      }
+      .play-btn svg { width: 14px; height: 14px; }
+      .scrub {
+        flex: 1; height: 4px; background: rgba(255,255,255,0.18);
+        border-radius: 2px; position: relative; overflow: hidden;
+      }
+      .scrub-fill {
+        position: absolute; left: 0; top: 0; bottom: 0;
+        background: #fff; width: 0%;
+      }
+      .scrub-handle {
+        position: absolute; top: 50%; width: 12px; height: 12px;
+        margin-top: -6px; margin-left: -6px;
+        background: #fff; border-radius: 50%;
+        left: 0%;
+      }
+      .timecode {
+        font-family: var(--font-sans); color: rgba(255,255,255,0.85);
+        font-size: 13px; font-variant-numeric: tabular-nums;
+      }
+      .speed-pill {
+        background: rgba(255,255,255,0.12); color: #fff;
+        padding: 4px 10px; border-radius: 6px;
+        font-size: 12px; font-weight: 500;
+      }
+    </style>
+
+      <div class="scene clip" id="s1" data-start="0" data-duration="12" data-track-index="0">
+        <div class="scene-content" id="scene-content">
+
+          <!-- ===== Top bar ===== -->
+          <div class="topbar">
+            <div class="topbar-left">
+              <div class="logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#d97757" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3 C 7 3 3 7 3 12 C 3 16 6 19 10 19 C 11 19 11.5 18.4 11.5 17.6 C 11.5 17 11 16.6 11 16 C 11 15.2 11.6 14.5 12.5 14.5 L 14.5 14.5 C 17 14.5 19 12.5 19 10 C 19 6 16 3 12 3 Z"/>
+                  <circle cx="7.5" cy="11" r="0.9" fill="#d97757" stroke="none"/>
+                  <circle cx="10.5" cy="7.5" r="0.9" fill="#d97757" stroke="none"/>
+                  <circle cx="14" cy="7.5" r="0.9" fill="#d97757" stroke="none"/>
+                  <circle cx="16" cy="10.5" r="0.9" fill="#d97757" stroke="none"/>
+                </svg>
+              </div>
+              <div class="project-name">announcement-video</div>
+            </div>
+            <div class="topbar-tabs">
+              <div class="top-tab">
+                <span class="tab-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="2" width="8" height="8" rx="1.2"/></svg></span>
+                Design Files
+              </div>
+              <div class="top-tab active">
+                preview.html
+                <span class="close-x">×</span>
+              </div>
+            </div>
+            <div class="topbar-right">
+              <div class="present-btn">Present</div>
+              <div class="share-btn">Share</div>
+              <div class="avatar-u">U</div>
+            </div>
+          </div>
+
+          <!-- ===== Sub-toolbar ===== -->
+          <div class="subbar">
+            <div class="subbar-left">
+              <div class="left-tab-v2 active">Code Editor Animation</div>
+              <div class="left-tab-v2 muted">Comments</div>
+              <div class="plus-btn-v2">+</div>
+            </div>
+            <div class="subbar-right">
+              <div class="subbar-icon-btn">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                  <path d="M2 7 A 5 5 0 0 1 11 4 L12 5 M12 2 V5 H9"/>
+                </svg>
+              </div>
+              <div class="subbar-actions">
+                <div class="subbar-action"><span style="font-size:14px;line-height:1">+</span> Tweaks</div>
+                <div class="subbar-action">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 3 H10 V8 H6 L4 10 V8 H2 Z"/></svg> Comment
+                </div>
+                <div class="subbar-action">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M2 10 L8 4 L10 6 L4 10 Z"/><path d="M7 5 L9 7"/></svg> Edit
+                </div>
+                <div class="subbar-action">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M2 10 Q 4 4 6 6 T 10 4"/></svg> Draw
+                </div>
+                <div class="subbar-action">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="5" cy="5" r="3"/><path d="M7.5 7.5 L10 10" stroke-linecap="round"/></svg> 100%
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== Left panel ===== -->
+          <div class="left">
+            <div class="left-tabs">
+              <div class="left-tab active">Chat</div>
+              <div class="left-tab muted">Comments</div>
+              <div class="plus-btn">+</div>
+            </div>
+
+            <div class="start-context" id="start-context">
+              <div style="text-align:center;">
+                <div class="start-title">Start with context</div>
+                <div class="start-sub">Designs grounded in real context turn out better.</div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
+                <div class="ctx-pill"><span class="ico b">B</span> Design System</div>
+                <div class="ctx-pill"><span class="ico n">N</span> Add screenshot</div>
+                <div class="ctx-pill"><span class="ico f">F</span> Drag in a Figma file</div>
+              </div>
+            </div>
+
+            <!-- Chat stream: user msg + Claude's full streaming response -->
+            <div class="chat-stream" id="chat-stream">
+              <!-- The user's "sent" message that flies into place -->
+              <div class="chat-block" id="block-user" style="margin-bottom: 22px;">
+                <span class="who">You</span>
+                <span class="body">Generate a 5 second cinematic intro video</span>
+                <div class="chat-file-chip" id="chat-file-chip">claude-design-hyperframes.md</div>
+              </div>
+
+              <!-- Claude header -->
+              <div class="chat-block" id="block-claude-head" style="margin-bottom: 6px;">
+                <span class="who">Claude</span>
+              </div>
+
+              <!-- Para 1 (streamed) -->
+              <div class="chat-block" id="block-p1">
+                <span class="body" id="p1-body"></span><span class="claude-typing-cursor" id="cursor-p1"></span>
+              </div>
+
+              <!-- Para 2 (Aesthetic choice — streamed) -->
+              <div class="chat-block" id="block-p2">
+                <span class="body"><b>Aesthetic choice:</b> <span id="p2-body"></span></span><span class="claude-typing-cursor" id="cursor-p2"></span>
+              </div>
+
+              <!-- Tool pill 1 -->
+              <div class="chat-block" id="block-tool1">
+                <div class="claude-tool">
+                  <span class="bolt">⚡</span> <span>Copying starter, Reading</span>
+                  <span class="chev">▾</span>
+                </div>
+              </div>
+
+              <!-- Para 3 (streamed) -->
+              <div class="chat-block" id="block-p3">
+                <span class="body" id="p3-body"></span><span class="claude-typing-cursor" id="cursor-p3"></span>
+              </div>
+
+              <!-- Tool pill 2 -->
+              <div class="chat-block" id="block-tool2">
+                <div class="claude-tool">
+                  <span class="bolt">⚡</span> <span>Writing ×2, Done</span>
+                  <span class="chev">▾</span>
+                </div>
+              </div>
+
+              <!-- Para 4 (streamed) -->
+              <div class="chat-block" id="block-p4">
+                <span class="body" id="p4-body"></span><span class="claude-typing-cursor" id="cursor-p4"></span>
+              </div>
+            </div>
+
+            <div class="composer-wrap">
+              <div class="composer" id="composer">
+                <div class="file-chip" id="file-chip">
+                  <span>claude-design-hyperframes.md</span>
+                  <span class="x">×</span>
+                </div>
+                <div class="composer-input empty" id="composer-input">
+                  <span id="composer-placeholder">Describe what you want to create...</span><span id="composer-typed"></span><span class="typing-cursor" id="typing-cursor"></span>
+                </div>
+                <div class="composer-bottom">
+                  <span class="icon-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="3"/>
+                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                  </span>
+                  <span class="icon-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                    </svg>
+                  </span>
+                  <span class="icon-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                      <path d="M5 10 V14"/>
+                      <path d="M8.5 7 V17"/>
+                      <path d="M12 4 V20"/>
+                      <path d="M15.5 7 V17"/>
+                      <path d="M19 10 V14"/>
+                    </svg>
+                  </span>
+                  <div class="import-pill">Import</div>
+                  <div class="send-btn" id="send-btn">
+                    <span class="arrow">▷</span> Send
+                  </div>
+                </div>
+              </div>
+
+              <!-- Streaming Claude response (appears in chat after send) -->
+              <!-- removed: moved to .left -->
+
+              <!-- The user's "sent" message that flies to the chat -->
+              <!-- removed: moved to .left -->
+            </div>
+          </div>
+
+          <!-- ===== Right canvas ===== -->
+          <div class="right">
+            <div class="right-header">
+              <div class="project-chip">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M5 5 L2 8 L5 11 M11 5 L14 8 L11 11"/>
+                </svg>
+                project
+              </div>
+              <div class="right-actions">
+                <span>↗ New sketch</span>
+                <span>📋 Paste</span>
+              </div>
+            </div>
+
+            <div class="canvas-empty" id="canvas-empty">
+              <div class="creations-text">Creations will appear here</div>
+              <div class="start-sketch">✎ Start with a sketch</div>
+            </div>
+
+            <!-- Generated artboard with cinematic video preview -->
+            <div class="artboard" id="artboard">
+              <div class="letterbox-top"></div>
+              <div class="letterbox-bottom"></div>
+              <div class="v-stage" id="v-stage">
+                <div class="v-stars" id="v-stars"></div>
+                <div class="v-fog" id="v-fog"></div>
+                <div class="v-beam" id="v-beam" style="transform-origin: 50% 0%;"></div>
+                <div class="v-beam-flash" id="v-beam-flash"></div>
+                <div class="v-beam-floor" id="v-beam-floor"></div>
+
+                <div class="v-title-wrap">
+                  <div class="v-eyebrow" id="v-eyebrow">INTRODUCING</div>
+                  <div class="v-title">
+                    <span class="word" id="w1">HyperFrames</span><br/>
+                    <span class="word" id="w2">in</span>
+                    <span class="word" id="w3">Claude</span>
+                    <span class="word" id="w4">Design</span>
+                  </div>
+                  <div class="v-sub" id="v-sub">Creating videos has never been easier.</div>
+                </div>
+
+                <div class="v-mockup" id="v-mockup">
+                  <div class="v-mockup-frame">
+                    <div class="v-mockup-bar">
+                      <div class="v-mockup-dot"></div>
+                      <div class="v-mockup-dot"></div>
+                      <div class="v-mockup-dot"></div>
+                    </div>
+                    <div class="v-mockup-grid">
+                      <div class="v-mockup-col">
+                        <div class="v-mockup-row"></div>
+                        <div class="v-mockup-row short"></div>
+                        <div class="v-mockup-row short"></div>
+                        <div class="v-mockup-row tag"></div>
+                        <div class="v-mockup-row"></div>
+                        <div class="v-mockup-row short"></div>
+                      </div>
+                      <div class="v-mockup-col">
+                        <div class="v-mockup-card"><div class="v-mockup-row tag"></div><div class="v-mockup-row"></div><div class="v-mockup-row short"></div></div>
+                        <div class="v-mockup-card"><div class="v-mockup-row tag"></div><div class="v-mockup-row"></div><div class="v-mockup-row short"></div></div>
+                        <div class="v-mockup-card"><div class="v-mockup-row tag"></div><div class="v-mockup-row"></div><div class="v-mockup-row short"></div></div>
+                      </div>
+                      <div class="v-mockup-col">
+                        <div class="v-mockup-row"></div>
+                        <div class="v-mockup-row tag"></div>
+                        <div class="v-mockup-row short"></div>
+                        <div class="v-mockup-row"></div>
+                        <div class="v-mockup-row short"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="drop-here">
+              <div class="label">↓ DROP FILES HERE</div>
+              <div>Images, docs, references, Figma links, or folders — Claude will use them as context.</div>
+            </div>
+
+            <!-- Player bar -->
+            <div class="player-bar" id="player-bar">
+              <div class="play-btn" id="play-btn">
+                <svg id="play-icon" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2 L12 7 L3 12 Z"/></svg>
+                <svg id="pause-icon" viewBox="0 0 14 14" fill="currentColor" style="display:none"><rect x="3" y="2" width="3" height="10"/><rect x="8" y="2" width="3" height="10"/></svg>
+              </div>
+              <div class="scrub">
+                <div class="scrub-fill" id="scrub-fill"></div>
+                <div class="scrub-handle" id="scrub-handle"></div>
+              </div>
+              <div class="timecode" id="timecode">0:00 / 0:05</div>
+              <div class="speed-pill">1x</div>
+            </div>
+          </div>
+
+          <!-- ===== Cursor ===== -->
+          <div class="cursor-ring" id="cursor-ring"></div>
+          <div class="drag-file" id="drag-file">
+            <div class="doc">
+              <span class="l1"></span>
+              <span class="l2"></span>
+              <span class="l3"></span>
+              <span class="l4"></span>
+            </div>
+            <div class="plus-badge">+</div>
+          </div>
+          <svg class="cursor" id="cursor" viewBox="0 0 22 28">
+            <path d="M2 2 L2 22 L7.5 17 L11 25 L14 23.5 L10.5 16 L18 16 Z"
+                  fill="#1d1c19" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/>
+          </svg>
+
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // === Cursor positions (in 1920x1080 coords) ===
+      // Left panel: x 0–540. Composer sits at left:16 right:16 bottom:16, so
+      // its inner box runs roughly x=34..520, y≈970..1058. Input text starts ~y=988.
+      // Send button (right-aligned, ~80px wide) ends near x=508, vertical center ~y=1038.
+      var POS = {
+        start:    { x: 1180, y: 600 },
+        composer: { x: 200,  y: 965 },
+        send:     { x: 502,  y: 1035 },
+        chat:     { x: 280,  y: 300 },
+        canvas:   { x: 1240, y: 540 },
+      };
+
+      // initial cursor placement
+      gsap.set("#cursor", { x: POS.start.x, y: POS.start.y });
+      gsap.set("#cursor-ring", { x: POS.start.x - 1, y: POS.start.y - 1 });
+
+      // === Camera zoom helper ===
+      // Animates #scene-content to zoom to (cx, cy) at scale s within 1920x1080.
+      // Clamps the target so the frame edges are never visible (camera stays inside bounds).
+      function camTo(cx, cy, scale, dur, ease, time) {
+        var halfW = 1920 / 2 / scale;
+        var halfH = 1080 / 2 / scale;
+        var clampedCx = Math.max(halfW, Math.min(1920 - halfW, cx));
+        var clampedCy = Math.max(halfH, Math.min(1080 - halfH, cy));
+        var tx = 1920/2 - clampedCx * scale;
+        var ty = 1080/2 - clampedCy * scale;
+        tl.to("#scene-content", {
+          x: tx, y: ty, scale: scale,
+          duration: dur, ease: ease
+        }, time);
+      }
+      // start at full view
+      gsap.set("#scene-content", { x: 0, y: 0, scale: 1 });
+
+      // helper: move cursor + ring together
+      function moveCursor(x, y, dur, ease, time) {
+        tl.to("#cursor",      { x: x,     y: y,     duration: dur, ease: ease }, time);
+        tl.to("#cursor-ring", { x: x - 1, y: y - 1, duration: dur, ease: ease }, time);
+      }
+      function clickPulse(time) {
+        tl.fromTo("#cursor-ring",
+          { scale: 0, opacity: 0.9 },
+          { scale: 2.4, opacity: 0, duration: 0.5, ease: "power2.out" },
+          time);
+      }
+
+      // --- 0.0–0.8s: cursor moves to composer textarea ---
+      moveCursor(POS.composer.x, POS.composer.y, 0.7, "power3.inOut", 0.1);
+
+      // === Camera: zoom into composer input as cursor arrives ===
+      camTo(280, 965, 2.6, 0.9, "power2.inOut", 0.1);
+
+      // --- 0.85s: click on textarea ---
+      clickPulse(0.85);
+      // just show the typing cursor; placeholder stays until first keystroke
+      tl.to("#typing-cursor", { opacity: 1, duration: 0.05 }, 0.9);
+      tl.to("#typing-cursor", {
+        opacity: 0, duration: 0.5, ease: "steps(1)", repeat: 3, yoyo: true
+      }, 0.9);
+
+      // --- 1.0–2.6s: type the prompt (placeholder vanishes as first char lands) ---
+      var prompt = "Generate a 5 second cinematic intro video";
+      var typeState = { n: 0 };
+      // hide placeholder the instant typing starts
+      tl.set("#composer-placeholder", { display: "none" }, 1.0);
+      tl.to(typeState, {
+        n: prompt.length, duration: 1.6, ease: "none",
+        onUpdate: function () {
+          document.getElementById("composer-typed").textContent =
+            prompt.substring(0, Math.floor(typeState.n));
+        }
+      }, 1.0);
+
+      // send button activates (color saturates) once text exists
+      tl.to("#send-btn", { opacity: 1, backgroundColor: "#d97757", duration: 0.3 }, 1.2);
+
+      // --- 2.7s: cursor flies off-screen-right with the file ghost attached, then drags into composer ---
+      // file appears at right edge
+      gsap.set("#drag-file", { x: 1750, y: 600, opacity: 0, scale: 0.9 });
+      // cursor jumps to the file (off-screen edge)
+      moveCursor(1780, 640, 0.45, "power2.inOut", 2.7);
+      // file appears with a tiny pop
+      tl.to("#drag-file", { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(1.6)" }, 3.0);
+
+      // === Camera: zoom out a bit to follow the cursor flying right ===
+      camTo(800, 800, 1.4, 0.6, "power2.inOut", 2.7);
+
+      // 3.3s: cursor + file drag together into the composer
+      moveCursor(260, 905, 1.0, "power2.inOut", 3.3);
+      tl.to("#drag-file", { x: 230, y: 855, duration: 1.0, ease: "power2.inOut" }, 3.3);
+
+      // === Camera: zoom back into the composer input as the file drags in (mirrors typing zoom) ===
+      camTo(280, 965, 2.6, 1.0, "power2.inOut", 3.3);
+
+      // 4.3s: drop — file pill appears in composer, drag-file fades out
+      tl.to("#drag-file", { opacity: 0, scale: 0.85, duration: 0.25, ease: "power2.in" }, 4.3);
+      tl.to("#file-chip", { opacity: 1, duration: 0.3, ease: "power2.out" }, 4.35);
+      // small bump on composer to acknowledge drop
+      tl.fromTo("#composer",
+        { scale: 1 },
+        { scale: 1.01, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1 },
+        4.35);
+
+      // --- 4.6–5.1s: cursor moves to send button ---
+      moveCursor(POS.send.x, POS.send.y, 0.5, "power3.inOut", 4.6);
+
+      // === Camera: pan to send button ===
+      camTo(POS.send.x, POS.send.y, 2.8, 0.5, "power2.inOut", 4.6);
+
+      // --- 5.15s: click send ---
+      clickPulse(5.15);
+      tl.to("#send-btn", { scale: 0.94, duration: 0.08, ease: "power2.out" }, 5.15);
+      tl.to("#send-btn", { scale: 1, duration: 0.18, ease: "power2.out" }, 5.23);
+
+      // --- 5.3s: hide the entire start-context block (Start with context + pills) ---
+      tl.to("#start-context", { opacity: 0, y: -10, duration: 0.4, ease: "power2.out" }, 5.3);
+      tl.set("#start-context", { display: "none" }, 5.75);
+
+      // === Camera: zoom out to full view as message flies up ===
+      camTo(960, 540, 1.0, 0.9, "power2.inOut", 5.3);
+
+      // --- 3.5s: user message snaps into chat (no dip — slide up only) ---
+      // chat-stream is anchored at top; user-block is its first child. Start it offset down + invisible.
+      gsap.set("#block-user", { opacity: 0, y: 600 });
+      tl.to("#block-user", { opacity: 1, duration: 0.2 }, 5.3);
+      tl.to("#block-user", {
+        y: 0, duration: 0.7, ease: "power3.out"
+      }, 5.3);
+      // chat-side file chip appears with the message
+      tl.to("#chat-file-chip", { opacity: 1, duration: 0.3 }, 5.6);
+
+      // clear composer
+      tl.to("#composer-typed", { opacity: 0, duration: 0.2 }, 5.35);
+      tl.set("#composer-typed", { textContent: "" }, 5.6);
+      tl.set("#composer-typed", { opacity: 1 }, 5.6);
+      tl.to("#typing-cursor", { opacity: 0, duration: 0.1 }, 5.35);
+      tl.to("#file-chip", { opacity: 0, duration: 0.3 }, 5.4);
+      tl.to("#send-btn", { opacity: 0.7, backgroundColor: "#e8a48a", duration: 0.4 }, 5.5);
+
+      // --- Streaming chat sequence (runs in parallel with the video preview) ---
+      // hide all blocks + cursors initially
+      gsap.set(["#block-claude-head","#block-p1","#block-p2","#block-tool1","#block-p3","#block-tool2","#block-p4"], { opacity: 0 });
+      gsap.set(["#cursor-p1","#cursor-p2","#cursor-p3","#cursor-p4"], { opacity: 0 });
+
+      // helper to stream text into a target with a typing cursor
+      function streamText(targetId, cursorId, text, startTime, duration) {
+        var s = { n: 0 };
+        tl.set("#" + cursorId, { opacity: 1 }, startTime);
+        tl.to(s, {
+          n: text.length, duration: duration, ease: "none",
+          onUpdate: function () {
+            document.getElementById(targetId).textContent =
+              text.substring(0, Math.floor(s.n));
+          }
+        }, startTime);
+        // blink while typing
+        tl.to("#" + cursorId, {
+          opacity: 0, duration: 0.4, ease: "steps(1)", repeat: Math.floor(duration/0.4), yoyo: true
+        }, startTime);
+        // hide cursor at end
+        tl.set("#" + cursorId, { opacity: 0 }, startTime + duration + 0.1);
+      }
+
+      // 6.2s: Claude header
+      tl.to("#block-claude-head", { opacity: 1, duration: 0.25 }, 6.2);
+
+      // 6.65s: paragraph 1 streams
+      tl.to("#block-p1", { opacity: 1, duration: 0.2 }, 6.65);
+      var p1 = "I'll create a 5-second cinematic intro video using the animations starter component. Let me build this as an original design with a bold, cinematic aesthetic.";
+      streamText("p1-body", "cursor-p1", p1, 6.7, 1.4);
+
+      // 8.15s: paragraph 2 (Aesthetic choice)
+      tl.to("#block-p2", { opacity: 1, duration: 0.2 }, 8.15);
+      var p2 = "Dark cinematic with a single warm accent (amber/gold), Helvetica-adjacent sans + a serif display. Letterboxed widescreen feel. Animation centers on type-driven reveal with light streaks and a logo mark lockup.";
+      streamText("p2-body", "cursor-p2", p2, 8.2, 1.6);
+
+      // 9.85s: tool pill 1
+      tl.to("#block-tool1", { opacity: 1, duration: 0.3 }, 9.85);
+
+      // 10.2s: paragraph 3 streams
+      tl.to("#block-p3", { opacity: 1, duration: 0.2 }, 10.2);
+      var p3 = "Now I'll build a cinematic 5-second intro. Concept: deep black void → slow light reveal → title \"HORIZON\" rises with a serif display type → horizontal light streak slashes across → subtitle locks up → final fade.";
+      streamText("p3-body", "cursor-p3", p3, 10.25, 1.3);
+
+      // 11.6s: tool pill 2
+      tl.to("#block-tool2", { opacity: 1, duration: 0.3 }, 11.6);
+
+      // 11.95s: paragraph 4 starts
+      tl.to("#block-p4", { opacity: 1, duration: 0.2 }, 11.95);
+      var p4 = "A 5-second cinematic intro titled HORIZON — pinpoint light blooms into an amber horizon streak, serif title rises letter-by-letter with a slow dolly-in, subtitle locks up under a thin rule, then fades.";
+      streamText("p4-body", "cursor-p4", p4, 12.0, 1.5);
+
+      // settle — no scale change for plain text
+
+      // --- 6.2s: cursor moves off-screen and fades out (don't drift onto the video) ---
+      moveCursor(1900, 1100, 0.6, "power2.inOut", 6.2);
+      tl.to("#cursor", { opacity: 0, duration: 0.4 }, 6.4);
+      tl.to("#cursor-ring", { opacity: 0, duration: 0.4 }, 6.4);
+
+      // --- 6.4s: canvas empty state + grid + drop hint fade out, artboard fills right ---
+      tl.to("#canvas-empty", { opacity: 0, duration: 0.4, ease: "power2.out" }, 6.4);
+      tl.to(".right-header", { opacity: 0, duration: 0.4 }, 6.4);
+      tl.to(".drop-here", { opacity: 0, duration: 0.4 }, 6.4);
+      gsap.set("#artboard", { opacity: 0 });
+      tl.fromTo("#artboard",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.6, ease: "power2.out" },
+        6.5);
+
+      // === Cinematic mini-video sequence (plays inside letterbox area) ===
+      // 6.8–7.4: ambience builds
+      gsap.set("#v-stars", { opacity: 0 });
+      tl.to("#v-stars", { opacity: 1, duration: 0.6, ease: "power2.out" }, 6.8);
+      tl.to("#v-fog", { opacity: 1, duration: 0.8, ease: "sine.out" }, 7.0);
+      tl.to("#v-stars", {
+        backgroundPosition: "20px 10px", duration: 4.5, ease: "none"
+      }, 6.8);
+
+      // 7.4: beam slams down from the top like a laser
+      tl.to("#v-beam", {
+        scaleY: 1, duration: 0.7, ease: "power3.out"
+      }, 7.4);
+      tl.fromTo("#v-beam-flash",
+        { opacity: 0, scale: 0.2 },
+        { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out" },
+        7.95);
+      tl.to("#v-beam-flash", { opacity: 0, duration: 0.6, ease: "power2.out" }, 8.2);
+      tl.to("#v-beam-floor", { opacity: 1, duration: 0.6, ease: "power2.out" }, 8.0);
+      tl.to("#v-beam", {
+        opacity: 0.85, duration: 1.0, ease: "sine.inOut", yoyo: true, repeat: 2
+      }, 8.3);
+
+      // 8.1: mockup rises from below
+      tl.to("#v-mockup", { opacity: 1, duration: 0.5, ease: "power2.out" }, 8.1);
+      tl.to("#v-mockup", { y: 0, duration: 1.2, ease: "expo.out" }, 8.1);
+
+      // 8.3: eyebrow
+      tl.fromTo("#v-eyebrow",
+        { opacity: 0, y: -8, letterSpacing: "0.6em" },
+        { opacity: 1, y: 0, letterSpacing: "0.4em", duration: 0.7, ease: "power2.out" },
+        8.3);
+
+      // 8.65: title words stagger
+      tl.to("#w1", { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 8.65);
+      tl.to("#w2", { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 9.0);
+      tl.to("#w3", { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 9.15);
+      tl.to("#w4", { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 9.3);
+
+      // 9.8: subtitle
+      tl.fromTo("#v-sub",
+        { opacity: 0, y: 6 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
+        9.8);
+
+      // continuous slow zoom on stage (Ken Burns)
+      gsap.set("#v-stage", { transformOrigin: "50% 60%" });
+      tl.to("#v-stage", { scale: 1.04, duration: 4.0, ease: "sine.out" }, 7.4);
+
+      // --- Player bar fades in shortly after artboard ---
+      tl.to("#player-bar", { opacity: 1, duration: 0.4 }, 7.1);
+
+      // play → pause icon swap when playback starts
+      tl.set("#play-icon", { display: "none" }, 7.8);
+      tl.set("#pause-icon", { display: "inline-flex" }, 7.8);
+
+      // === Camera: push into the video preview so it fills the entire viewport ===
+      // Scale chosen so the right-side artboard covers the full 1920x1080 frame.
+      camTo(1248, 588, 1.55, 1.6, "power2.inOut", 9.0);
+      // hold the full-screen video frame through the end (handoff to next clip)
+      // scrubber + timecode animate during 'playback' (7.8 — 10.6)
+      tl.to("#scrub-fill", { width: "100%", duration: 2.8, ease: "none" }, 7.8);
+      tl.to("#scrub-handle", { left: "100%", duration: 2.8, ease: "none" }, 7.8);
+      var tcState = { n: 0 };
+      tl.to(tcState, {
+        n: 5, duration: 2.8, ease: "none",
+        onUpdate: function () {
+          var s = tcState.n;
+          var sec = Math.floor(s);
+          document.getElementById("timecode").textContent =
+            "0:0" + sec + " / 0:05";
+        }
+      }, 7.8);
+
+      window.__timelines["claude-ui"] = tl;
+    </script>    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/shader-transitions/dist/index.global.js"></script>
+
+  </div>
+</template>

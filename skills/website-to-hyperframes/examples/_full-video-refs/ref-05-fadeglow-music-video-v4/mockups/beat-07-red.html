@@ -1,0 +1,62 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Beat 7 · Red. Go ahead.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@900&family=Anton&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  html,body{margin:0;width:1920px;height:1080px;overflow:hidden;font-family:'Archivo',sans-serif}
+  .frame{position:relative;width:1920px;height:1080px;
+    background:radial-gradient(ellipse at 50% 40%, #FF3B2F 0%, #E1231A 48%, #9E0E0A 100%);
+    overflow:hidden}
+  .grain{position:absolute;inset:0;background-image:radial-gradient(rgba(0,0,0,0.1) 0.6px,transparent 0.9px);background-size:3px 3px;mix-blend-mode:multiply;opacity:0.5;pointer-events:none}
+  .beam{position:absolute;top:-200px;left:50%;width:1600px;height:1800px;transform:translateX(-50%);
+    background:radial-gradient(ellipse at 50% 0%, rgba(255,240,210,0.35), transparent 55%);
+    pointer-events:none}
+  .bauhaus .circ{position:absolute;border-radius:50%}
+  .bauhaus .c1{width:380px;height:380px;background:#0E0E0E;top:80px;left:80px}
+  .bauhaus .c2{width:240px;height:240px;background:#FFE94F;bottom:120px;right:140px;border:12px solid #0E0E0E}
+  .bauhaus .c3{width:520px;height:260px;background:#0E0E0E;border-radius:260px 260px 0 0;bottom:0;left:0}
+  .bauhaus .bar{position:absolute;background:#0E0E0E;height:14px}
+  .bauhaus .b1{top:680px;right:0;width:520px}
+  .bauhaus .b2{top:720px;right:0;width:320px;background:#FFE94F;height:8px}
+  .word{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Anton',sans-serif;font-size:860px;line-height:0.82;letter-spacing:-0.04em;color:#FDF5E3;text-shadow:14px 14px 0 #0E0E0E;z-index:5}
+  .word::after{content:'.';color:#FFE94F}
+  .sub{position:absolute;top:50%;left:50%;transform:translate(-50%,calc(-50% + 420px));font-family:'JetBrains Mono',monospace;font-weight:500;font-size:28px;letter-spacing:0.3em;text-transform:uppercase;color:#FDF5E3;z-index:6}
+  .sub span{background:#0E0E0E;padding:6px 14px;margin:0 6px}
+  .sub .yellow{background:#FFE94F;color:#0E0E0E}
+  .hud{position:absolute;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:18px;letter-spacing:0.2em;text-transform:uppercase;color:#FDF5E3;z-index:7}
+  .hud.tl{top:48px;left:72px}
+  .hud.tr{top:48px;right:72px;text-align:right}
+  .hud.bl{bottom:48px;left:72px}
+  .hud.br{bottom:48px;right:72px;text-align:right;color:#FFE94F}
+  .go{position:absolute;top:50%;left:50%;transform:translate(-50%,calc(-50% - 360px)) rotate(-3deg);font-family:'Archivo',sans-serif;font-weight:900;font-size:120px;letter-spacing:-0.04em;color:#FFE94F;text-shadow:8px 8px 0 #0E0E0E;z-index:6}
+  .go em{font-style:italic}
+  .reg{position:absolute;top:280px;left:560px;width:120px;height:120px;border:8px solid #FDF5E3;border-radius:50%}
+  .reg::before,.reg::after{content:'';position:absolute;background:#FDF5E3}
+  .reg::before{left:50%;top:-20px;bottom:-20px;width:4px;margin-left:-2px}
+  .reg::after{top:50%;left:-20px;right:-20px;height:4px;margin-top:-2px}
+  .tick{position:absolute;top:720px;right:72px;display:flex;gap:8px;z-index:7}
+  .tick span{width:8px;height:32px;background:rgba(253,245,227,0.3)}
+  .tick span.on{background:#FFE94F}
+</style></head>
+<body>
+<div class="frame">
+  <div class="beam"></div>
+  <div class="bauhaus">
+    <div class="circ c1"></div>
+    <div class="circ c2"></div>
+    <div class="circ c3"></div>
+    <div class="bar b1"></div>
+    <div class="bar b2"></div>
+  </div>
+  <div class="grain"></div>
+  <div class="hud tl">▲ spotlight · trigger 33.94s</div>
+  <div class="hud tr">#E1231A</div>
+  <div class="go">go ahead<em>.</em></div>
+  <div class="word">RED</div>
+  <div class="sub"><span>want this spotlight?</span><span class="yellow">RED</span></div>
+  <div class="reg"></div>
+  <div class="tick"><span></span><span></span><span class="on"></span><span class="on"></span><span></span><span></span><span class="on"></span><span></span></div>
+  <div class="hud bl">color &middot; background &middot; spotlight</div>
+  <div class="hud br">07 / 08 &nbsp; bauhaus red</div>
+</div>
+</body></html>

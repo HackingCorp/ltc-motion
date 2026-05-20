@@ -1,0 +1,1621 @@
+<template id="grid-template">
+  <div data-composition-id="grid" data-width="1920" data-height="1080">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #050505;
+        --ink: #f5f5f7;
+        --cyan: #22d3ee;
+        --magenta: #ec4899;
+        --amber: #f59e0b;
+        --green: #22c55e;
+        --violet: #8b5cf6;
+        --red: #ef4444;
+        --blue: #3b82f6;
+        --indigo: #6366f1;
+        --orb: #e8a769;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Space Grotesk", sans-serif;
+      }
+      .scene {
+        position: absolute;
+        top: 0; left: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+      }
+      .scene-content {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      .vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.7) 100%);
+        pointer-events: none;
+        z-index: 50;
+      }
+
+      /* ===== 6x4 grid ===== */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(6, 250px);
+        grid-template-rows: repeat(4, 250px);
+        gap: 16px;
+      }
+      .square {
+        width: 250px;
+        height: 250px;
+        position: relative;
+        overflow: hidden;
+        background: #08080c;
+        border-radius: 6px;
+        border: 1px solid rgba(255,255,255,0.04);
+      }
+      /* The "feature" square sits at row 2, col 2 — slightly enlarged */
+      .square.feature {
+        border-color: rgba(245,158,11,0.25);
+        box-shadow: 0 0 50px rgba(245,158,11,0.18);
+      }
+
+      /* ===== 1. Concentric rings ===== */
+      .rings {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at center, #0a1220, #050505);
+      }
+      .ring {
+        position: absolute;
+        border-radius: 50%;
+        border: 3px solid;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        transform-origin: center;
+      }
+
+      /* ===== 2. Stripes ===== */
+      .stripes {
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(45deg,
+          var(--indigo) 0, var(--indigo) 10px,
+          #0f1117 10px, #0f1117 20px);
+        background-size: 200% 200%;
+      }
+
+      /* ===== 3. Dot grid ===== */
+      .dots {
+        position: absolute;
+        inset: -30px;
+        background: radial-gradient(circle, #94a3b8 2px, transparent 2.5px);
+        background-size: 26px 26px;
+      }
+
+      /* ===== 4. Radial burst ===== */
+      .burst {
+        position: absolute; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        background: radial-gradient(circle at center, #1a0a14, #050505);
+      }
+      .burst-inner { position: relative; width: 1px; height: 1px; }
+      .ray {
+        position: absolute;
+        top: -110px; left: -1px;
+        width: 2px;
+        height: 220px;
+        background: linear-gradient(to bottom, transparent 0%, #f59e0b 50%, transparent 100%);
+        transform-origin: 50% 50%;
+      }
+
+      /* ===== 5. Glowing orb ===== */
+      .orb-wrap {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at center, #1a0a05, #050505 70%);
+      }
+      .orb {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at center, var(--orb) 0%, rgba(232,167,105,0.4) 30%, transparent 70%);
+        filter: blur(40px);
+      }
+      .orb-core {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at center, rgba(255,220,180,0.95) 0%, transparent 25%);
+      }
+
+      /* ===== 6. Sine waves ===== */
+      .waves {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; justify-content: center; gap: 0;
+        background: linear-gradient(180deg, #050818, #050505);
+      }
+      .wave { height: 28px; margin-top: -7px; }
+      .wave svg { width: 100%; height: 100%; display: block; }
+
+      /* ===== 7. Binary rain ===== */
+      .rain {
+        position: absolute; inset: 0;
+        display: flex; gap: 1px; padding: 0 2px;
+        background: #020a05;
+        overflow: hidden;
+      }
+      .rain-col {
+        flex: 1;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        line-height: 11px;
+        color: var(--green);
+        opacity: 0.32;
+        white-space: pre;
+        text-align: center;
+      }
+
+      /* ===== 8. Maze ===== */
+      .maze {
+        position: absolute; inset: 0;
+        background-color: #0a0a0e;
+        background-image:
+          linear-gradient(0deg, transparent 24%, rgba(148,163,184,0.5) 25%, rgba(148,163,184,0.5) 26%, transparent 27%, transparent 74%, rgba(148,163,184,0.5) 75%, rgba(148,163,184,0.5) 76%, transparent 77%),
+          linear-gradient(90deg, transparent 24%, rgba(148,163,184,0.5) 25%, rgba(148,163,184,0.5) 26%, transparent 27%, transparent 74%, rgba(148,163,184,0.5) 75%, rgba(148,163,184,0.5) 76%, transparent 77%);
+        background-size: 30px 30px;
+      }
+
+      /* ===== 9. ECG ===== */
+      .ecg {
+        position: absolute; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(180deg, #15040a, #050505);
+      }
+      .ecg svg { width: 100%; height: 100%; }
+      .ecg-path {
+        fill: none; stroke: var(--red);
+        stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+        filter: drop-shadow(0 0 4px rgba(239,68,68,0.6));
+      }
+
+      /* ===== 10. Liquid blob ===== */
+      .blob-wrap {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at 30% 30%, #1a1f2e, #050505);
+      }
+      .blob-wrap svg { width: 100%; height: 100%; }
+
+      /* ===== 11. Kinetic word ===== */
+      .kinetic {
+        position: absolute; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(135deg, #1a0533, #050505 70%);
+        perspective: 600px;
+      }
+      .kinetic-word {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700;
+        font-size: 44px;
+        letter-spacing: -0.03em;
+        color: var(--magenta);
+        text-shadow: 0 0 20px rgba(236,72,153,0.6);
+        display: flex;
+        gap: 2px;
+        transform-style: preserve-3d;
+      }
+      .kinetic-char {
+        display: inline-block;
+        transform-style: preserve-3d;
+        will-change: transform;
+      }
+
+      /* ===== 12. 3D cube ===== */
+      .cube-stage {
+        position: absolute; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        perspective: 700px;
+        background: radial-gradient(circle at center, #0a1628, #050505);
+      }
+      .cube {
+        position: relative;
+        width: 100px; height: 100px;
+        transform-style: preserve-3d;
+        transform: rotateX(-25deg) rotateY(0deg);
+      }
+      .face {
+        position: absolute;
+        width: 100px; height: 100px;
+        border: 2px solid rgba(255,255,255,0.85);
+        display: flex; align-items: center; justify-content: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 26px; font-weight: 700;
+        text-shadow: 0 0 6px currentColor;
+      }
+      .f-front  { transform: translateZ(50px);                background: rgba(34,211,238,0.18);  color: var(--cyan); }
+      .f-back   { transform: rotateY(180deg) translateZ(50px); background: rgba(236,72,153,0.18); color: var(--magenta); }
+      .f-right  { transform: rotateY(90deg)  translateZ(50px); background: rgba(245,158,11,0.18); color: var(--amber); }
+      .f-left   { transform: rotateY(-90deg) translateZ(50px); background: rgba(34,197,94,0.18);  color: var(--green); }
+      .f-top    { transform: rotateX(90deg)  translateZ(50px); background: rgba(139,92,246,0.18); color: var(--violet); }
+      .f-bottom { transform: rotateX(-90deg) translateZ(50px); background: rgba(239,68,68,0.18);  color: var(--red); }
+
+      /* ===== 13. Spirograph ===== */
+      .spiro {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at center, #1a0a1f, #050505);
+      }
+      .spiro svg { width: 100%; height: 100%; }
+
+      /* ===== 14. Particle vortex (FEATURE) ===== */
+      .vortex {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at center, #1a0a2e 0%, #050505 70%);
+        overflow: hidden;
+      }
+      .vortex-core {
+        position: absolute; top: 50%; left: 50%;
+        width: 50px; height: 50px;
+        margin: -25px 0 0 -25px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #fff 0%, var(--amber) 30%, transparent 70%);
+        filter: blur(7px);
+        z-index: 2;
+      }
+      .particle {
+        position: absolute; top: 50%; left: 50%;
+        width: 4px; height: 4px;
+        margin: -2px 0 0 -2px;
+        border-radius: 50%;
+        background: var(--amber);
+        box-shadow: 0 0 6px var(--amber);
+        will-change: transform, opacity;
+      }
+
+      /* ===== 15. Glitch text ===== */
+      .glitch-wrap {
+        position: absolute; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(180deg, #0a0a0e, #1a0a14);
+        overflow: hidden;
+      }
+      .glitch-text {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        font-size: 28px;
+        letter-spacing: 0.04em;
+        color: #fff;
+        position: relative;
+      }
+      .glitch-layer {
+        position: absolute; top: 0; left: 0; right: 0;
+        text-align: center;
+        mix-blend-mode: screen;
+        will-change: transform;
+      }
+      .glitch-r { color: #ff0040; }
+      .glitch-g { color: #00ffaa; }
+      .glitch-b { color: #00aaff; }
+      .scanline {
+        position: absolute; left: 0; right: 0;
+        height: 12px;
+        background: linear-gradient(180deg, transparent, rgba(255,255,255,0.1) 50%, transparent);
+        pointer-events: none;
+        will-change: transform;
+      }
+
+      /* ===== 16. Terminal ===== */
+      .term {
+        position: absolute; inset: 0;
+        background: #020608;
+        padding: 10px 12px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        line-height: 1.45;
+        color: var(--green);
+        overflow: hidden;
+      }
+      .term-bar {
+        display: flex; align-items: center; gap: 5px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid rgba(34,197,94,0.15);
+        margin-bottom: 6px;
+      }
+      .term-dot { width: 6px; height: 6px; border-radius: 50%; }
+      .term-title {
+        font-size: 7px; color: rgba(34,197,94,0.5);
+        margin-left: 4px; letter-spacing: 0.1em;
+      }
+      .term-line { white-space: pre; opacity: 0; }
+      .term-line .dim { color: rgba(34,197,94,0.4); }
+      .term-line .ok { color: #4ade80; }
+      .term-line .warn { color: var(--amber); }
+      .cursor {
+        display: inline-block;
+        width: 5px; height: 9px;
+        background: var(--green);
+        vertical-align: middle;
+        margin-left: 2px;
+      }
+
+      /* ===== 17 [used as 16th]: Audio bars ===== */
+      .audio {
+        position: absolute; inset: 0;
+        background: linear-gradient(180deg, #050818, #050505);
+        display: flex; align-items: center; justify-content: center;
+        gap: 3px; padding: 0 14px;
+      }
+      .bar {
+        flex: 1;
+        background: linear-gradient(180deg, var(--cyan), var(--violet));
+        border-radius: 2px 2px 0 0;
+        transform-origin: bottom;
+        height: 60%;
+        max-width: 7px;
+        box-shadow: 0 0 6px rgba(34,211,238,0.5);
+      }
+
+      /* ===== Neon globe ===== */
+      .globe-stage {
+        position: absolute; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        background: radial-gradient(circle at center, #0a1224, #050505);
+        perspective: 700px;
+      }
+      .globe-wrap {
+        width: 170px; height: 170px;
+        position: relative;
+        transform-style: preserve-3d;
+      }
+      .globe-wrap svg {
+        position: absolute; inset: 0;
+        width: 100%; height: 100%;
+        overflow: visible;
+      }
+      .globe-orbit {
+        position: absolute; inset: 0;
+        border-radius: 50%;
+        border: 1px solid rgba(34,211,238,0.5);
+        box-shadow: inset 0 0 25px rgba(34,211,238,0.15), 0 0 18px rgba(34,211,238,0.2);
+      }
+      .merid {
+        position: absolute; top: 0; left: 50%;
+        width: 170px; height: 170px;
+        margin-left: -85px;
+        border-radius: 50%;
+        border: 1px solid rgba(34,211,238,0.45);
+      }
+      .ping {
+        position: absolute;
+        width: 5px; height: 5px;
+        border-radius: 50%;
+        background: var(--magenta);
+        box-shadow: 0 0 8px var(--magenta);
+        top: 50%; left: 50%;
+        margin: -2.5px 0 0 -2.5px;
+      }
+
+      /* ===== NEW: Analog clock ===== */
+      .clock-stage {
+        position: absolute; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        background: radial-gradient(circle at center, #1a1410, #050505);
+      }
+      .clock-face {
+        width: 180px; height: 180px;
+        border-radius: 50%;
+        border: 2px solid rgba(245,158,11,0.5);
+        box-shadow: inset 0 0 20px rgba(245,158,11,0.15), 0 0 20px rgba(245,158,11,0.2);
+        position: relative;
+      }
+      .tick {
+        position: absolute;
+        top: 6px; left: 50%;
+        width: 2px; height: 10px;
+        background: rgba(245,158,11,0.7);
+        transform-origin: 1px 84px;
+      }
+      .hand {
+        position: absolute;
+        left: 50%; top: 50%;
+        background: var(--amber);
+        transform-origin: 50% 100%;
+        border-radius: 2px;
+      }
+      .hand.hour   { width: 4px; height: 50px; margin: -50px 0 0 -2px; }
+      .hand.minute { width: 3px; height: 70px; margin: -70px 0 0 -1.5px; background: #fde68a; }
+      .hand.second { width: 1.5px; height: 78px; margin: -78px 0 0 -0.75px; background: var(--red); }
+      .clock-center {
+        position: absolute; top: 50%; left: 50%;
+        width: 10px; height: 10px;
+        margin: -5px 0 0 -5px;
+        border-radius: 50%;
+        background: var(--amber);
+        z-index: 4;
+      }
+
+      /* ===== NEW: Stock chart ===== */
+      .stock {
+        position: absolute; inset: 0;
+        background: linear-gradient(180deg, #051a10, #050505);
+        padding: 18px;
+      }
+      .stock-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: rgba(34,197,94,0.6);
+        letter-spacing: 0.15em;
+      }
+      .stock-price {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700;
+        font-size: 26px;
+        color: var(--green);
+        letter-spacing: -0.02em;
+        margin-top: 2px;
+      }
+      .stock-delta {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--green);
+      }
+      .stock-chart {
+        position: absolute;
+        left: 0; right: 0; bottom: 18px;
+        height: 130px;
+      }
+
+      /* ===== NEW: Neural network ===== */
+      .nn {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at center, #0a0f1a, #050505);
+      }
+      .nn svg { width: 100%; height: 100%; }
+
+      /* ===== NEW: Loading spinners ===== */
+      .spinners {
+        position: absolute; inset: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        background: linear-gradient(135deg, #0a0a14, #050505);
+        padding: 14px;
+        gap: 6px;
+      }
+      .spin-cell {
+        display: flex; align-items: center; justify-content: center;
+        position: relative;
+      }
+      .spin-ring {
+        width: 52px; height: 52px;
+        border-radius: 50%;
+        border: 3px solid rgba(34,211,238,0.18);
+        border-top-color: var(--cyan);
+      }
+      .spin-dots { display: flex; gap: 6px; }
+      .spin-dot {
+        width: 10px; height: 10px;
+        border-radius: 50%;
+        background: var(--magenta);
+      }
+      .spin-bars { display: flex; gap: 4px; align-items: center; }
+      .spin-bar {
+        width: 4px; height: 30px;
+        background: var(--amber);
+        border-radius: 2px;
+        transform-origin: center;
+      }
+      .spin-pulse {
+        width: 50px; height: 50px;
+        border-radius: 50%;
+        background: var(--violet);
+        position: relative;
+      }
+      .spin-pulse::after {
+        content: "";
+        position: absolute; inset: 0;
+        border-radius: 50%;
+        border: 2px solid var(--violet);
+      }
+
+      /* ===== NEW: QR code ===== */
+      .qr {
+        position: absolute; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        background: #f5f5f7;
+      }
+      .qr-grid {
+        width: 180px; height: 180px;
+        display: grid;
+        grid-template-columns: repeat(21, 1fr);
+        grid-template-rows: repeat(21, 1fr);
+        gap: 1px;
+      }
+      .qr-cell { background: #0a0a0a; }
+      .qr-cell.empty { background: transparent; }
+
+      /* ===== NEW: Map pin ===== */
+      .map {
+        position: absolute; inset: 0;
+        background:
+          linear-gradient(90deg, rgba(139,92,246,0.08) 1px, transparent 1px) 0 0 / 26px 26px,
+          linear-gradient(180deg, rgba(139,92,246,0.08) 1px, transparent 1px) 0 0 / 26px 26px,
+          linear-gradient(180deg, #0f0818, #050505);
+      }
+      .map-path {
+        position: absolute;
+        top: 40%; left: -10%;
+        width: 60%; height: 3px;
+        background: linear-gradient(90deg, transparent, var(--violet), transparent);
+        transform: rotate(12deg);
+        opacity: 0.7;
+      }
+      .map-pin {
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 28px; height: 36px;
+        margin: -36px 0 0 -14px;
+        z-index: 3;
+      }
+      .map-pin svg {
+        width: 100%; height: 100%;
+        filter: drop-shadow(0 0 8px rgba(239,68,68,0.7));
+      }
+      .map-ripple {
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 20px; height: 20px;
+        margin: -10px 0 0 -10px;
+        border-radius: 50%;
+        border: 2px solid var(--red);
+        opacity: 0;
+      }
+
+      /* ===== NEW: Code editor ===== */
+      .code {
+        position: absolute; inset: 0;
+        background: #0a0a14;
+        padding: 12px 14px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        line-height: 1.5;
+        overflow: hidden;
+      }
+      .code-bar {
+        display: flex; align-items: center; gap: 5px;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+      }
+      .code-dot { width: 6px; height: 6px; border-radius: 50%; }
+      .code-file {
+        font-size: 8px;
+        color: rgba(255,255,255,0.4);
+        margin-left: 6px;
+        letter-spacing: 0.1em;
+      }
+      .code-line {
+        white-space: pre;
+        color: rgba(255,255,255,0.7);
+        opacity: 0;
+      }
+      .tok-kw  { color: #c084fc; }
+      .tok-fn  { color: #60a5fa; }
+      .tok-str { color: #fb923c; }
+      .tok-num { color: #34d399; }
+      .tok-com { color: rgba(255,255,255,0.3); font-style: italic; }
+      .code-gut { color: rgba(255,255,255,0.15); margin-right: 8px; }
+
+      /* ===== NEW: Weather card ===== */
+      .weather {
+        position: absolute; inset: 0;
+        background: linear-gradient(180deg, #051626 0%, #0a1f3a 60%, #050a14 100%);
+        overflow: hidden;
+      }
+      .weather-info {
+        position: absolute;
+        left: 16px; bottom: 14px;
+        z-index: 3;
+      }
+      .weather-temp {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 500;
+        font-size: 44px;
+        color: #fff;
+        letter-spacing: -0.04em;
+        line-height: 1;
+      }
+      .weather-city {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: rgba(255,255,255,0.6);
+        letter-spacing: 0.12em;
+        margin-top: 4px;
+      }
+      .cloud {
+        position: absolute;
+        top: 30px; right: 20px;
+        width: 70px; height: 40px;
+        background: rgba(255,255,255,0.85);
+        border-radius: 20px;
+        z-index: 2;
+      }
+      .cloud::before, .cloud::after {
+        content: "";
+        position: absolute;
+        background: rgba(255,255,255,0.85);
+        border-radius: 50%;
+      }
+      .cloud::before {
+        width: 30px; height: 30px;
+        top: -12px; left: 12px;
+      }
+      .cloud::after {
+        width: 22px; height: 22px;
+        top: -8px; left: 38px;
+      }
+      .raindrop {
+        position: absolute;
+        width: 2px; height: 10px;
+        background: linear-gradient(180deg, transparent, #93c5fd);
+        border-radius: 1px;
+        opacity: 0.7;
+      }
+
+      /* ===== NEW: DNA helix ===== */
+      .dna {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at center, #0a0018, #050505);
+        display: flex; align-items: center; justify-content: center;
+      }
+      .dna svg { width: 100%; height: 100%; }
+    </style>
+
+      <div class="scene clip" id="s1" data-start="0" data-duration="4" data-track-index="0">
+        <div class="vignette"></div>
+        <div class="scene-content">
+          <div class="grid">
+
+            <!-- ROW 1 -->
+            <!-- [0,L] Analog clock -->
+            <div class="square" id="sqL0">
+              <div class="clock-stage">
+                <div class="clock-face" id="clock-face">
+                  <div class="clock-center"></div>
+                  <div class="hand hour"   id="hand-h"></div>
+                  <div class="hand minute" id="hand-m"></div>
+                  <div class="hand second" id="hand-s"></div>
+                </div>
+              </div>
+            </div>
+            <!-- [0,0] Concentric rings -->
+            <div class="square" id="sq00" data-row="0" data-col="0">
+              <div class="rings" id="rings"></div>
+            </div>
+            <!-- [0,1] Stripes -->
+            <div class="square" id="sq01" data-row="0" data-col="1">
+              <div class="stripes" id="stripes"></div>
+            </div>
+            <!-- [0,2] 3D cube -->
+            <div class="square" id="sq02" data-row="0" data-col="2">
+              <div class="cube-stage">
+                <div class="cube" id="cube">
+                  <div class="face f-front">+</div>
+                  <div class="face f-back">×</div>
+                  <div class="face f-right">◆</div>
+                  <div class="face f-left">○</div>
+                  <div class="face f-top">▲</div>
+                  <div class="face f-bottom">▼</div>
+                </div>
+              </div>
+            </div>
+            <!-- [0,3] Dots -->
+            <div class="square" id="sq03" data-row="0" data-col="3">
+              <div class="dots" id="dots"></div>
+            </div>
+            <!-- [0,R] QR code -->
+            <div class="square" id="sqR0">
+              <div class="qr">
+                <div class="qr-grid" id="qr-grid"></div>
+              </div>
+            </div>
+
+            <!-- ROW 2 -->
+            <!-- [1,L] Stock chart -->
+            <div class="square" id="sqL1">
+              <div class="stock">
+                <div class="stock-label">AAPL</div>
+                <div class="stock-price" id="stock-price">$0.00</div>
+                <div class="stock-delta" id="stock-delta">+0.00%</div>
+                <svg class="stock-chart" viewBox="0 0 250 130" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="stockFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#22c55e" stop-opacity="0.4"/>
+                      <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <path id="stock-fill" d="M 0 110 L 25 90 L 50 100 L 75 80 L 100 85 L 125 60 L 150 65 L 175 45 L 200 50 L 225 25 L 250 15 L 250 130 L 0 130 Z" fill="url(#stockFill)"/>
+                  <path id="stock-path" d="M 0 110 L 25 90 L 50 100 L 75 80 L 100 85 L 125 60 L 150 65 L 175 45 L 200 50 L 225 25 L 250 15" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+            <!-- [1,0] Liquid blob -->
+            <div class="square" id="sq10" data-row="1" data-col="0">
+              <div class="blob-wrap">
+                <svg viewBox="0 0 230 230">
+                  <defs>
+                    <filter id="goo">
+                      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+                      <feColorMatrix in="blur" mode="matrix"
+                        values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10" result="goo"/>
+                      <feBlend in="SourceGraphic" in2="goo"/>
+                    </filter>
+                    <radialGradient id="blobGrad" cx="50%" cy="40%" r="60%">
+                      <stop offset="0%" stop-color="#a78bfa"/>
+                      <stop offset="60%" stop-color="#7c3aed"/>
+                      <stop offset="100%" stop-color="#312e81"/>
+                    </radialGradient>
+                  </defs>
+                  <g filter="url(#goo)">
+                    <circle id="b1" cx="115" cy="115" r="36" fill="url(#blobGrad)"/>
+                    <circle id="b2" cx="85"  cy="90"  r="22" fill="url(#blobGrad)"/>
+                    <circle id="b3" cx="145" cy="135" r="26" fill="url(#blobGrad)"/>
+                    <circle id="b4" cx="115" cy="160" r="20" fill="url(#blobGrad)"/>
+                    <circle id="b5" cx="140" cy="85"  r="18" fill="url(#blobGrad)"/>
+                  </g>
+                </svg>
+              </div>
+            </div>
+            <!-- [1,1] Particle vortex (FEATURE) -->
+            <div class="square feature" id="sq11" data-row="1" data-col="1">
+              <div class="vortex" id="vortex">
+                <div class="vortex-core"></div>
+              </div>
+            </div>
+            <!-- [1,2] Glowing orb -->
+            <div class="square" id="sq12" data-row="1" data-col="2">
+              <div class="orb-wrap">
+                <div class="orb" id="orb"></div>
+                <div class="orb-core" id="orb-core"></div>
+              </div>
+            </div>
+            <!-- [1,3] Spirograph -->
+            <div class="square" id="sq13" data-row="1" data-col="3">
+              <div class="spiro">
+                <svg viewBox="0 0 230 230">
+                  <g id="spiro-g" transform="translate(115 115)">
+                    <g id="spiro-r1">
+                      <circle r="75" fill="none" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
+                      <circle r="75" fill="none" stroke="var(--cyan)" stroke-width="1.4" stroke-dasharray="2 6"/>
+                    </g>
+                    <g id="spiro-r2">
+                      <ellipse rx="60" ry="30" fill="none" stroke="var(--magenta)" stroke-width="1.2" opacity="0.75"/>
+                    </g>
+                    <g id="spiro-r3">
+                      <ellipse rx="45" ry="45" fill="none" stroke="var(--amber)" stroke-width="1.2" opacity="0.75"/>
+                    </g>
+                    <g id="spiro-r4">
+                      <ellipse rx="75" ry="15" fill="none" stroke="var(--violet)" stroke-width="1.2" opacity="0.75"/>
+                    </g>
+                    <g id="spiro-r5">
+                      <ellipse rx="30" ry="75" fill="none" stroke="var(--green)" stroke-width="1.2" opacity="0.75"/>
+                    </g>
+                    <circle r="3" fill="#fff"/>
+                  </g>
+                </svg>
+              </div>
+            </div>
+            <!-- [1,R] DNA helix -->
+            <div class="square" id="sqR1">
+              <div class="dna">
+                <svg id="dna-svg" viewBox="0 0 250 250"></svg>
+              </div>
+            </div>
+
+            <!-- ROW 3 -->
+            <!-- [2,L] Neural network -->
+            <div class="square" id="sqL2">
+              <div class="nn">
+                <svg id="nn-svg" viewBox="0 0 250 250"></svg>
+              </div>
+            </div>
+            <!-- [2,0] Radial burst -->
+            <div class="square" id="sq20" data-row="2" data-col="0">
+              <div class="burst">
+                <div class="burst-inner" id="burst"></div>
+              </div>
+            </div>
+            <!-- [2,1] Kinetic CLAUDE -->
+            <div class="square" id="sq21" data-row="2" data-col="1">
+              <div class="kinetic">
+                <div class="kinetic-word" id="kword">
+                  <span class="kinetic-char">C</span><span class="kinetic-char">L</span><span class="kinetic-char">A</span><span class="kinetic-char">U</span><span class="kinetic-char">D</span><span class="kinetic-char">E</span>
+                </div>
+              </div>
+            </div>
+            <!-- [2,2] Glitch text -->
+            <div class="square" id="sq22" data-row="2" data-col="2">
+              <div class="glitch-wrap">
+                <div class="glitch-text" id="glitch">
+                  <span class="glitch-layer glitch-r" id="g-r">SYSTEM</span>
+                  <span class="glitch-layer glitch-g" id="g-g">SYSTEM</span>
+                  <span class="glitch-layer glitch-b" id="g-b">SYSTEM</span>
+                  <span id="g-base" style="visibility:hidden;">SYSTEM</span>
+                </div>
+                <div class="scanline" id="scanline" style="top:0;"></div>
+              </div>
+            </div>
+            <!-- [2,3] Sine waves -->
+            <div class="square" id="sq23" data-row="2" data-col="3">
+              <div class="waves" id="waves"></div>
+            </div>
+            <!-- [2,R] Code editor -->
+            <div class="square" id="sqR2">
+              <div class="code-editor">
+                <div class="code-bar">
+                  <span class="code-dot" style="background:#ff5f57;"></span>
+                  <span class="code-dot" style="background:#febc2e;"></span>
+                  <span class="code-dot" style="background:#28c840;"></span>
+                  <span class="code-file">app.tsx</span>
+                </div>
+                <div class="code-line" id="cl1"><span class="tok-kw">const</span> tl = gsap.timeline();</div>
+                <div class="code-line" id="cl2">tl.<span class="tok-fn">from</span>(<span class="tok-str">".sq"</span>, {</div>
+                <div class="code-line" id="cl3">  scale: <span class="tok-num">0</span>,</div>
+                <div class="code-line" id="cl4">  stagger: <span class="tok-num">0.04</span>,</div>
+                <div class="code-line" id="cl5">  ease: <span class="tok-str">"back"</span></div>
+                <div class="code-line" id="cl6">});</div>
+                <div class="code-line" id="cl7"><span class="tok-com">// 24 patterns</span></div>
+                <div class="code-line" id="cl8"><span class="tok-kw">return</span> tl;</div>
+              </div>
+            </div>
+
+            <!-- ROW 4 -->
+            <!-- [3,L] Loading spinners -->
+            <div class="square" id="sqL3">
+              <div class="spinners">
+                <div class="spin-cell"><div class="spin-ring" id="spin-ring"></div></div>
+                <div class="spin-cell"><div class="spin-dots" id="spin-dots">
+                  <span class="spin-dot"></span><span class="spin-dot"></span><span class="spin-dot"></span><span class="spin-dot"></span>
+                </div></div>
+                <div class="spin-cell"><div class="spin-bars" id="spin-bars">
+                  <span class="spin-bar"></span><span class="spin-bar"></span><span class="spin-bar"></span><span class="spin-bar"></span><span class="spin-bar"></span>
+                </div></div>
+                <div class="spin-cell"><div class="spin-pulse" id="spin-pulse"></div></div>
+              </div>
+            </div>
+            <!-- [3,0] Binary rain -->
+            <div class="square" id="sq30" data-row="3" data-col="0">
+              <div class="rain" id="rain"></div>
+            </div>
+            <!-- [3,1] Maze -->
+            <div class="square" id="sq31" data-row="3" data-col="1">
+              <div class="maze" id="maze"></div>
+            </div>
+            <!-- [3,2] Audio waveform -->
+            <div class="square" id="sq32" data-row="3" data-col="2">
+              <div class="audio" id="audio"></div>
+            </div>
+            <!-- [3,3] Neon globe -->
+            <div class="square" id="sq33" data-row="3" data-col="3">
+              <div class="globe-stage">
+                <div class="globe-wrap" id="globe">
+                  <div class="globe-orbit"></div>
+                  <div class="merid" style="transform: rotateY(0deg);"></div>
+                  <div class="merid" style="transform: rotateY(30deg);"></div>
+                  <div class="merid" style="transform: rotateY(60deg);"></div>
+                  <div class="merid" style="transform: rotateY(90deg);"></div>
+                  <div class="merid" style="transform: rotateY(120deg);"></div>
+                  <div class="merid" style="transform: rotateY(150deg);"></div>
+                  <svg viewBox="-85 -85 170 170">
+                    <ellipse cx="0" cy="-45" rx="72" ry="14" fill="none" stroke="rgba(34,211,238,0.35)" stroke-width="1"/>
+                    <ellipse cx="0" cy="-22" rx="82" ry="9"  fill="none" stroke="rgba(34,211,238,0.4)"  stroke-width="1"/>
+                    <ellipse cx="0" cy="0"   rx="85" ry="4"  fill="none" stroke="rgba(34,211,238,0.5)"  stroke-width="1"/>
+                    <ellipse cx="0" cy="22"  rx="82" ry="9"  fill="none" stroke="rgba(34,211,238,0.4)"  stroke-width="1"/>
+                    <ellipse cx="0" cy="45"  rx="72" ry="14" fill="none" stroke="rgba(34,211,238,0.35)" stroke-width="1"/>
+                  </svg>
+                  <div class="ping" id="ping1" style="transform: translate(28px, -22px);"></div>
+                  <div class="ping" id="ping2" style="transform: translate(-35px, 14px); background: var(--cyan); box-shadow: 0 0 8px var(--cyan);"></div>
+                </div>
+              </div>
+            </div>
+            <!-- [3,R] Weather card -->
+            <div class="square" id="sqR3">
+              <div class="weather" id="weather">
+                <div class="cloud" id="cloud"></div>
+                <div class="weather-info">
+                  <div class="weather-temp" id="weather-temp">0°</div>
+                  <div class="weather-city">SAN FRANCISCO</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Terminal floats over [3,0] location? Actually we used rain there. Let me drop terminal in for square... Let's slot it via CSS. Actually we used 16 patterns: rings, stripes, dots, burst, orb, waves, rain, maze, ECG (missing!), blob, kinetic, cube, spiro, vortex, glitch, audio, globe = 17. Need to drop one. ECG already dropped. Need to add Terminal somewhere... -->
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ===== Build dynamic content =====
+
+      // Concentric rings
+      (function() {
+        var c = document.getElementById("rings");
+        var colors = ["#3b82f6", "#1e293b"];
+        for (var i = 12; i >= 1; i--) {
+          var r = document.createElement("div");
+          r.className = "ring";
+          var size = i * 18;
+          r.style.width = size + "px";
+          r.style.height = size + "px";
+          r.style.borderColor = colors[i % 2];
+          r.style.borderWidth = "3px";
+          r.id = "ring-" + i;
+          c.appendChild(r);
+        }
+      })();
+
+      // Radial burst rays
+      (function() {
+        var c = document.getElementById("burst");
+        for (var i = 0; i < 24; i++) {
+          var ray = document.createElement("div");
+          ray.className = "ray";
+          ray.style.transform = "rotate(" + (i * 15) + "deg)";
+          c.appendChild(ray);
+        }
+      })();
+
+      // Sine waves
+      (function() {
+        var c = document.getElementById("waves");
+        var palette = ["#3b82f6", "#6366f1", "#e8a769", "#22c55e", "#ef4444"];
+        for (var i = 0; i < 5; i++) {
+          var wrap = document.createElement("div");
+          wrap.className = "wave";
+          wrap.id = "wave-" + i;
+          var pts = [];
+          var amp = 9, period = 60;
+          for (var x = 0; x <= 230; x += 4) {
+            var y = 14 + amp * Math.sin((x / period) * Math.PI * 2 + i * 0.7);
+            pts.push((x === 0 ? "M" : "L") + " " + x + " " + y.toFixed(2));
+          }
+          wrap.innerHTML =
+            '<svg viewBox="0 0 230 28" preserveAspectRatio="none">' +
+            '<path d="' + pts.join(" ") + '" stroke="' + palette[i] + '" stroke-width="2" fill="none" stroke-linecap="round"/>' +
+            "</svg>";
+          c.appendChild(wrap);
+        }
+      })();
+
+      // Binary rain
+      (function() {
+        function rng(seed) {
+          return function() {
+            seed = (seed + 0x6d2b79f5) | 0;
+            var t = seed;
+            t = Math.imul(t ^ (t >>> 15), t | 1);
+            t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+        var rand = rng(42);
+        var c = document.getElementById("rain");
+        var numCols = 22;
+        for (var col = 0; col < numCols; col++) {
+          var d = document.createElement("div");
+          d.className = "rain-col";
+          d.id = "rain-" + col;
+          var s = "";
+          for (var r = 0; r < 60; r++) s += (rand() < 0.5 ? "0" : "1") + "\n";
+          d.textContent = s;
+          d.style.transform = "translateY(-" + (rand() * 200) + "px)";
+          c.appendChild(d);
+        }
+      })();
+
+      // Particle vortex
+      (function() {
+        var v = document.getElementById("vortex");
+        var N = 80;
+        for (var i = 0; i < N; i++) {
+          var p = document.createElement("div");
+          p.className = "particle";
+          var hueRoll = (i * 47) % 100;
+          var color;
+          if (hueRoll < 33) color = "#f59e0b";
+          else if (hueRoll < 66) color = "#ec4899";
+          else color = "#22d3ee";
+          p.style.background = color;
+          p.style.boxShadow = "0 0 6px " + color;
+          var size = 2 + (i % 4);
+          p.style.width = size + "px";
+          p.style.height = size + "px";
+          p.style.marginLeft = (-size/2) + "px";
+          p.style.marginTop = (-size/2) + "px";
+          v.appendChild(p);
+        }
+      })();
+
+      // Audio bars
+      (function() {
+        var c = document.getElementById("audio");
+        for (var i = 0; i < 24; i++) {
+          var b = document.createElement("div");
+          b.className = "bar";
+          b.id = "bar-" + i;
+          c.appendChild(b);
+        }
+      })();
+
+      // ===== Grid entrance — staggered from [1,1] outward (Chebyshev distance) =====
+      // [1,1] is FEATURE (vortex). Distance from [1,1]:
+      // d=0: sq11
+      // d=1: sq00, sq01, sq02, sq10, sq12, sq20, sq21, sq22
+      // d=2: sq03, sq13, sq23, sq30, sq31, sq32, sq33
+      var distance = {
+        sq11: 0,
+        sq00: 1, sq01: 1, sq02: 1,
+        sq10: 1,           sq12: 1,
+        sq20: 1, sq21: 1, sq22: 1,
+        sq03: 2, sq13: 2, sq23: 2,
+        sq30: 2, sq31: 2, sq32: 2, sq33: 2,
+        // New left column (col -1 from feature, d=2)
+        sqL0: 2, sqL1: 2, sqL2: 2, sqL3: 2,
+        // New right column (col +3 from feature, d=3)
+        sqR0: 3, sqR1: 3, sqR2: 3, sqR3: 3,
+      };
+
+      gsap.set(".square", { scale: 0.8, autoAlpha: 0, transformOrigin: "center center" });
+
+      Object.keys(distance).forEach(function(id) {
+        var d = distance[id];
+        tl.to("#" + id, {
+          scale: 1, autoAlpha: 1,
+          duration: 0.5, ease: "back.out(1.6)",
+        }, d * 0.06);
+      });
+
+      // Internal animations begin ~0.2s after each square enters
+      function intStart(id) { return distance[id] * 0.06 + 0.2; }
+
+      // ===== 1. Rings pulse (sq00) =====
+      var ringStart = intStart("sq00");
+      for (var i = 1; i <= 12; i++) {
+        tl.to("#ring-" + i, {
+          scale: 1.2,
+          duration: 0.9,
+          ease: "sine.inOut",
+          yoyo: true, repeat: 2,
+          transformOrigin: "center center",
+        }, ringStart + i * 0.04);
+      }
+
+      // ===== 2. Stripes drift (sq01) =====
+      tl.to("#stripes", {
+        backgroundPosition: "120px 120px",
+        duration: 3.0, ease: "none",
+      }, intStart("sq01"));
+
+      // ===== 3. 3D cube rotation (sq02) =====
+      tl.fromTo("#cube",
+        { rotationX: -25, rotationY: 0 },
+        { rotationY: 720, duration: 3.2, ease: "power1.inOut" },
+        intStart("sq02")
+      );
+
+      // ===== 4. Dots drift (sq03) =====
+      tl.to("#dots", {
+        backgroundPosition: "60px 40px",
+        duration: 3.0, ease: "sine.inOut",
+      }, intStart("sq03"));
+
+      // ===== 5. Liquid blob (sq10) =====
+      var blobT = intStart("sq10");
+      tl.to("#b2", { x: 22, y: -16, duration: 1.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, blobT);
+      tl.to("#b3", { x: -18, y: 14, duration: 1.7, ease: "sine.inOut", yoyo: true, repeat: 1 }, blobT);
+      tl.to("#b4", { x: 14, y: 18, duration: 1.5, ease: "sine.inOut", yoyo: true, repeat: 1 }, blobT + 0.1);
+      tl.to("#b5", { x: -22, y: -10, duration: 1.8, ease: "sine.inOut", yoyo: true, repeat: 1 }, blobT);
+      tl.to("#b1", { scale: 1.1, transformOrigin: "115px 115px", duration: 1.5, ease: "sine.inOut", yoyo: true, repeat: 1 }, blobT);
+
+      // ===== 6. Particle vortex (sq11 — FEATURE) =====
+      (function() {
+        var particles = document.querySelectorAll("#vortex .particle");
+        function rng(seed) {
+          return function() {
+            seed = (seed + 0x6d2b79f5) | 0;
+            var t = seed;
+            t = Math.imul(t ^ (t >>> 15), t | 1);
+            t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+        var rand = rng(7);
+        var baseT = intStart("sq11");
+        particles.forEach(function(p, i) {
+          var startAngle = (i / particles.length) * Math.PI * 2 + rand() * 0.5;
+          var startR = 110 + rand() * 25;
+          var startX = Math.cos(startAngle) * startR;
+          var startY = Math.sin(startAngle) * startR;
+          var endAngle = startAngle + 4 + rand() * 1.5;
+          var endR = 7;
+          var endX = Math.cos(endAngle) * endR;
+          var endY = Math.sin(endAngle) * endR;
+          var delay = baseT + rand() * 0.6;
+          var dur = 1.7 + rand() * 1.0;
+          gsap.set(p, { x: startX, y: startY, opacity: 0 });
+          tl.to(p, { opacity: 1, duration: 0.2 }, delay);
+          tl.to(p, { x: endX, y: endY, duration: dur, ease: "power2.in" }, delay);
+          tl.to(p, { opacity: 0, duration: 0.2 }, delay + dur - 0.15);
+        });
+      })();
+      tl.to(".vortex-core", {
+        scale: 1.4, duration: 0.6, ease: "sine.inOut",
+        yoyo: true, repeat: 4, transformOrigin: "center center",
+      }, intStart("sq11") + 0.4);
+
+      // ===== 7. Glowing orb (sq12) =====
+      tl.fromTo(["#orb", "#orb-core"],
+        { scale: 1 },
+        { scale: 1.2, duration: 1.5, ease: "sine.inOut", yoyo: true, repeat: 1, transformOrigin: "center center" },
+        intStart("sq12")
+      );
+
+      // ===== 8. Spirograph (sq13) =====
+      var spT = intStart("sq13");
+      tl.to("#spiro-r1", { rotation: 360,  transformOrigin: "0 0", duration: 3.0, ease: "none" }, spT);
+      tl.to("#spiro-r2", { rotation: -540, transformOrigin: "0 0", duration: 3.0, ease: "none" }, spT);
+      tl.to("#spiro-r3", { rotation: 720,  transformOrigin: "0 0", duration: 3.0, ease: "none" }, spT);
+      tl.to("#spiro-r4", { rotation: -360, transformOrigin: "0 0", duration: 3.0, ease: "none" }, spT);
+      tl.to("#spiro-r5", { rotation: 540,  transformOrigin: "0 0", duration: 3.0, ease: "none" }, spT);
+
+      // ===== 9. Radial burst rotates (sq20) =====
+      tl.to("#burst", {
+        rotation: 30, duration: 3.0, ease: "none", transformOrigin: "center center",
+      }, intStart("sq20"));
+
+      // ===== 10. Kinetic CLAUDE (sq21) =====
+      var chars = document.querySelectorAll("#kword .kinetic-char");
+      var kT = intStart("sq21");
+      tl.from(chars, {
+        y: 50, rotationX: -90, autoAlpha: 0,
+        duration: 0.6, ease: "back.out(2)",
+        stagger: 0.05, transformOrigin: "50% 50% -15px",
+      }, kT);
+      tl.to(chars, {
+        y: -8, duration: 0.45, ease: "sine.inOut",
+        yoyo: true, repeat: 1,
+        stagger: { each: 0.05, from: "start" },
+      }, kT + 1.0);
+      tl.to(chars, {
+        rotationY: 15, duration: 1.0, ease: "sine.inOut",
+        yoyo: true, repeat: 1, stagger: 0.03,
+      }, kT + 1.6);
+
+      // ===== 11. Glitch text (sq22) =====
+      var glT = intStart("sq22");
+      tl.to("#g-r", { x: -2, duration: 0.08, ease: "steps(1)", yoyo: true, repeat: 30 }, glT);
+      tl.to("#g-g", { x: 2,  duration: 0.08, ease: "steps(1)", yoyo: true, repeat: 30 }, glT + 0.04);
+      tl.to("#g-b", { x: 3, y: 1, duration: 0.08, ease: "steps(1)", yoyo: true, repeat: 30 }, glT);
+      [glT + 0.6, glT + 1.2, glT + 1.9, glT + 2.4].forEach(function(t) {
+        tl.to("#g-r", { x: -8, duration: 0.05, ease: "steps(1)" }, t);
+        tl.to("#g-r", { x: -2, duration: 0.05, ease: "steps(1)" }, t + 0.08);
+      });
+      tl.call(function() {
+        document.getElementById("g-r").textContent = "DESIGN";
+        document.getElementById("g-g").textContent = "DESIGN";
+        document.getElementById("g-b").textContent = "DESIGN";
+        document.getElementById("g-base").textContent = "DESIGN";
+      }, [], glT + 1.5);
+      tl.fromTo("#scanline",
+        { y: 0 },
+        { y: 230, duration: 1.4, ease: "none", repeat: 1 },
+        glT
+      );
+
+      // ===== 12. Sine waves undulate (sq23) =====
+      var wT = intStart("sq23");
+      for (var w = 0; w < 5; w++) {
+        tl.to("#wave-" + w, {
+          y: 6, duration: 1.1, ease: "sine.inOut",
+          yoyo: true, repeat: 2,
+        }, wT + w * 0.1);
+      }
+
+      // ===== 13. Binary rain (sq30) =====
+      var rT = intStart("sq30");
+      for (var c = 0; c < 22; c++) {
+        tl.to("#rain-" + c, {
+          y: 200 + (c * 13) % 80,
+          duration: 3.0 + (c % 5) * 0.2,
+          ease: "none",
+        }, rT);
+      }
+
+      // ===== 14. Maze shimmer (sq31) =====
+      tl.to("#maze", {
+        backgroundPosition: "30px 30px",
+        duration: 3.0, ease: "none",
+      }, intStart("sq31"));
+
+      // ===== 15. Audio bars (sq32) =====
+      (function() {
+        function rng(seed) {
+          return function() {
+            seed = (seed + 0x6d2b79f5) | 0;
+            var t = seed;
+            t = Math.imul(t ^ (t >>> 15), t | 1);
+            t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+        var rand = rng(99);
+        var bars = document.querySelectorAll(".bar");
+        gsap.set(bars, { scaleY: 0.1 });
+        var baseT = intStart("sq32");
+        bars.forEach(function(bar, i) {
+          for (var k = 0; k < 8; k++) {
+            var amp = 0.15 + rand() * 0.85;
+            tl.to(bar, {
+              scaleY: amp,
+              duration: 0.16,
+              ease: "power2.out",
+            }, baseT + k * 0.32 + (i * 0.005));
+          }
+        });
+      })();
+
+      // ===== 16. Neon globe (sq33) =====
+      var gT = intStart("sq33");
+      tl.to("#globe", {
+        rotationY: 360, duration: 3.2, ease: "none",
+        transformOrigin: "center center",
+      }, gT);
+      tl.fromTo("#ping1",
+        { scale: 0.5, opacity: 1 },
+        { scale: 2.5, opacity: 0, duration: 1.0, ease: "power1.out", repeat: 2 },
+        gT + 0.3
+      );
+      tl.fromTo("#ping2",
+        { scale: 0.5, opacity: 1 },
+        { scale: 2.5, opacity: 0, duration: 1.0, ease: "power1.out", repeat: 2 },
+        gT + 0.7
+      );
+
+      // ============== NEW PATTERN BUILDERS ==============
+
+      // Clock ticks
+      (function() {
+        var face = document.getElementById("clock-face");
+        for (var i = 0; i < 12; i++) {
+          var t = document.createElement("div");
+          t.className = "tick";
+          t.style.transform = "rotate(" + (i * 30) + "deg)";
+          face.appendChild(t);
+        }
+      })();
+
+      // Neural network nodes + edges
+      (function() {
+        var svg = document.getElementById("nn-svg");
+        var layers = [3, 5, 5, 3];
+        var nodes = [];
+        var W = 250, H = 250;
+        layers.forEach(function(count, L) {
+          var x = 30 + (L * (W - 60) / (layers.length - 1));
+          var nodeRow = [];
+          for (var i = 0; i < count; i++) {
+            var y = (H / (count + 1)) * (i + 1);
+            nodeRow.push({ x: x, y: y });
+          }
+          nodes.push(nodeRow);
+        });
+        var edgeIdx = 0;
+        for (var L = 0; L < nodes.length - 1; L++) {
+          for (var a = 0; a < nodes[L].length; a++) {
+            for (var b = 0; b < nodes[L+1].length; b++) {
+              var na = nodes[L][a], nb = nodes[L+1][b];
+              var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+              line.setAttribute("x1", na.x); line.setAttribute("y1", na.y);
+              line.setAttribute("x2", nb.x); line.setAttribute("y2", nb.y);
+              line.setAttribute("stroke", "rgba(139,92,246,0.25)");
+              line.setAttribute("stroke-width", "1");
+              line.id = "nn-e" + edgeIdx;
+              svg.appendChild(line);
+              edgeIdx++;
+            }
+          }
+        }
+        var nIdx = 0;
+        nodes.forEach(function(row) {
+          row.forEach(function(n) {
+            var c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            c.setAttribute("cx", n.x); c.setAttribute("cy", n.y);
+            c.setAttribute("r", 5);
+            c.setAttribute("fill", "#8b5cf6");
+            c.setAttribute("filter", "drop-shadow(0 0 4px #8b5cf6)");
+            c.id = "nn-n" + nIdx;
+            svg.appendChild(c);
+            nIdx++;
+          });
+        });
+        window.__nnNodeCount = nIdx;
+        window.__nnEdgeCount = edgeIdx;
+      })();
+
+      // QR grid (21x21 deterministic pattern)
+      (function() {
+        function rng(seed) {
+          return function() {
+            seed = (seed + 0x6d2b79f5) | 0;
+            var t = seed;
+            t = Math.imul(t ^ (t >>> 15), t | 1);
+            t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+        var rand = rng(123);
+        var grid = document.getElementById("qr-grid");
+        var N = 21;
+        function isFinder(r, c) {
+          function inCorner(rr, cc) {
+            return rr >= 0 && rr < 7 && cc >= 0 && cc < 7;
+          }
+          return inCorner(r, c) || inCorner(r, c - (N-7)) || inCorner(r - (N-7), c);
+        }
+        function finderFill(r, c) {
+          var rr = r % 7 < 7 ? r : r - (N-7);
+          var cc = c % 7 < 7 ? c : c - (N-7);
+          rr = r >= N-7 ? r - (N-7) : r;
+          cc = c >= N-7 ? c - (N-7) : c;
+          if (rr === 0 || rr === 6 || cc === 0 || cc === 6) return true;
+          if (rr >= 2 && rr <= 4 && cc >= 2 && cc <= 4) return true;
+          return false;
+        }
+        for (var r = 0; r < N; r++) {
+          for (var c = 0; c < N; c++) {
+            var cell = document.createElement("div");
+            cell.className = "qr-cell";
+            var fill;
+            if (isFinder(r, c)) {
+              fill = finderFill(r, c);
+            } else {
+              fill = rand() < 0.5;
+            }
+            if (!fill) cell.classList.add("empty");
+            cell.style.opacity = "0";
+            cell.dataset.idx = r * N + c;
+            grid.appendChild(cell);
+          }
+        }
+      })();
+
+      // Weather raindrops
+      (function() {
+        var w = document.getElementById("weather");
+        for (var i = 0; i < 20; i++) {
+          var d = document.createElement("div");
+          d.className = "raindrop";
+          d.style.left = (15 + (i * 11) % 220) + "px";
+          d.style.top = "60px";
+          d.dataset.delay = (i * 0.08) % 1.6;
+          w.appendChild(d);
+        }
+      })();
+
+      // DNA helix
+      (function() {
+        var svg = document.getElementById("dna-svg");
+        var N = 14;
+        for (var i = 0; i < N; i++) {
+          var t = i / (N - 1);
+          var y = 20 + t * 210;
+          var phase = t * Math.PI * 4;
+          var x1 = 125 + Math.cos(phase) * 55;
+          var x2 = 125 + Math.cos(phase + Math.PI) * 55;
+          // Rung
+          var rung = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          rung.setAttribute("x1", x1); rung.setAttribute("y1", y);
+          rung.setAttribute("x2", x2); rung.setAttribute("y2", y);
+          rung.setAttribute("stroke", i % 2 ? "#ec4899" : "#22d3ee");
+          rung.setAttribute("stroke-width", "1.5");
+          rung.setAttribute("opacity", "0.6");
+          rung.id = "dna-r" + i;
+          svg.appendChild(rung);
+          // Bead 1
+          var c1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          c1.setAttribute("cx", x1); c1.setAttribute("cy", y);
+          c1.setAttribute("r", 5);
+          c1.setAttribute("fill", "#22d3ee");
+          c1.setAttribute("filter", "drop-shadow(0 0 3px #22d3ee)");
+          c1.id = "dna-a" + i;
+          svg.appendChild(c1);
+          var c2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          c2.setAttribute("cx", x2); c2.setAttribute("cy", y);
+          c2.setAttribute("r", 5);
+          c2.setAttribute("fill", "#ec4899");
+          c2.setAttribute("filter", "drop-shadow(0 0 3px #ec4899)");
+          c2.id = "dna-b" + i;
+          svg.appendChild(c2);
+        }
+        window.__dnaN = N;
+      })();
+
+      // ============== NEW ANIMATIONS ==============
+
+      // Clock — fast-forward time (dramatic for 4s)
+      var clT = intStart("sqL0");
+      tl.fromTo("#hand-s", { rotation: 0 }, { rotation: 1440, duration: 3.0, ease: "none", transformOrigin: "50% 100%" }, clT);
+      tl.fromTo("#hand-m", { rotation: 0 }, { rotation: 240,  duration: 3.0, ease: "none", transformOrigin: "50% 100%" }, clT);
+      tl.fromTo("#hand-h", { rotation: 0 }, { rotation: 20,   duration: 3.0, ease: "none", transformOrigin: "50% 100%" }, clT);
+
+      // Stock — draw line + count up
+      var stT = intStart("sqL1");
+      (function() {
+        var path = document.getElementById("stock-path");
+        var len = path.getTotalLength();
+        path.style.strokeDasharray = len;
+        path.style.strokeDashoffset = len;
+        tl.to(path, { strokeDashoffset: 0, duration: 2.0, ease: "power2.out" }, stT);
+        tl.fromTo("#stock-fill", { opacity: 0 }, { opacity: 1, duration: 2.0, ease: "power2.out" }, stT);
+        var counter = { v: 0 };
+        tl.to(counter, {
+          v: 184.32,
+          duration: 2.2,
+          ease: "power2.out",
+          onUpdate: function() {
+            document.getElementById("stock-price").textContent = "$" + counter.v.toFixed(2);
+          },
+        }, stT);
+        var delta = { v: 0 };
+        tl.to(delta, {
+          v: 12.47,
+          duration: 2.2,
+          ease: "power2.out",
+          onUpdate: function() {
+            document.getElementById("stock-delta").textContent = "+" + delta.v.toFixed(2) + "%";
+          },
+        }, stT);
+      })();
+
+      // Neural network — edges + nodes pulse
+      var nnT = intStart("sqL2");
+      (function() {
+        // Edges flicker
+        for (var i = 0; i < window.__nnEdgeCount; i++) {
+          var delay = nnT + (i % 20) * 0.04;
+          tl.fromTo("#nn-e" + i,
+            { opacity: 0.05 },
+            { opacity: 0.6, duration: 0.3, ease: "power1.out", yoyo: true, repeat: 3 },
+            delay
+          );
+        }
+        // Node pulses
+        for (var n = 0; n < window.__nnNodeCount; n++) {
+          tl.fromTo("#nn-n" + n,
+            { scale: 1 },
+            { scale: 1.6, duration: 0.4, ease: "sine.inOut", yoyo: true, repeat: 2, transformOrigin: "center center" },
+            nnT + n * 0.04
+          );
+        }
+      })();
+
+      // Loading spinners
+      var spT2 = intStart("sqL3");
+      tl.to("#spin-ring", { rotation: 720, duration: 3.0, ease: "none", transformOrigin: "center center" }, spT2);
+      var dots = document.querySelectorAll("#spin-dots .spin-dot");
+      tl.to(dots, {
+        y: -10, duration: 0.4, ease: "sine.inOut",
+        yoyo: true, repeat: 5, stagger: { each: 0.12, repeat: 5 }
+      }, spT2);
+      var bars = document.querySelectorAll("#spin-bars .spin-bar");
+      tl.to(bars, {
+        scaleY: 0.3, duration: 0.35, ease: "sine.inOut",
+        yoyo: true, repeat: 7, stagger: { each: 0.08, repeat: 7 }
+      }, spT2);
+      tl.to("#spin-pulse", {
+        scale: 0.6, duration: 0.7, ease: "sine.inOut",
+        yoyo: true, repeat: 3, transformOrigin: "center center"
+      }, spT2);
+
+      // QR code — reveal cells from center outward
+      var qrT = intStart("sqR0");
+      (function() {
+        var cells = document.querySelectorAll("#qr-grid .qr-cell");
+        var center = 10;
+        cells.forEach(function(cell) {
+          var idx = parseInt(cell.dataset.idx);
+          var r = Math.floor(idx / 21), c = idx % 21;
+          var d = Math.max(Math.abs(r - center), Math.abs(c - center));
+          tl.to(cell, {
+            opacity: 1, duration: 0.08, ease: "power1.out",
+          }, qrT + d * 0.06);
+        });
+      })();
+
+      // DNA rotation
+      var dnT = intStart("sqR1");
+      (function() {
+        var N = window.__dnaN;
+        for (var i = 0; i < N; i++) {
+          var t = i / (N - 1);
+          var phaseStart = t * Math.PI * 4;
+          // Animate phase via onUpdate
+          var obj = { p: phaseStart };
+          (function(ii, oo) {
+            var yy = 20 + ii / (N - 1) * 210;
+            tl.to(oo, {
+              p: phaseStart + Math.PI * 2,
+              duration: 3.0,
+              ease: "none",
+              onUpdate: function() {
+                var x1 = 125 + Math.cos(oo.p) * 55;
+                var x2 = 125 + Math.cos(oo.p + Math.PI) * 55;
+                document.getElementById("dna-r" + ii).setAttribute("x1", x1);
+                document.getElementById("dna-r" + ii).setAttribute("x2", x2);
+                document.getElementById("dna-a" + ii).setAttribute("cx", x1);
+                document.getElementById("dna-b" + ii).setAttribute("cx", x2);
+                // Depth via opacity
+                var a = 0.4 + 0.6 * (Math.cos(oo.p) * 0.5 + 0.5);
+                var b = 0.4 + 0.6 * (Math.cos(oo.p + Math.PI) * 0.5 + 0.5);
+                document.getElementById("dna-a" + ii).setAttribute("opacity", a);
+                document.getElementById("dna-b" + ii).setAttribute("opacity", b);
+              },
+            }, dnT);
+          })(i, obj);
+        }
+      })();
+
+      // Code editor — type lines
+      var coT = intStart("sqR2");
+      for (var cl = 1; cl <= 8; cl++) {
+        tl.to("#cl" + cl, { autoAlpha: 1, duration: 0.05 }, coT + cl * 0.28);
+      }
+
+      // Weather — count temp, cloud drift, rain
+      var weT = intStart("sqR3");
+      (function() {
+        var temp = { v: 0 };
+        tl.to(temp, {
+          v: 67,
+          duration: 1.8,
+          ease: "power2.out",
+          onUpdate: function() {
+            document.getElementById("weather-temp").textContent = Math.round(temp.v) + "\u00b0";
+          },
+        }, weT);
+        tl.fromTo("#cloud", { x: 10 }, { x: -10, duration: 3.0, ease: "sine.inOut" }, weT);
+        var drops = document.querySelectorAll(".raindrop");
+        drops.forEach(function(d, i) {
+          var delay = weT + parseFloat(d.dataset.delay);
+          gsap.set(d, { y: 0, opacity: 0 });
+          tl.to(d, { opacity: 0.8, duration: 0.1 }, delay);
+          tl.to(d, { y: 170, duration: 0.7, ease: "power1.in" }, delay);
+          tl.to(d, { opacity: 0, duration: 0.1 }, delay + 0.65);
+          // Second drop
+          tl.set(d, { y: 0 }, delay + 0.75);
+          tl.to(d, { opacity: 0.8, duration: 0.1 }, delay + 0.8);
+          tl.to(d, { y: 170, duration: 0.7, ease: "power1.in" }, delay + 0.8);
+          tl.to(d, { opacity: 0, duration: 0.1 }, delay + 1.4);
+        });
+      })();
+
+      window.__timelines["grid"] = tl;
+    </script>
+  </div>
+</template>

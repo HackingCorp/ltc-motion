@@ -1,0 +1,329 @@
+<template id="lottie-captions-template">
+  <div data-composition-id="lottie-captions" data-width="1920" data-height="1080" data-start="0">
+
+    <!-- Background -->
+    <div class="bg-grad"></div>
+
+    <!-- Three panels -->
+    <div class="panels">
+
+      <!-- LOTTIE panel -->
+      <div class="panel p-lottie" id="panel-lottie">
+        <div class="panel-header ph-lottie">LOTTIE ANIMATIONS</div>
+        <div class="panel-content">
+          <div class="bell-area">
+            <div class="bell-icon">
+              <div class="bell-dome"></div>
+              <div class="bell-handle"></div>
+              <div class="bell-clapper"></div>
+            </div>
+            <div class="ring-wave rw1"></div>
+            <div class="ring-wave rw2"></div>
+            <div class="ring-wave rw3"></div>
+          </div>
+          <div class="lottie-code">
+            <span class="lk">"op"</span><span class="lp">: </span><span class="ln">140</span><span class="lp">, </span><span class="lk">"fr"</span><span class="lp">: </span><span class="ln">30</span><span class="lp">,</span><br>
+            <span class="lk">"layers"</span><span class="lp">: [{ </span><span class="lk">"ty"</span><span class="lp">: </span><span class="ln">4</span><span class="lp">, </span><span class="lk">"nm"</span><span class="lp">: </span><span class="ls">"bell"</span><span class="lp"> }]</span><br>
+            <span class="lc">// GSAP-driven: proxy.frame 0&rarr;140</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CAPTIONS panel -->
+      <div class="panel p-captions" id="panel-captions">
+        <div class="panel-header ph-captions">CAPTIONS + WORD SYNC</div>
+        <div class="panel-content">
+          <div class="video-frame">
+            <div class="speaker-sil"></div>
+            <div class="caption-overlay">
+              <span class="cw">Your </span><span class="cw">code </span><span class="cw cw-active" id="cw-active">renders</span><span class="cw"> to </span><span class="cw">video</span>
+            </div>
+          </div>
+          <div class="waveform-bar" id="caption-waveform"></div>
+          <div class="transcript">
+            <div class="tr-line"><span class="tr-time">00:01</span><span class="tr-text">Your code renders to video</span></div>
+            <div class="tr-line"><span class="tr-time">00:03</span><span class="tr-text">Write HTML, get MP4</span></div>
+            <div class="tr-line"><span class="tr-time">00:05</span><span class="tr-text">Frame-perfect every time</span></div>
+            <div class="tr-line"><span class="tr-time">00:07</span><span class="tr-text">Deterministic output</span></div>
+            <div class="tr-line"><span class="tr-time">00:09</span><span class="tr-text">Open source, MIT license</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEMPLATES panel -->
+      <div class="panel p-templates" id="panel-templates">
+        <div class="panel-header ph-templates">TEMPLATES + REGISTRY</div>
+        <div class="panel-content">
+          <div class="tpl-card" id="tpl-1">
+            <div class="tpl-preview tp-launch"><div class="tp-grad"></div></div>
+            <div class="tpl-info">
+              <div class="tpl-name">product-launch</div>
+              <div class="tpl-desc">Full product announcement video with hero, features grid, demo, and CTA.</div>
+              <div class="tpl-cmd"><span class="tc-cmd">npx hyperframes init</span> <span class="tc-arg">--template product-launch</span></div>
+            </div>
+          </div>
+          <div class="tpl-card" id="tpl-2">
+            <div class="tpl-preview tp-swiss"><div class="tp-grid"><div></div><div></div><div></div><div></div></div></div>
+            <div class="tpl-info">
+              <div class="tpl-name">swiss-grid</div>
+              <div class="tpl-desc">Clean grid-based layouts with bold typography and structured compositions.</div>
+              <div class="tpl-cmd"><span class="tc-cmd">npx hyperframes init</span> <span class="tc-arg">--template swiss-grid</span></div>
+            </div>
+          </div>
+          <div class="tpl-card" id="tpl-3">
+            <div class="tpl-preview tp-dev"><div class="tp-code"><div class="tc-l"></div><div class="tc-l tc-s"></div><div class="tc-l"></div><div class="tc-l tc-s"></div></div></div>
+            <div class="tpl-info">
+              <div class="tpl-name">dev-demo</div>
+              <div class="tpl-desc">Code walkthrough with syntax highlighting, terminal output, and annotations.</div>
+              <div class="tpl-cmd"><span class="tc-cmd">npx hyperframes init</span> <span class="tc-arg">--template dev-demo</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CRT -->
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    <div class="bleed-bottom"></div>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+      [data-composition-id="lottie-captions"] {
+        width: 1920px; height: 1080px; position: relative; overflow: hidden;
+        background: #06060a;
+      }
+
+      [data-composition-id="lottie-captions"] .bg-grad {
+        position: absolute; inset: 0; z-index: 1;
+        background:
+          radial-gradient(ellipse at 17% 50%, rgba(0,200,170,0.06) 0%, transparent 50%),
+          radial-gradient(ellipse at 50% 50%, rgba(255,180,70,0.05) 0%, transparent 50%),
+          radial-gradient(ellipse at 83% 50%, rgba(200,0,255,0.05) 0%, transparent 50%);
+      }
+
+      [data-composition-id="lottie-captions"] .panels {
+        position: absolute; inset: 40px; z-index: 10;
+        display: flex; gap: 24px;
+      }
+
+      [data-composition-id="lottie-captions"] .panel {
+        flex: 1; background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 12px; overflow: hidden;
+        backdrop-filter: blur(8px);
+        display: flex; flex-direction: column; opacity: 0;
+      }
+
+      [data-composition-id="lottie-captions"] .panel-header {
+        font-family: 'VT323', monospace; font-size: 18px;
+        letter-spacing: 0.15em; padding: 16px 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+      }
+      [data-composition-id="lottie-captions"] .ph-lottie { color: #00DDAA; }
+      [data-composition-id="lottie-captions"] .ph-captions { color: #FFB446; }
+      [data-composition-id="lottie-captions"] .ph-templates { color: #CC00FF; }
+
+      [data-composition-id="lottie-captions"] .panel-content {
+        flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 16px;
+      }
+
+      /* Lottie panel */
+      [data-composition-id="lottie-captions"] .bell-area {
+        position: relative; height: 200px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      [data-composition-id="lottie-captions"] .bell-icon {
+        position: relative; width: 80px; height: 100px;
+        animation: bellSwing 2s ease-in-out infinite;
+        transform-origin: top center;
+      }
+      @keyframes bellSwing { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+
+      [data-composition-id="lottie-captions"] .bell-dome {
+        width: 80px; height: 70px; background: rgba(0,200,170,0.3);
+        border-radius: 40px 40px 10px 10px;
+        border: 2px solid rgba(0,200,170,0.5);
+      }
+      [data-composition-id="lottie-captions"] .bell-handle {
+        width: 20px; height: 20px; border: 3px solid rgba(0,200,170,0.5);
+        border-radius: 50%; margin: -12px auto 0;
+        background: transparent;
+      }
+      [data-composition-id="lottie-captions"] .bell-clapper {
+        width: 12px; height: 12px; background: rgba(0,200,170,0.6);
+        border-radius: 50%; margin: 4px auto 0;
+      }
+
+      [data-composition-id="lottie-captions"] .ring-wave {
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%,-50%);
+        border: 1px solid rgba(0,200,170,0.2); border-radius: 50%;
+        animation: ringExpand 2s ease-out infinite;
+      }
+      [data-composition-id="lottie-captions"] .rw1 { width: 120px; height: 120px; }
+      [data-composition-id="lottie-captions"] .rw2 { width: 120px; height: 120px; animation-delay: 0.6s; }
+      [data-composition-id="lottie-captions"] .rw3 { width: 120px; height: 120px; animation-delay: 1.2s; }
+      @keyframes ringExpand { 0% { transform: translate(-50%,-50%) scale(1); opacity: 0.5; } 100% { transform: translate(-50%,-50%) scale(2.5); opacity: 0; } }
+
+      [data-composition-id="lottie-captions"] .lottie-code {
+        font-family: 'IBM Plex Mono', monospace; font-size: 14px; line-height: 1.6;
+        background: rgba(0,0,0,0.4); padding: 12px; border-radius: 6px;
+      }
+      [data-composition-id="lottie-captions"] .lk { color: rgba(0,200,170,0.7); }
+      [data-composition-id="lottie-captions"] .lp { color: rgba(255,255,255,0.2); }
+      [data-composition-id="lottie-captions"] .ln { color: rgba(255,180,70,0.7); }
+      [data-composition-id="lottie-captions"] .ls { color: rgba(255,200,100,0.6); }
+      [data-composition-id="lottie-captions"] .lc { color: rgba(100,120,100,0.4); font-style: italic; }
+
+      /* Captions panel */
+      [data-composition-id="lottie-captions"] .video-frame {
+        height: 200px; background: rgba(0,0,0,0.5);
+        border-radius: 8px; position: relative; overflow: hidden;
+        border: 1px solid rgba(255,180,70,0.15);
+      }
+      [data-composition-id="lottie-captions"] .speaker-sil {
+        position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+        width: 80px; height: 120px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+        border-radius: 40px 40px 20px 20px;
+      }
+      [data-composition-id="lottie-captions"] .caption-overlay {
+        position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+        font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 600;
+        background: rgba(0,0,0,0.7); padding: 6px 12px; border-radius: 4px;
+        white-space: nowrap;
+      }
+      [data-composition-id="lottie-captions"] .cw { color: rgba(255,255,255,0.6); }
+      [data-composition-id="lottie-captions"] .cw-active {
+        color: #FFB446; background: rgba(255,180,70,0.15);
+        padding: 2px 4px; border-radius: 2px;
+        text-shadow: 0 0 8px rgba(255,180,70,0.3);
+      }
+
+      [data-composition-id="lottie-captions"] .waveform-bar {
+        height: 40px; display: flex; gap: 2px; align-items: center;
+      }
+      [data-composition-id="lottie-captions"] .wf-b {
+        flex: 1; background: rgba(255,180,70,0.3); border-radius: 1px; min-width: 2px;
+        animation: wfPulse 1.5s ease-in-out infinite;
+      }
+      @keyframes wfPulse { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(0.3); } }
+
+      [data-composition-id="lottie-captions"] .transcript { flex: 1; overflow: hidden; }
+      [data-composition-id="lottie-captions"] .tr-line {
+        display: flex; gap: 12px; font-family: 'VT323', monospace; font-size: 16px;
+        padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.03);
+      }
+      [data-composition-id="lottie-captions"] .tr-time { color: rgba(255,180,70,0.4); width: 40px; flex-shrink: 0; }
+      [data-composition-id="lottie-captions"] .tr-text { color: rgba(255,255,255,0.25); }
+
+      /* Templates panel */
+      [data-composition-id="lottie-captions"] .tpl-card {
+        display: flex; gap: 12px; padding: 12px;
+        background: rgba(0,0,0,0.3); border-radius: 8px;
+        border: 1px solid rgba(200,0,255,0.1);
+      }
+      [data-composition-id="lottie-captions"] .tpl-preview {
+        width: 80px; height: 60px; border-radius: 4px; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+      }
+      [data-composition-id="lottie-captions"] .tp-launch { background: rgba(200,0,255,0.15); }
+      [data-composition-id="lottie-captions"] .tp-grad {
+        width: 60px; height: 40px; border-radius: 4px;
+        background: linear-gradient(135deg, rgba(255,100,150,0.4), rgba(100,200,255,0.4));
+      }
+      [data-composition-id="lottie-captions"] .tp-swiss { background: rgba(200,0,255,0.1); }
+      [data-composition-id="lottie-captions"] .tp-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 3px; width: 40px; height: 30px;
+      }
+      [data-composition-id="lottie-captions"] .tp-grid div { background: rgba(200,0,255,0.3); border-radius: 2px; }
+      [data-composition-id="lottie-captions"] .tp-dev { background: rgba(200,0,255,0.1); }
+      [data-composition-id="lottie-captions"] .tp-code { display: flex; flex-direction: column; gap: 4px; padding: 8px; }
+      [data-composition-id="lottie-captions"] .tc-l { width: 50px; height: 3px; background: rgba(200,0,255,0.3); border-radius: 1px; }
+      [data-composition-id="lottie-captions"] .tc-s { width: 35px; }
+
+      [data-composition-id="lottie-captions"] .tpl-info { flex: 1; min-width: 0; }
+      [data-composition-id="lottie-captions"] .tpl-name {
+        font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 600;
+        color: #CC00FF; margin-bottom: 4px;
+      }
+      [data-composition-id="lottie-captions"] .tpl-desc {
+        font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+        color: rgba(255,255,255,0.2); line-height: 1.4; margin-bottom: 6px;
+      }
+      [data-composition-id="lottie-captions"] .tpl-cmd {
+        font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+      }
+      [data-composition-id="lottie-captions"] .tc-cmd { color: rgba(200,0,255,0.5); }
+      [data-composition-id="lottie-captions"] .tc-arg { color: rgba(255,200,100,0.4); }
+
+      /* CRT */
+      [data-composition-id="lottie-captions"] .scanlines {
+        position: absolute; inset: 0; z-index: 80;
+        background: repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px);
+        pointer-events: none;
+      }
+      [data-composition-id="lottie-captions"] .vignette {
+        position: absolute; inset: 0; z-index: 85;
+        background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.55) 100%);
+        pointer-events: none;
+      }
+      [data-composition-id="lottie-captions"] .bleed-bottom {
+        position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; z-index: 90;
+        background: linear-gradient(90deg, rgba(0,200,170,0.4), rgba(255,180,70,0.35), rgba(200,0,255,0.4));
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const scope = document.querySelector('[data-composition-id="lottie-captions"]');
+      const q = (sel) => scope.querySelector(sel);
+      const qa = (sel) => scope.querySelectorAll(sel);
+
+      // Generate waveform bars
+      const wfContainer = q('#caption-waveform');
+      let seed = 55;
+      function srand() { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return (seed % 10000) / 10000; }
+      for (let i = 0; i < 80; i++) {
+        const b = document.createElement('div');
+        b.className = 'wf-b';
+        b.style.height = (4 + srand() * 36) + 'px';
+        b.style.animationDelay = (srand() * 1.5) + 's';
+        wfContainer.appendChild(b);
+      }
+
+      // Panels appear simultaneously
+      tl.to(q('#panel-lottie'), { opacity: 1, duration: 0.4, ease: 'power2.out' }, 0.1);
+      tl.to(q('#panel-captions'), { opacity: 1, duration: 0.4, ease: 'power2.out' }, 0.1);
+      tl.to(q('#panel-templates'), { opacity: 1, duration: 0.4, ease: 'power2.out' }, 0.1);
+
+      // Word highlight cycles through caption words
+      const words = qa('.cw');
+      const cycleDur = 0.8;
+      const totalCycles = Math.floor(4.5 / cycleDur) - 1;
+      for (let c = 0; c <= totalCycles; c++) {
+        words.forEach((w, i) => {
+          const t = 0.5 + c * cycleDur + i * (cycleDur / words.length);
+          tl.set(w, { color: 'rgba(255,255,255,0.6)', backgroundColor: 'transparent', textShadow: 'none' }, t);
+        });
+        const activeIdx = c % words.length;
+        const activeT = 0.5 + c * cycleDur + activeIdx * (cycleDur / words.length);
+        tl.set(words[activeIdx], {
+          color: '#FFB446',
+          backgroundColor: 'rgba(255,180,70,0.15)',
+          textShadow: '0 0 8px rgba(255,180,70,0.3)'
+        }, activeT);
+      }
+
+      // Hold
+      tl.to({}, { duration: 0.2 }, 4.8);
+
+      window.__timelines["lottie-captions"] = tl;
+    </script>
+  </div>
+</template>

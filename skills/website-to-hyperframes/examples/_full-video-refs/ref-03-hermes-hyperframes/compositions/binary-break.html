@@ -1,0 +1,202 @@
+<template id="binary-break-template">
+  <div data-composition-id="binary-break" data-width="1920" data-height="1080" data-start="0">
+
+    <!-- Binary rain columns -->
+    <div class="rain-field" id="rain-field"></div>
+
+    <!-- Screen shards -->
+    <div class="shard s-1" id="s1"></div>
+    <div class="shard s-2" id="s2"></div>
+    <div class="shard s-3" id="s3"></div>
+    <div class="shard s-4" id="s4"></div>
+    <div class="shard s-5" id="s5"></div>
+    <div class="shard s-6" id="s6"></div>
+    <div class="shard s-7" id="s7"></div>
+    <div class="shard s-8" id="s8"></div>
+
+    <!-- Radial burst -->
+    <div class="burst" id="burst"></div>
+
+    <!-- Title -->
+    <div class="title-block" id="title-block">
+      <div class="title-main" id="title-main">
+        <span class="t-red">HYPERFRAMES</span>
+        <span class="t-core">HYPERFRAMES</span>
+        <span class="t-blue">HYPERFRAMES</span>
+      </div>
+      <div class="title-sub" id="title-sub">HTML TO VIDEO</div>
+    </div>
+
+    <!-- Interference lines -->
+    <div class="interference i-1" id="i1"></div>
+    <div class="interference i-2" id="i2"></div>
+    <div class="interference i-3" id="i3"></div>
+
+    <!-- CRT -->
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@700&display=swap');
+
+      [data-composition-id="binary-break"] {
+        width: 1920px; height: 1080px; position: relative; overflow: hidden;
+        background: #000;
+      }
+
+      [data-composition-id="binary-break"] .rain-field {
+        position: absolute; inset: 0; z-index: 2; opacity: 0;
+      }
+      [data-composition-id="binary-break"] .rain-col {
+        position: absolute; top: 0;
+        font-family: 'VT323', monospace; font-size: 16px; line-height: 1.1;
+        color: #33FF33; white-space: pre; writing-mode: vertical-lr;
+        text-shadow: 0 0 8px rgba(51,255,51,0.5);
+      }
+      [data-composition-id="binary-break"] .rain-col.bright {
+        color: #88FFAA;
+        text-shadow: 0 0 12px rgba(51,255,51,0.8), 0 0 30px rgba(51,255,51,0.3);
+      }
+
+      [data-composition-id="binary-break"] .shard {
+        position: absolute; left: 0; width: 100%; z-index: 5;
+        opacity: 0;
+      }
+      [data-composition-id="binary-break"] .s-1 { top: 0; height: 135px; background: linear-gradient(90deg, rgba(255,80,80,0.15), rgba(0,200,200,0.1)); }
+      [data-composition-id="binary-break"] .s-2 { top: 135px; height: 135px; background: linear-gradient(90deg, rgba(0,150,255,0.12), rgba(255,180,70,0.1)); }
+      [data-composition-id="binary-break"] .s-3 { top: 270px; height: 135px; background: linear-gradient(90deg, rgba(200,0,200,0.12), rgba(0,255,150,0.08)); }
+      [data-composition-id="binary-break"] .s-4 { top: 405px; height: 135px; background: linear-gradient(90deg, rgba(255,200,0,0.1), rgba(0,100,255,0.12)); }
+      [data-composition-id="binary-break"] .s-5 { top: 540px; height: 135px; background: linear-gradient(90deg, rgba(0,200,200,0.12), rgba(255,50,150,0.1)); }
+      [data-composition-id="binary-break"] .s-6 { top: 675px; height: 135px; background: linear-gradient(90deg, rgba(255,100,50,0.12), rgba(100,0,255,0.1)); }
+      [data-composition-id="binary-break"] .s-7 { top: 810px; height: 135px; background: linear-gradient(90deg, rgba(0,255,100,0.1), rgba(200,0,200,0.12)); }
+      [data-composition-id="binary-break"] .s-8 { top: 945px; height: 135px; background: linear-gradient(90deg, rgba(100,150,255,0.12), rgba(255,200,100,0.08)); }
+
+      [data-composition-id="binary-break"] .burst {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+        width: 0; height: 0; z-index: 3; border-radius: 50%; opacity: 0;
+        background: radial-gradient(ellipse at center,
+          rgba(255,200,100,0.3) 0%, rgba(200,100,255,0.15) 30%,
+          rgba(0,150,200,0.08) 60%, transparent 100%);
+      }
+
+      [data-composition-id="binary-break"] .title-block {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+        z-index: 20; text-align: center; opacity: 0;
+      }
+      [data-composition-id="binary-break"] .title-main {
+        position: relative; height: 120px; display: flex; align-items: center; justify-content: center;
+      }
+      [data-composition-id="binary-break"] .title-main span {
+        position: absolute;
+        font-family: 'IBM Plex Mono', monospace; font-size: 110px; font-weight: 700;
+        letter-spacing: 0.08em;
+      }
+      [data-composition-id="binary-break"] .t-red { color: rgba(255,0,50,0.2); }
+      [data-composition-id="binary-break"] .t-core {
+        color: #FFD080;
+        text-shadow: 0 0 30px rgba(255,208,128,0.6), 0 0 80px rgba(255,180,70,0.3);
+      }
+      [data-composition-id="binary-break"] .t-blue { color: rgba(0,100,255,0.2); }
+
+      [data-composition-id="binary-break"] .title-sub {
+        font-family: 'VT323', monospace; font-size: 32px;
+        color: rgba(255,255,255,0.3); letter-spacing: 0.3em; margin-top: 16px;
+      }
+
+      [data-composition-id="binary-break"] .interference {
+        position: absolute; left: 0; width: 100%; height: 2px; z-index: 25;
+        opacity: 0;
+      }
+      [data-composition-id="binary-break"] .i-1 { top: 30%; background: rgba(255,200,100,0.6); }
+      [data-composition-id="binary-break"] .i-2 { top: 55%; background: rgba(0,200,200,0.5); }
+      [data-composition-id="binary-break"] .i-3 { top: 78%; background: rgba(200,0,200,0.5); }
+
+      [data-composition-id="binary-break"] .scanlines {
+        position: absolute; inset: 0; z-index: 80;
+        background: repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px);
+        pointer-events: none;
+      }
+      [data-composition-id="binary-break"] .vignette {
+        position: absolute; inset: 0; z-index: 85;
+        background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.6) 100%);
+        pointer-events: none;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const scope = document.querySelector('[data-composition-id="binary-break"]');
+      const q = (sel) => scope.querySelector(sel);
+      const qa = (sel) => scope.querySelectorAll(sel);
+
+      // Generate binary rain columns deterministically
+      const field = q('#rain-field');
+      let seed = 42;
+      function srand() { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return (seed % 10000) / 10000; }
+      for (let i = 0; i < 96; i++) {
+        const col = document.createElement('div');
+        col.className = 'rain-col' + (srand() > 0.7 ? ' bright' : '');
+        let txt = '';
+        for (let j = 0; j < 80; j++) txt += srand() > 0.5 ? '1' : '0';
+        col.textContent = txt;
+        col.style.left = (i * 20) + 'px';
+        col.style.opacity = 0.3 + srand() * 0.7;
+        field.appendChild(col);
+      }
+
+      // Shards slam in
+      const shards = qa('.shard');
+      const offsets = [-60, 40, -30, 55, -45, 35, -50, 25];
+      shards.forEach((s, i) => {
+        tl.to(s, { opacity: 1, x: offsets[i], skewX: offsets[i] > 0 ? 1 : -1, duration: 0.08 }, 0);
+      });
+
+      // Shards dissolve as rain appears
+      tl.to(q('#rain-field'), { opacity: 1, duration: 0.15 }, 0.1);
+      shards.forEach((s) => {
+        tl.to(s, { opacity: 0, duration: 0.3 }, 0.3);
+      });
+
+      // Rain columns fall
+      const cols = qa('.rain-col');
+      seed = 99;
+      cols.forEach((c) => {
+        const speed = 0.8 + srand() * 0.8;
+        const dist = 200 + srand() * 400;
+        tl.to(c, { y: dist, duration: speed, ease: 'none' }, 0.1);
+      });
+
+      // Radial burst grows
+      tl.to(q('#burst'), { opacity: 1, width: 1600, height: 1600, duration: 0.8, ease: 'power2.out' }, 0.3);
+
+      // Interference lines flash
+      tl.to(q('#i1'), { opacity: 1, duration: 0.05 }, 0.15);
+      tl.to(q('#i1'), { opacity: 0, duration: 0.2 }, 0.3);
+      tl.to(q('#i2'), { opacity: 1, duration: 0.05 }, 0.25);
+      tl.to(q('#i2'), { opacity: 0, duration: 0.2 }, 0.4);
+      tl.to(q('#i3'), { opacity: 1, duration: 0.05 }, 0.35);
+      tl.to(q('#i3'), { opacity: 0, duration: 0.2 }, 0.5);
+
+      // Title punches in
+      tl.to(q('#title-block'), { opacity: 1, duration: 0.08 }, 0.6);
+      tl.fromTo(q('#title-block'), { scale: 1.3 }, { scale: 1, duration: 0.3, ease: 'back.out(2)' }, 0.6);
+      // Chromatic offset
+      tl.fromTo(q('.t-red'), { x: -12 }, { x: -8, duration: 0.5 }, 0.6);
+      tl.fromTo(q('.t-blue'), { x: 12 }, { x: 8, duration: 0.5 }, 0.6);
+
+      // Subtitle fade
+      tl.to(q('#title-sub'), { opacity: 1, duration: 0.3 }, 0.9);
+
+      // Rain fades for title readability
+      tl.to(q('#rain-field'), { opacity: 0.3, duration: 0.5 }, 0.8);
+
+      // Hold
+      tl.to({}, { duration: 0.3 }, 1.7);
+
+      window.__timelines["binary-break"] = tl;
+    </script>
+  </div>
+</template>

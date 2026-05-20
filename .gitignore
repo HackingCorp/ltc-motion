@@ -106,6 +106,13 @@ compositions/
 video-6-2-patched/
 claude-design-hyperframes-video/
 
+# Exception: the lifted full-video reference projects under
+# skills/website-to-hyperframes/examples/_full-video-refs/ need their
+# compositions/ subdirs committed so the refs are readable. The global
+# compositions/ rule above is for scratch dirs at the repo root.
+!skills/website-to-hyperframes/examples/_full-video-refs/**/compositions/
+!skills/website-to-hyperframes/examples/_full-video-refs/**/compositions/**
+
 # Review package (rater review copy, not part of repo)
 review-package/
 

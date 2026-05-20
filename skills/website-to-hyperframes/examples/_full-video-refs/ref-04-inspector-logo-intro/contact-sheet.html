@@ -1,0 +1,1020 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Inspector Logo Intro — Contact Sheet</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fraunces:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+      * { box-sizing: border-box; margin: 0; }
+
+      body {
+        background: #07100c;
+        color: #fff8e9;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        padding: 60px;
+      }
+
+      h1 {
+        font-size: 42px;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        margin-bottom: 8px;
+      }
+
+      .subtitle {
+        font-size: 20px;
+        color: rgba(255,248,233,0.5);
+        margin-bottom: 60px;
+        font-weight: 400;
+      }
+
+      .beat-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 48px;
+      }
+
+      .beat {
+        background: #0d1a14;
+        border: 1px solid rgba(255,248,233,0.08);
+        border-radius: 20px;
+        overflow: hidden;
+      }
+
+      .beat-frame {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16/9;
+        overflow: hidden;
+        background: #07100c;
+      }
+
+      .beat-meta {
+        padding: 24px 28px;
+        border-top: 1px solid rgba(255,248,233,0.06);
+      }
+
+      .beat-header {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+
+      .beat-num {
+        font-size: 14px;
+        font-weight: 700;
+        color: #45d86e;
+        font-family: 'IBM Plex Mono', monospace;
+        letter-spacing: 0.05em;
+      }
+
+      .beat-title {
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+
+      .beat-time {
+        font-size: 13px;
+        font-family: 'IBM Plex Mono', monospace;
+        color: rgba(255,248,233,0.35);
+        margin-left: auto;
+      }
+
+      .beat-notes {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 16px;
+        font-size: 13px;
+        line-height: 1.5;
+        color: rgba(255,248,233,0.55);
+      }
+
+      .note-label {
+        font-weight: 700;
+        color: rgba(255,248,233,0.3);
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+      }
+
+      .note-full { grid-column: 1 / -1; }
+
+      /* ── Halftone background simulation ── */
+      .halftone-bg {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle 1.2px, rgba(69,216,110,0.35) 80%, transparent 100%) 0 0 / 5px 5px,
+          radial-gradient(circle 0.9px, rgba(25,183,213,0.2) 80%, transparent 100%) 2.5px 2.5px / 5px 5px,
+          #07100c;
+      }
+
+      .halftone-bg.green-flat {
+        background: #45d86e;
+      }
+
+      .halftone-bg.warping {
+        background:
+          radial-gradient(circle 1.5px, rgba(69,216,110,0.45) 70%, transparent 100%) 0 0 / 5.5px 5.5px,
+          radial-gradient(circle 1px, rgba(25,183,213,0.25) 70%, transparent 100%) 2.75px 2.75px / 5.5px 5.5px,
+          radial-gradient(ellipse 600px 400px at 50% 50%, rgba(69,216,110,0.12), transparent),
+          #07100c;
+      }
+
+      /* ── Logo ── */
+      .logo-wordmark {
+        font-size: 48px;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        color: #fff8e9;
+      }
+
+      .logo-wordmark.small {
+        font-size: 34px;
+      }
+
+      .inspector-text {
+        font-size: 48px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: #fff8e9;
+      }
+
+      .inspector-text.large {
+        font-size: 120px;
+        font-weight: 900;
+        letter-spacing: -0.035em;
+      }
+
+      .inspector-text.blue {
+        color: #19b7d5;
+      }
+
+      .inspector-text.serif-font {
+        font-family: Fraunces, Georgia, serif;
+        color: #19b7d5;
+      }
+
+      /* ── Magnifying glass ── */
+      .mag-glass {
+        position: absolute;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        border: 4px solid rgba(255,248,233,0.6);
+        background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.18), transparent 60%),
+                    radial-gradient(circle at 50% 50%, rgba(25,183,213,0.08), transparent);
+        box-shadow:
+          0 0 0 2px rgba(7,16,12,0.4),
+          0 12px 40px rgba(0,0,0,0.5),
+          inset 0 0 30px rgba(255,255,255,0.06);
+      }
+
+      .mag-handle {
+        position: absolute;
+        bottom: -28px;
+        right: -28px;
+        width: 10px;
+        height: 40px;
+        background: rgba(255,248,233,0.5);
+        border-radius: 5px;
+        transform: rotate(-45deg);
+        transform-origin: top center;
+      }
+
+      /* ── Cursor (macOS-style pointer) ── */
+      .cursor {
+        position: absolute;
+        z-index: 10;
+        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
+      }
+
+      .cursor svg {
+        width: 28px;
+        height: 34px;
+      }
+
+      /* ── Selection highlight ── */
+      .selection-highlight {
+        position: absolute;
+        background: rgba(25,183,213,0.25);
+        border: 1px solid rgba(25,183,213,0.4);
+        border-radius: 4px;
+      }
+
+      /* ── Inspector panel ── */
+      .inspector-panel {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 260px;
+        background: #111b15;
+        border-left: 1px solid rgba(255,248,233,0.08);
+        border-radius: 16px 0 0 16px;
+        padding: 20px 16px;
+        font-size: 11px;
+        color: rgba(255,248,233,0.6);
+      }
+
+      .panel-section {
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255,248,233,0.06);
+      }
+
+      .panel-label {
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255,248,233,0.3);
+        margin-bottom: 8px;
+      }
+
+      .panel-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+
+      .panel-field {
+        flex: 1;
+        padding: 6px 8px;
+        background: rgba(255,248,233,0.04);
+        border: 1px solid rgba(255,248,233,0.08);
+        border-radius: 8px;
+        font-size: 11px;
+        color: rgba(255,248,233,0.7);
+        font-family: 'IBM Plex Mono', monospace;
+      }
+
+      .panel-field .field-label {
+        font-size: 9px;
+        color: rgba(255,248,233,0.3);
+        margin-right: 4px;
+      }
+
+      .color-swatch {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,248,233,0.12);
+        display: inline-block;
+      }
+
+      .color-swatch.warm { background: #fff8e9; }
+      .color-swatch.cyan { background: #19b7d5; }
+
+      .font-dropdown {
+        padding: 6px 10px;
+        background: rgba(255,248,233,0.04);
+        border: 1px solid rgba(255,248,233,0.08);
+        border-radius: 8px;
+        font-size: 11px;
+        color: rgba(255,248,233,0.7);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .font-dropdown::after {
+        content: '▾';
+        font-size: 10px;
+        color: rgba(255,248,233,0.3);
+      }
+
+      /* ── Transition arrow ── */
+      .transition-arrow {
+        position: absolute;
+        bottom: 16px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-family: 'IBM Plex Mono', monospace;
+        color: rgba(255,248,233,0.25);
+        letter-spacing: 0.04em;
+      }
+
+      .transition-arrow::after {
+        content: '→';
+        font-size: 16px;
+      }
+
+      .transition-arrow.down::after { content: '↓'; }
+      .transition-arrow.left::after { content: '←'; }
+      .transition-arrow.zoom::after { content: '⊕'; }
+
+      /* ── Motion path indicators ── */
+      .motion-path {
+        position: absolute;
+        border: 2px dashed rgba(69,216,110,0.2);
+        border-radius: 50%;
+        pointer-events: none;
+      }
+
+      .spring-indicator {
+        position: absolute;
+        font-size: 10px;
+        font-family: 'IBM Plex Mono', monospace;
+        color: rgba(241,182,74,0.5);
+        white-space: nowrap;
+      }
+
+      /* Full-width beat */
+      .beat.full-width {
+        grid-column: 1 / -1;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Inspector Logo Intro</h1>
+    <p class="subtitle">Contact sheet — 11 beats, ~7.35s total → transitions into existing scene-00</p>
+
+    <div class="beat-grid">
+
+      <!-- ═══════ BEAT 1 ═══════ -->
+      <div class="beat">
+        <div class="beat-frame">
+          <!-- Left half: flat green. Right half: warping into halftone -->
+          <div style="position:absolute; inset:0; display:flex;">
+            <div style="flex:1; background:#45d86e;"></div>
+            <div style="flex:1; position:relative;">
+              <div class="halftone-bg warping"></div>
+            </div>
+          </div>
+          <!-- Center divider showing the warp -->
+          <div style="position:absolute; left:50%; top:0; bottom:0; width:3px; background:linear-gradient(180deg, rgba(255,248,233,0.4), rgba(255,248,233,0.1)); box-shadow:0 0 20px rgba(69,216,110,0.4);"></div>
+          <div style="position:absolute; left:25%; top:50%; transform:translate(-50%,-50%); font-size:16px; font-weight:700; color:rgba(7,16,12,0.6);">FLAT GREEN</div>
+          <div style="position:absolute; left:75%; top:50%; transform:translate(-50%,-50%); font-size:16px; font-weight:700; color:rgba(255,248,233,0.4);">HALFTONE GRID</div>
+          <div class="transition-arrow zoom">0.25s warp</div>
+        </div>
+        <div class="beat-meta">
+          <div class="beat-header">
+            <span class="beat-num">01</span>
+            <span class="beat-title">Background Warp</span>
+            <span class="beat-time">0.00 – 0.25s</span>
+          </div>
+          <div class="beat-notes">
+            <div>
+              <div class="note-label">Moves first</div>
+              Background (only element)
+            </div>
+            <div>
+              <div class="note-label">Transition</div>
+              Flat green → halftone dot field, center-out pulse
+            </div>
+            <div class="note-full">
+              <div class="note-label">Background</div>
+              #45d86e solid warps into the oversized halftone canvas matching main video. Dots emerge from center outward. No ease-in — motion at frame 1.
+            </div>
+            <div class="note-full">
+              <div class="note-label">Halftone mode</div>
+              <strong style="color:#f1b64a;">FIELD WIPE</strong> — dots scale up from zero radius with swell * 1.65, blend * 0.98. The green flat field resolves into individual dots as density increases. Most explosive opening possible.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ BEAT 2 ═══════ -->
+      <div class="beat">
+        <div class="beat-frame">
+          <div class="halftone-bg"></div>
+          <!-- Logo flying in from deep Z — shown at 3 stages -->
+          <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) scale(0.15); opacity:0.3; filter:blur(8px);">
+            <img src="assets/hf-logo.svg" style="width:320px; height:auto;" alt="HyperFrames logo" />
+          </div>
+          <div style="position:absolute; left:50%; top:42%; transform:translate(-50%,-50%) scale(0.6); opacity:0.6; filter:blur(3px);">
+            <img src="assets/hf-logo.svg" style="width:320px; height:auto;" alt="HyperFrames logo" />
+          </div>
+          <div style="position:absolute; left:50%; top:38%; transform:translate(-50%,-50%) scale(1.15); opacity:1; filter:drop-shadow(2px 0 0 rgba(25,183,213,0.3)) drop-shadow(-2px 0 0 rgba(217,119,87,0.2));">
+            <img src="assets/hf-logo.svg" style="width:320px; height:auto;" alt="HyperFrames logo" />
+          </div>
+          <div class="spring-indicator" style="right:20px; top:20px;">spring: stiff=180 damp=14</div>
+          <div class="transition-arrow zoom">fly-through</div>
+        </div>
+        <div class="beat-meta">
+          <div class="beat-header">
+            <span class="beat-num">02</span>
+            <span class="beat-title">Logo Fly-Through</span>
+            <span class="beat-time">0.25 – 0.85s</span>
+          </div>
+          <div class="beat-notes">
+            <div>
+              <div class="note-label">Moves first</div>
+              Logo (bg already established)
+            </div>
+            <div>
+              <div class="note-label">Spring</div>
+              Overshoot ~15%, 2–3 bounces, high stiffness
+            </div>
+            <div class="note-full">
+              <div class="note-label">Motion</div>
+              HyperFrames wordmark from hf-logo.svg flies from deep Z toward camera. Starts tiny/blurred center, scales past 1.0, spring settles. Brief chromatic fringe at peak velocity. Inspired by html-in-canvas glass-frame punch-through.
+            </div>
+            <div class="note-full">
+              <div class="note-label">Halftone mode</div>
+              <strong style="color:#f1b64a;">DOT BLOOM</strong> — radius swell * 1.35, blend * 0.85 as logo punches through. Dots briefly merge into soft shader wash at peak velocity, then resolve back. Hue-rotate + saturate kick at impact. plateScale += 0.18 * swell.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ BEAT 3 ═══════ -->
+      <div class="beat">
+        <div class="beat-frame">
+          <div class="halftone-bg"></div>
+          <!-- Logo sliding left + shrinking, Inspector entering right -->
+          <div style="position:absolute; left:26%; top:50%; transform:translate(-50%,-50%);">
+            <img src="assets/hf-logo.svg" style="width:200px; height:auto;" alt="HyperFrames logo" />
+          </div>
+          <!-- Inspector letters staggering in -->
+          <div style="position:absolute; left:54%; top:50%; transform:translateY(-50%); display:flex; gap:0;">
+            <span class="inspector-text" style="opacity:1;">I</span>
+            <span class="inspector-text" style="opacity:1;">n</span>
+            <span class="inspector-text" style="opacity:1;">s</span>
+            <span class="inspector-text" style="opacity:0.9;">p</span>
+            <span class="inspector-text" style="opacity:0.7; filter:blur(1px);">e</span>
+            <span class="inspector-text" style="opacity:0.5; filter:blur(2px);">c</span>
+            <span class="inspector-text" style="opacity:0.3; filter:blur(3px);">t</span>
+            <span class="inspector-text" style="opacity:0.15; filter:blur(4px);">o</span>
+            <span class="inspector-text" style="opacity:0.05; filter:blur(5px);">r</span>
+          </div>
+          <!-- Motion arrows -->
+          <div style="position:absolute; left:42%; top:38%; color:rgba(241,182,74,0.3); font-size:24px;">← scale ↓</div>
+          <div style="position:absolute; right:15%; top:38%; color:rgba(69,216,110,0.3); font-size:24px;">← stagger</div>
+          <div class="spring-indicator" style="left:20px; bottom:40px;">spring continues from beat 2</div>
+          <div class="transition-arrow left">bg leads 0.1s</div>
+        </div>
+        <div class="beat-meta">
+          <div class="beat-header">
+            <span class="beat-num">03</span>
+            <span class="beat-title">Logo Slides Left + "Inspector" Enters</span>
+            <span class="beat-time">0.85 – 1.65s</span>
+          </div>
+          <div class="beat-notes">
+            <div>
+              <div class="note-label">Moves first</div>
+              BG drifts left (0.1s) → logo scales/slides → letters stagger
+            </div>
+            <div>
+              <div class="note-label">Typography</div>
+              "Inspector" Inter 800, #fff8e9, letter stagger ~0.04s
+            </div>
+            <div class="note-full">
+              <div class="note-label">Motion</div>
+              Logo spring settle bleeds directly into scale-down (→ 60%) + leftward slide. No hard keyframe boundary. "Inspector" letters enter from right with blur-to-sharp stagger. Forms the "HyperFrames Inspector" lockup.
+            </div>
+            <div class="note-full">
+              <div class="note-label">Halftone mode</div>
+              <strong style="color:#45d86e;">SOFT CUT</strong> — same field keeps moving under the slide. Subtle leftward lateral drift (plateX -96px pulse). Swell * 0.35, blend * 0.2 — just enough to feel the seam without announcing a new chapter.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ BEAT 4 ═══════ -->
+      <div class="beat">
+        <div class="beat-frame">
+          <div class="halftone-bg"></div>
+          <!-- Lockup with magnifying glass scanning -->
+          <div style="position:absolute; left:26%; top:50%; transform:translate(-50%,-50%);">
+            <img src="assets/hf-logo.svg" style="width:200px; height:auto;" alt="HyperFrames logo" />
+          </div>
+          <div style="position:absolute; left:54%; top:50%; transform:translateY(-50%);">
+            <span class="inspector-text">Inspector</span>
+          </div>
+          <!-- Magnifying glass -->
+          <div class="mag-glass" style="left:52%; top:28%; transform:translate(-50%,-50%);">
+            <div class="mag-handle"></div>
+            <!-- Magnified text preview inside lens -->
+            <div style="position:absolute; inset:8px; border-radius:50%; overflow:hidden; display:grid; place-items:center;">
+              <span style="font-size:22px; font-weight:800; color:#fff8e9; text-shadow:0 0 8px rgba(25,183,213,0.3); transform:scale(2.2); letter-spacing:-0.02em;">spe</span>
+            </div>
+          </div>
+          <!-- Scan path indicator -->
+          <div style="position:absolute; top:28%; left:78%; right:18%; height:2px; border-top:2px dashed rgba(25,183,213,0.2);"></div>
+          <div style="position:absolute; top:28%; left:30%; right:60%; height:2px; border-top:2px dashed rgba(25,183,213,0.15);"></div>
+          <div class="spring-indicator" style="right:20px; top:16px;">WebGL shader: spherical lens + CA</div>
+          <div class="transition-arrow left">scan L → drop ↓</div>
+        </div>
+        <div class="beat-meta">
+          <div class="beat-header">
+            <span class="beat-num">04</span>
+            <span class="beat-title">Magnifying Glass Effect</span>
+            <span class="beat-time">1.65 – 2.85s</span>
+          </div>
+          <div class="beat-notes">
+            <div>
+              <div class="note-label">Moves first</div>
+              Lens enters from right → scans left → drops out
+            </div>
+            <div>
+              <div class="note-label">Shader</div>
+              Ported from Remotion gl.ts — spherical profile, CA, specular
+            </div>
+            <div class="note-full">
+              <div class="note-label">Motion</div>
+              Magnifying glass lens enters with spring, scans leftward across "Inspector" with fbm noise jitter (X amp 0.32, Y amp 0.025). Scan ~0.8s. Then lens springs downward + scales to 0 (~0.3s gravity drop). BG hue shifts toward cyan during scan.
+            </div>
+            <div class="note-full">
+              <div class="note-label">Halftone mode</div>
+              <strong style="color:#19b7d5;">CURRENT (cyan drift)</strong> — slow domain warp, restrained lateral drift. Hue-rotate toward cyan follows lens position. Gradient masses drift to track the magnifying glass center. Calm field lets the shader lens be the star.
+            </div>
+            <div class="note-full">
+              <div class="note-label">Placeholder</div>
+              WebGL shader needs porting from Remotion HtmlInCanvas API to standalone canvas overlay. Shaders (VS/FS) are directly portable; texture upload path needs adaptation.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ BEAT 5 ═══════ -->
+      <div class="beat">
+        <div class="beat-frame">
+          <div class="halftone-bg" style="background:
+            radial-gradient(circle 1.3px, rgba(69,216,110,0.4) 80%, transparent 100%) 0 0 / 5px 5px,
+            radial-gradient(circle 1px, rgba(25,183,213,0.25) 80%, transparent 100%) 2.5px 2.5px / 5px 5px,
+            radial-gradient(ellipse 800px 500px at 50% 50%, rgba(25,183,213,0.08), transparent),
+            #07100c;
+          "></div>
+          <!-- Large Inspector text centered -->
+          <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);">
+            <span class="inspector-text large">Inspector</span>
+          </div>
+          <!-- Ghost of logo fading out left -->
+          <div style="position:absolute; left:6%; top:50%; transform:translateY(-50%); opacity:0.15; filter:blur(6px);">
+            <img src="assets/hf-logo.svg" style="width:200px; height:auto;" alt="HyperFrames logo" />
+          </div>
+          <div class="transition-arrow zoom">zoom-through</div>
+        </div>
+        <div class="beat-meta">
+          <div class="beat-header">
+            <span class="beat-num">05</span>
+            <span class="beat-title">Zoom In on "Inspector"</span>
+            <span class="beat-time">2.85 – 3.35s</span>
+          </div>
+          <div class="beat-notes">
+            <div>
+              <div class="note-label">Moves first</div>
+              BG zooms (0.1s lead) → logo fades left → Inspector scales
+            </div>
+            <div>
+              <div class="note-label">End state</div>
+              "Inspector" centered, ~70% frame width, sharp
+            </div>
+            <div class="note-full">
+              <div class="note-label">Motion</div>
+              Camera zoom as magnifying glass drops. Zoom-through style: scale accelerates (power3.in), blur peaks mid-transition, expo.out settle. Logo exits left simultaneously. One continuous forward motion.
+            </div>
+            <div class="note-full">
+              <div class="note-label">Halftone mode</div>
+              <strong style="color:#f1b64a;">FIELD WIPE</strong> — strongest transition between lens and solo "Inspector." Swell * 1.65, blend * 0.98 — dots scale up, blur together into wash, then contract as the zoom settles. plateScale += 0.28 * swell. Hue shifts -18° (amber warmth). Sells the "real turn" into the interactive section.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ BEAT 6 ═══════ -->
+      <div class="beat">
+        <div class="beat-frame">
+          <div class="halftone-bg"></div>
+          <!-- Large Inspector — selection only on letter "t" -->
+          <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);">
+            <span class="inspector-text large">Inspector</span>
+          </div>
+          <!-- Selection highlight — covers ONLY the letter "t" (7th of 9 chars) -->
+          <div class="selection-highlight" style="left:66%; top:36%; width:6%; height:22%;"></div>
+          <!-- Cursor at bottom-right of "t" after diagonal drag -->
+          <div class="cursor" style="left:70%; top:54%;"><svg viewBox="0 0 28 34" fill="none"><path d="M2 1L2 25.5L8.5 19.5L14.5 31L18.5 29L12.5 17.5L21 17.5L2 1Z" fill="white" stroke="black" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+          <!-- Cursor path: bottom-left → top-left of "t" → drag diagonally down across "t" -->
+          <svg style="position:absolute; inset:0; pointer-events:none;" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path d="M 8 88 C 22 68, 44 52, 66 36" stroke="rgba(241,182,74,0.25)" stroke-width="0.3" fill="none" stroke-dasharray="1,1"/>
+            <path d="M 66 36 L 71 55" stroke="rgba(25,183,213,0.3)" stroke-width="0.4" fill="none" stroke-dasharray="1.5,1"/>
+            <circle cx="66" cy="36" r="1.2" fill="rgba(241,182,74,0.3)"/>
+            <circle cx="71" cy="55" r="1.2" fill="rgba(25,183,213,0.4)"/>
+          </svg>
+          <div style="position:absolute; bottom:16px; left:20px; font-size:10px; font-family:'IBM Plex Mono',monospace; color:rgba(241,182,74,0.3);">↗ bezier entry → select "t" ↘</div>
+        </div>
+        <div class="beat-meta">
+          <div class="beat-header">
+            <span class="beat-num">06</span>
+            <span class="beat-title">Cursor Enters + Text Selection</span>
+            <span class="beat-time">3.35 – 4.15s</span>
+          </div>
+          <div class="beat-notes">
+            <div>
+              <div class="note-label">Moves first</div>
+              Cursor enters → travels to "t" → drag diagonally down
+            </div>
+            <div>
+              <div class="note-label">Selection</div>
+              Blue highlight rgba(25,183,213,0.3) — only the letter "t"
+            </div>
+            <div class="note-full">
+              <div class="note-label">Motion</div>
+              Cursor enters from bottom-left via smooth bezier. Travels to top-left of the letter "t" in Inspector. Brief pause, then click-drag diagonally downward across "t." Blue selection highlight follows drag in real-time. End: letter "t" selected, cursor rests at bottom of "t".
+            </div>
+            <div class="note-full">
+              <div class="note-label">Halftone mode</div>
+              <strong style="color:#45d86e;">PROOF BEAT</strong> — measured lateral drift (plateX ±34px). Restrained, precise motion matches the cursor's deliberate path. Background alive but not competing for attention.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ BEAT 7 ═══════ -->
+      <div class="beat">
+        <div class="beat-frame">
+          <div class="halftone-bg"></div>
+          <!-- Inspector text with "t" selected -->
+          <div style="position:absolute; left:42%; top:50%; transform:translate(-50%,-50%);">
+            <span class="inspector-text large" style="font-size:100px;">Inspec<span style="position:relative;">t<div class="selection-highlight" style="position:absolute; inset:-4px -2px; border-radius:4px;"></div></span>or</span>
+          </div>
+          <!-- Inspector panel sliding in from right -->
+          <div class="inspector-panel">
+            <div class="panel-section">
+              <div class="panel-label">Document</div>
+              <div style="font-size:14px; font-weight:700; color:#fff8e9; margin-bottom:4px;">Inspector</div>
+              <div style="font-size:10px; color:rgba(255,248,233,0.3);">#text-layer</div>
+            </div>
+            <div class="panel-section">
+              <div class="panel-label">Layout</div>
+              <div class="panel-row">
+                <div class="panel-field"><span class="field-label">X</span> 192px</div>
+                <div class="panel-field"><span class="field-label">Y</span> 420px</div>
+              </div>
+              <div class="panel-row">
+                <div class="panel-field"><span class="field-label">W</span> 1344px</div>
+                <div class="panel-field"><span class="field-label">H</span> 156px</div>
+              </div>
+            </div>
+            <div class="panel-section">
+              <div class="panel-label">Color</div>
+              <div class="panel-row" style="align-items:center; gap:10px;">
+                <div class="color-swatch warm"></div>
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:11px;">rgb(255,248,233)</span>
+              </div>
+            </div>
+            <div class="panel-section">
+              <div class="panel-label">Font</div>
+              <div class="font-dropdown">Inter</div>
+            </div>
+            <div class="panel-section">
+              <div class="panel-label">Size</div>
+              <div class="panel-field"><span class="field-label">Size</span> 120px</div>
+            </div>
+          </div>
+          <!-- Cursor near panel -->
+          <div class="cursor" style="right:220px; top:42%;"><svg viewBox="0 0 28 34" fill="none"><path d="M2 1L2 25.5L8.5 19.5L14.5 31L18.5 29L12.5 17.5L21 17.5L2 1Z" fill="white" stroke="black" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+          <div class="transition-arrow left">panel spring from right</div>
+        </div>
+        <div class="beat-meta">
+          <div class="beat-header">
+            <span class="beat-num">07</span>
+            <span class="beat-title">Inspector Panel Slides In</span>
+            <span class="beat-time">4.15 – 4.75s</span>
+          </div>
+          <div class="beat-notes">
+            <div>
+              <div class="note-label">Moves first</div>
+              BG shifts right (0.1s) → panel springs in from right
+            </div>
+            <div>
+              <div class="note-label">Panel</div>
+              Rounded corners, dark surface, soft recreation of screenshot
+            </div>
+            <div class="note-full">
+              <div class="note-label">Motion</div>
+              Inspector panel slides from x:+400 to final position (right edge). Spring curve with slight overshoot. Contains: color swatch, font dropdown, size field, layout fields. Not pixel-perfect — faithful in spirit.
+            </div>
+            <div class="note-full">
+              <div class="note-label">Halftone mode</div>
+              <strong style="color:#45d86e;">PROOF BEAT</strong> — rightward drift anticipates panel entry. Same restrained motion as beats 6 + 8–10. Background serves the UI, doesn't upstage it.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ BEAT 8 ═══════ -->
+      <div class="beat">
+        <div class="beat-frame">
+          <div class="halftone-bg"></div>
+          <!-- Inspector text — only "t" is now BLUE -->
+          <div style="position:absolute; left:42%; top:50%; transform:translate(-50%,-50%);">
+            <span class="inspector-text large" style="font-size:100px;">Inspec<span style="color:#19b7d5;">t</span>or</span>
+          </div>
+          <!-- Color picker panel — matching Inspector screenshot style -->
+          <div style="position:absolute; right:16px; top:10px; bottom:10px; width:270px; background:#0a0a0a; border:1px solid rgba(255,248,233,0.1); border-radius:16px; padding:18px; font-size:11px; color:rgba(255,248,233,0.6); overflow:hidden;">
+            <!-- Header -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-size:14px; font-weight:700; color:#fff8e9;">Stroke color</span>
+              <span style="color:rgba(255,248,233,0.3); font-size:16px;">×</span>
+            </div>
+            <div style="font-size:9px; letter-spacing:0.1em; color:rgba(255,248,233,0.3); text-transform:uppercase; margin-bottom:12px;">COLOR</div>
+            <!-- Gradient square -->
+            <div style="position:relative; width:100%; height:100px; border-radius:8px; background:linear-gradient(to bottom, transparent, black), linear-gradient(to right, white, #19b7d5); margin-bottom:12px; border:1px solid rgba(255,248,233,0.08);">
+              <!-- Picker circle -->
+              <div style="position:absolute; left:18%; top:12%; width:14px; height:14px; border-radius:50%; border:2px solid white; box-shadow:0 0 4px rgba(0,0,0,0.5);"></div>
+            </div>
+            <!-- Color preview + rgb -->
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+              <div style="width:32px; height:32px; border-radius:8px; background:#19b7d5; border:1px solid rgba(255,248,233,0.1);"></div>
+              <div>
+                <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:rgba(255,248,233,0.7);">rgb(25, 183, 213)</div>
+                <div style="font-size:9px; color:rgba(255,248,233,0.3);">S 88% · B 84% · A 100%</div>
+              </div>
+            </div>
+            <!-- HUE slider -->
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span style="font-size:9px; letter-spacing:0.1em; color:rgba(255,248,233,0.3); text-transform:uppercase;">HUE</span>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:rgba(255,248,233,0.5);">191°</span>
+            </div>
+            <div style="position:relative; height:12px; border-radius:6px; background:linear-gradient(to right, red, yellow, lime, cyan, blue, magenta, red); margin-bottom:12px;">
+              <div style="position:absolute; left:53%; top:-2px; width:16px; height:16px; border-radius:50%; background:#19b7d5; border:2px solid white; box-shadow:0 0 4px rgba(0,0,0,0.5); transform:translateX(-50%);"></div>
+            </div>
+            <!-- ALPHA slider -->
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span style="font-size:9px; letter-spacing:0.1em; color:rgba(255,248,233,0.3); text-transform:uppercase;">ALPHA</span>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:rgba(255,248,233,0.5);">100%</span>
+            </div>
+            <div style="position:relative; height:12px; border-radius:6px; background:linear-gradient(to right, transparent, #19b7d5); margin-bottom:12px;">
+              <div style="position:absolute; right:0; top:-2px; width:16px; height:16px; border-radius:50%; background:#19b7d5; border:2px solid white; box-shadow:0 0 4px rgba(0,0,0,0.5);"></div>
+            </div>
+            <!-- HEX field -->
+            <div style="font-size:9px; letter-spacing:0.1em; color:rgba(255,248,233,0.3); text-transform:uppercase; margin-bottom:4px;">HEX</div>
+            <div style="padding:8px 10px; background:rgba(255,248,233,0.04); border:1px solid rgba(255,248,233,0.08); border-radius:8px; font-family:'IBM Plex Mono',monospace; font-size:13px; color:rgba(255,248,233,0.8);">#19B7D5</div>
+          </div>
+          <!-- Cursor on the gradient square picker circle -->
+          <div class="cursor" style="right:200px; top:28%;"><svg viewBox="0 0 28 34" fill="none"><path d="M2 1L2 25.5L8.5 19.5L14.5 31L18.5 29L12.5 17.5L21 17.5L2 1Z" fill="white" stroke="black" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+          <div class="transition-arrow">color: #fff8e9 → #19b7d5</div>
+        </div>
+        <div class="beat-meta">
+          <div class="beat-header">
+            <span class="beat-num">08</span>
+            <span class="beat-title">Color Picker Interaction</span>
+            <span class="beat-time">4.75 – 5.55s</span>
+          </div>
+          <div class="beat-notes">
+            <div>
+              <div class="note-label">Moves first</div>
+              Cursor → swatch click → picker opens → select blue
+            </div>
+            <div>
+              <div class="note-label">Live update</div>
+              Only the "t" transitions to #19b7d5
+            </div>
+            <div class="note-full">
+              <div class="note-label">Motion</div>
+              Cursor beziers to color swatch, click opens full color picker (gradient square + hue/alpha sliders + hex field — matching Inspector screenshot). Cursor drags picker circle to cyan region. Only the selected letter "t" changes color — rest of "Inspector" stays warm paper. Picker reflects #19B7D5.
+            </div>
+            <div class="note-full">
+              <div class="note-label">Halftone mode</div>
+              <strong style="color:#45d86e;">PROOF BEAT</strong> — restrained lateral. Subtle hue-rotate toward cyan as the "t" changes color, syncing background palette with foreground action.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ BEAT 9 ═══════ -->
+      <div class="beat">
+        <div class="beat-frame">
+          <div class="halftone-bg"></div>
+          <!-- Inspector text — only "t" cycles through fonts -->
+          <div style="position:absolute; left:42%; top:36%; transform:translate(-50%,-50%); opacity:0.15;">
+            <span class="inspector-text large" style="font-size:100px;">Inspec<span style="color:#19b7d5;">t</span>or</span>
+          </div>
+          <div style="position:absolute; left:42%; top:44%; transform:translate(-50%,-50%); opacity:0.3;">
+            <span class="inspector-text large" style="font-size:100px;">Inspec<span style="color:#19b7d5; font-family:Fraunces,Georgia,serif;">t</span>or</span>
+          </div>
+          <div style="position:absolute; left:42%; top:52%; transform:translate(-50%,-50%); opacity:1;">
+            <span class="inspector-text large" style="font-size:100px;">Inspec<span style="color:#19b7d5; font-family:'IBM Plex Mono',monospace;">t</span>or</span>
+          </div>
+          <!-- Panel with font dropdown open -->
+          <div class="inspector-panel">
+            <div class="panel-section">
+              <div class="panel-label">Color</div>
+              <div class="panel-row" style="align-items:center; gap:10px;">
+                <div class="color-swatch cyan"></div>
+              </div>
+            </div>
+            <div class="panel-section">
+              <div class="panel-label">Font</div>
+              <div style="background:rgba(255,248,233,0.04); border:1px solid rgba(255,248,233,0.1); border-radius:8px; overflow:hidden;">
+                <div style="padding:7px 10px; font-size:11px; color:rgba(255,248,233,0.4);">Inter</div>
+                <div style="padding:7px 10px; font-size:11px; color:rgba(255,248,233,0.4); font-family:Fraunces,serif;">Fraunces</div>
+                <div style="padding:7px 10px; font-size:11px; color:#19b7d5; background:rgba(25,183,213,0.08); font-family:'IBM Plex Mono',monospace; border-left:2px solid #19b7d5;">IBM Plex Mono</div>
+                <div style="padding:7px 10px; font-size:11px; color:rgba(255,248,233,0.4);">Georgia</div>
+              </div>
+            </div>
+            <div class="panel-section">
+              <div class="panel-label">Size</div>
+              <div class="panel-field"><span class="field-label">Size</span> 120px</div>
+            </div>
+          </div>
+          <div class="cursor" style="right:195px; top:55%;"><svg viewBox="0 0 28 34" fill="none"><path d="M2 1L2 25.5L8.5 19.5L14.5 31L18.5 29L12.5 17.5L21 17.5L2 1Z" fill="white" stroke="black" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+          <div class="transition-arrow">rapid font clicks ~0.15s each</div>
+        </div>
+        <div class="beat-meta">
+          <div class="beat-header">
+            <span class="beat-num">09</span>
+            <span class="beat-title">Font Library Interaction</span>
+            <span class="beat-time">5.55 – 6.35s</span>
+          </div>
+          <div class="beat-notes">
+            <div>
+              <div class="note-label">Moves first</div>
+              Cursor → dropdown click → rapid font cycling
+            </div>
+            <div>
+              <div class="note-label">Fonts</div>
+              Inter → Fraunces → IBM Plex Mono → final choice
+            </div>
+            <div class="note-full">
+              <div class="note-label">Motion</div>
+              Font dropdown opens, cursor clicks through 3–4 options rapidly (~0.15s each). Each click instantly swaps only the "t" letter's font — rest of word stays Inter. Ghost images show previous "t" fonts fading.
+            </div>
+            <div class="note-full">
+              <div class="note-label">Halftone mode</div>
+              <strong style="color:#45d86e;">PROOF BEAT</strong> — same restrained lateral as beats 6–8. Rapid font clicks don't need bg drama.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ BEAT 10 ═══════ -->
+      <div class="beat">
+        <div class="beat-frame">
+          <div class="halftone-bg"></div>
+          <!-- Inspector — only "t" changes size -->
+          <div style="position:absolute; left:42%; top:50%; transform:translate(-50%,-50%); opacity:0.1;">
+            <span class="inspector-text large" style="font-size:100px;">Inspec<span style="color:#19b7d5; font-size:70px;">t</span>or</span>
+          </div>
+          <div style="position:absolute; left:42%; top:50%; transform:translate(-50%,-50%); opacity:0.2;">
+            <span class="inspector-text large" style="font-size:100px;">Inspec<span style="color:#19b7d5; font-size:130px;">t</span>or</span>
+          </div>
+          <div style="position:absolute; left:42%; top:50%; transform:translate(-50%,-50%); opacity:1;">
+            <span class="inspector-text large" style="font-size:100px;">Inspec<span style="color:#19b7d5; font-size:116px;">t</span>or</span>
+          </div>
+          <!-- Panel -->
+          <div class="inspector-panel">
+            <div class="panel-section">
+              <div class="panel-label">Color</div>
+              <div class="panel-row" style="align-items:center; gap:10px;">
+                <div class="color-swatch cyan"></div>
+              </div>
+            </div>
+            <div class="panel-section">
+              <div class="panel-label">Font</div>
+              <div class="font-dropdown">IBM Plex Mono</div>
+            </div>
+            <div class="panel-section">
+              <div class="panel-label">Size</div>
+              <div class="panel-field" style="border-color:rgba(25,183,213,0.4);"><span class="field-label">Size</span> 116px</div>
+              <!-- Size scrub indicator -->
+              <div style="margin-top:6px; height:3px; background:rgba(255,248,233,0.06); border-radius:2px; position:relative;">
+                <div style="position:absolute; left:72%; top:-3px; width:10px; height:10px; background:#19b7d5; border-radius:50%;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="cursor" style="right:200px; bottom:38%;"><svg viewBox="0 0 28 34" fill="none"><path d="M2 1L2 25.5L8.5 19.5L14.5 31L18.5 29L12.5 17.5L21 17.5L2 1Z" fill="white" stroke="black" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+          <div class="transition-arrow">scrub size value</div>
+        </div>
+        <div class="beat-meta">
+          <div class="beat-header">
+            <span class="beat-num">10</span>
+            <span class="beat-title">Size Interaction</span>
+            <span class="beat-time">6.35 – 6.85s</span>
+          </div>
+          <div class="beat-notes">
+            <div>
+              <div class="note-label">Moves first</div>
+              Cursor → size field → drag/scrub
+            </div>
+            <div>
+              <div class="note-label">End state</div>
+              Only "t" at adjusted size, ready for exit
+            </div>
+            <div class="note-full">
+              <div class="note-label">Motion</div>
+              Cursor moves to size field, drags/scrubs the value. Only the "t" scales up and down in real-time — rest of word stays at 100px. Ghosts show the range. Settle on a slightly larger final "t" size.
+            </div>
+            <div class="note-full">
+              <div class="note-label">Halftone mode</div>
+              <strong style="color:#45d86e;">PROOF BEAT</strong> — last calm frame before the explosive exit. Background gently builds energy (lift +0.02, wash +0.04) anticipating beat 11.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ BEAT 11 (full width) ═══════ -->
+      <div class="beat full-width">
+        <div class="beat-frame" style="aspect-ratio:32/9;">
+          <!-- Split view: left = exit state, right = scene-00 entry -->
+          <div style="position:absolute; inset:0; display:flex;">
+            <!-- Left half: drag off -->
+            <div style="flex:1; position:relative; overflow:hidden; border-right:2px solid rgba(255,248,233,0.08);">
+              <div class="halftone-bg"></div>
+              <!-- Text being dragged off left — "t" still has edits -->
+              <div style="position:absolute; left:-8%; top:50%; transform:translateY(-50%); filter:blur(4px); opacity:0.5;">
+                <span class="inspector-text large" style="font-size:100px;">Inspec<span style="color:#19b7d5; font-size:116px;">t</span>or</span>
+              </div>
+              <!-- Panel exiting right -->
+              <div class="inspector-panel" style="right:-120px; opacity:0.5; filter:blur(2px); width:200px;">
+                <div class="panel-section">
+                  <div class="panel-label">Color</div>
+                </div>
+              </div>
+              <!-- Cursor dragging -->
+              <div class="cursor" style="left:8%; top:52%;"><svg viewBox="0 0 28 34" fill="none"><path d="M2 1L2 25.5L8.5 19.5L14.5 31L18.5 29L12.5 17.5L21 17.5L2 1Z" fill="white" stroke="black" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+              <div style="position:absolute; top:16px; left:16px; font-size:12px; font-family:'IBM Plex Mono',monospace; color:rgba(241,182,74,0.4);">EXIT: text ← panel →</div>
+              <div style="position:absolute; bottom:16px; left:50%; transform:translateX(-50%); font-size:11px; font-family:'IBM Plex Mono',monospace; color:rgba(255,248,233,0.2);">blur peak at cut point</div>
+            </div>
+            <!-- Right half: scene-00 entering -->
+            <div style="flex:1; position:relative; overflow:hidden;">
+              <div class="halftone-bg"></div>
+              <!-- Dark prompt entering from right -->
+              <div style="position:absolute; left:55%; top:50%; transform:translate(-50%,-50%); width:460px; padding:16px 20px; background:#111b15; border:1px solid rgba(255,248,233,0.1); border-radius:16px; filter:blur(1px); opacity:0.8;">
+                <div style="font-size:14px; color:rgba(255,248,233,0.6); font-style:italic;">we created HyperFrames because we believe<span style="display:inline-block; width:2px; height:16px; background:#45d86e; margin-left:4px; vertical-align:middle;"></span></div>
+                <div style="display:flex; justify-content:flex-end; margin-top:10px; gap:8px;">
+                  <div style="width:24px; height:24px; border-radius:6px; background:rgba(255,248,233,0.06);"></div>
+                  <div style="width:30px; height:30px; border-radius:8px; background:#d97757; display:grid; place-items:center;">
+                    <div style="width:10px; height:10px; border-left:2px solid #fff; border-top:2px solid #fff; transform:rotate(45deg) translateY(2px);"></div>
+                  </div>
+                </div>
+              </div>
+              <div style="position:absolute; top:16px; right:16px; font-size:12px; font-family:'IBM Plex Mono',monospace; color:rgba(69,216,110,0.4);">ENTER: scene-00 from right</div>
+              <div style="position:absolute; bottom:16px; left:50%; transform:translateX(-50%); font-size:11px; font-family:'IBM Plex Mono',monospace; color:rgba(255,248,233,0.2);">expo.out deceleration</div>
+            </div>
+          </div>
+        </div>
+        <div class="beat-meta">
+          <div class="beat-header">
+            <span class="beat-num">11</span>
+            <span class="beat-title">Drag Off + Cut-the-Curve → Scene 00</span>
+            <span class="beat-time">6.85 – 7.35s</span>
+          </div>
+          <div class="beat-notes">
+            <div>
+              <div class="note-label">Moves first</div>
+              BG shifts left (0.1s) → cursor drags text left + panel exits right → blur peak → scene-00 enters
+            </div>
+            <div>
+              <div class="note-label">Cut-the-curve</div>
+              Text accelerates left (power3.in), blur peaks, scene-00 prompt continues leftward (expo.out)
+            </div>
+            <div class="note-full">
+              <div class="note-label">Motion</div>
+              Cursor grabs text, drags it left. Inspector panel slides off right simultaneously. Cut-the-curve transition: both sides move leftward. Blur peak at the cut hides the swap. Scene-00's dark prompt box enters from right continuing the same vector. Clean handoff to existing video.
+            </div>
+            <div class="note-full">
+              <div class="note-label">Background</div>
+              Halftone makes major leftward shift 0.1s before foreground. This is the bridge into the main video — halftone style must match exactly.
+            </div>
+            <div class="note-full">
+              <div class="note-label">Halftone mode</div>
+              <strong style="color:#d97757;">CUT-THE-CURVE V2 (60% bloom)</strong> — the big one. BG accelerates leftward with fg (power3.in → exitDist -210px), bloom peaks at cut frame (swell * 1.35 * 0.6, blend * 0.85 * 0.6), then decelerates into scene-00 (expo.out → entryDist -260px continues leftward). Field internals drag with the plate: mass positions, ribbon, center all slide laterally. Motion blur (6px * intensity) at peak. Hue-rotate +8°, saturate 1.04 + 0.25. This is the handoff into the main video's halftone — same field, same grammar, seamless.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Global notes footer -->
+    <div style="margin-top:60px; padding:32px; background:#0d1a14; border:1px solid rgba(255,248,233,0.06); border-radius:16px;">
+      <h2 style="font-size:20px; font-weight:800; margin-bottom:16px;">Global Motion Notes</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; font-size:13px; line-height:1.6; color:rgba(255,248,233,0.5);">
+        <div>
+          <div class="note-label" style="margin-bottom:6px;">Canvas Halftone System</div>
+          Background is a canvas-rendered halftone field (from halftone-motion-examples.html), NOT CSS radial-gradient dots. Key components: <strong style="color:rgba(255,248,233,0.7);">drawHalftone()</strong> with fbm domain warping, gradient masses (3 elliptical color fields that drift), dot-level energy/color from shaderField(), and <strong style="color:rgba(255,248,233,0.7);">paintShaderWash()</strong> soft color overlay in screen blend mode. Spacing = 5.15 / density, base radius = 1.02. The field is one continuous warped surface — dots are texture, not independent particles.
+        </div>
+        <div>
+          <div class="note-label" style="margin-bottom:6px;">Transition Modes (per beat)</div>
+          <span style="color:#f1b64a;">FIELD WIPE</span> — beats 1, 5: swell 1.65, blend 0.98. Dots scale up + blur into wash, then resolve. Most explosive.<br>
+          <span style="color:#f1b64a;">DOT BLOOM</span> — beat 2: swell 1.35, blend 0.85. Radius swells, raster merges briefly, hue + sat kick.<br>
+          <span style="color:#45d86e;">SOFT CUT</span> — beat 3: swell 0.35, blend 0.2. Same field keeps moving, subtle lateral drift.<br>
+          <span style="color:#19b7d5;">CURRENT</span> — beat 4: slow domain warp, restrained. Hue tracks the magnifying glass.<br>
+          <span style="color:#45d86e;">PROOF BEAT</span> — beats 6–10: measured lateral motion (±34px), precise, background serves the UI.<br>
+          <span style="color:#d97757;">CUT-CURVE V2 60%</span> — beat 11: bg accelerates with fg, field internals drag laterally, bloom at cut frame, decelerates into scene-00.
+        </div>
+        <div>
+          <div class="note-label" style="margin-bottom:6px;">Spring Physics</div>
+          Logo fly-through: high stiffness (180), moderate damping (14), ~15% overshoot. Panel slide-in: softer spring with slight overshoot. Magnifying glass entry/exit: spring in, gravity drop out. GSAP ticker-driven for logo, CustomEase approximations elsewhere.
+        </div>
+        <div>
+          <div class="note-label" style="margin-bottom:6px;">Transition Protocol</div>
+          Cut-the-curve for the final exit (beat 11). Same direction both sides (leftward). Exit: power3.in (42% of travel). Entry: expo.out (58%, continues same vector). Bloom peaks at cut frame — radius swell + color saturation + motion blur (6px). Field-space drag: mass positions, ribbon, center, phase all slide laterally with the plate. Background leads by 0.1s. Handoff to existing scene-00 must be seamless — same halftone grammar, same field.
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

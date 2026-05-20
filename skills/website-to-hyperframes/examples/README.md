@@ -149,15 +149,23 @@ Need a specific technique? Use this table to find the canonical scene.
 - [`_shared/shared-styles.css`](_shared/shared-styles.css) — design tokens (color palette, type scale, spacing). Every scene `<link>`s this so the catalog feels cohesive.
 - [`_shared/easing-glossary.md`](_shared/easing-glossary.md) — the 7 production easings and when to use each. Single source of truth.
 
-## Full-Video References (new tier)
+## Full-Video References (new tier — 6 refs across 6 architectures)
 
-The 81 numbered scenes above teach **vocabulary** — what individual beats can look like. The 3 refs in [`_full-video-refs/`](_full-video-refs/) teach **grammar** — how 4-10 beats assemble into a 40s video with narration, captions, intro hook, CTA close.
+The 81 numbered scenes above teach **vocabulary** — what individual beats can look like. The 6 refs in [`_full-video-refs/`](_full-video-refs/) teach **grammar** — how multi-beat videos assemble in 6 different architectural styles.
 
-- [**ref-01 launch-video-2**](_full-video-refs/ref-01-launch-video-2/) (41.8s) — 4 acts, stacked-beats arch, AI-agent IDE quartet. Watch: https://www.heygenverse.com/s/fb0a115b-81e6-4e3f-acae-6dbe8ef3def7/raw
+**Tier A — full launch reels (40s+):**
+
+- [**ref-01 launch-video-2**](_full-video-refs/ref-01-launch-video-2/) (41.8s) — 4 acts, stacked sub-comps, AI-agent IDE quartet. Watch: https://www.heygenverse.com/s/fb0a115b-81e6-4e3f-acae-6dbe8ef3def7/raw
 - [**ref-02 claude-design-hyperframes-video**](_full-video-refs/ref-02-claude-design-hyperframes-video/) (43.5s) — 10 beats, pre-rendered clip stitching, 1500+ line compositions. Watch: https://www.heygenverse.com/s/0e1f0a40-351d-4a2d-9b18-139c095a42dd/raw
-- [**ref-03 hermes-hyperframes**](_full-video-refs/ref-03-hermes-hyperframes/) (41.0s, 1080×1080 square) — 20 beats inside one composition, VHS/CRT aesthetic, Lottie integration. Watch: https://www.heygenverse.com/s/51dbc7ce-42df-4a94-84ef-a10c302b4a2f/raw
+- [**ref-03 hermes-hyperframes**](_full-video-refs/ref-03-hermes-hyperframes/) (41.0s, 1080×1080 square) — 20 beats inside one composition, VHS/CRT, Lottie. Watch: https://www.heygenverse.com/s/51dbc7ce-42df-4a94-84ef-a10c302b4a2f/raw
+- [**ref-05 fadeglow-music-video-v4**](_full-video-refs/ref-05-fadeglow-music-video-v4/) (41.6s) — **music video grammar** — 8 sequential beats, no narration, music-driven cuts. Watch: https://www.heygenverse.com/s/5eee1ed3-3255-473b-a0e0-f488eda984df/raw
 
-Read the [tier README](_full-video-refs/README.md) for when to study each, the 3 architectural patterns, and what's deliberately not bundled.
+**Tier B — short-form (10-15s):**
+
+- [**ref-04 inspector-logo-intro**](_full-video-refs/ref-04-inspector-logo-intro/) (12.77s) — Figma-style inspector reveal, single 1344-line composition, source for the cycling-spans pattern in scene-13. Watch: https://www.heygenverse.com/s/e0474ffa-9c3b-4f50-b8aa-03c92ba72bf2/raw
+- [**ref-06 webgl-textures-playground**](_full-video-refs/ref-06-webgl-textures-playground/) (12.0s) — **shader-as-the-beat** pattern, Three.js fragment shader with HTML overlay via `mix-blend-mode: screen`. Watch: https://www.heygenverse.com/s/094d6602-c8cf-4c08-99a0-80345a60958f/raw
+
+Read the [tier README](_full-video-refs/README.md) for when to study each, the 6 architectural patterns side-by-side, and what's deliberately not bundled.
 
 ---
 
