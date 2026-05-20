@@ -91,6 +91,22 @@ describe("createMediaPreloadManager", () => {
     expect(manager.isLazy()).toBe(true);
   });
 
+  it("activates lazy mode for 4-5 clip compositions without spurious eviction", () => {
+    const f = createTestFixture(4);
+    expect(f.manager.isLazy()).toBe(true);
+    for (const el of f.elements) el.preload = "metadata";
+    f.manager.sync(0);
+    const promoted = f.elements.filter((el) => el.preload === "auto").length;
+    expect(promoted).toBeGreaterThanOrEqual(2);
+    expect(promoted).toBeLessThanOrEqual(4);
+    f.manager.sync(0);
+    const evicted = f.elements.filter(
+      (el) =>
+        el.preload === "metadata" && (el.load as ReturnType<typeof vi.fn>).mock.calls.length > 1,
+    );
+    expect(evicted.length).toBe(0);
+  });
+
   it("sync promotes clips in the lookahead window", () => {
     const f = createTestFixture(8);
     for (const el of f.elements) el.preload = "metadata";
