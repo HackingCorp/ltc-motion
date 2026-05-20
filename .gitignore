@@ -34,6 +34,7 @@ coverage/
 
 # Producer regression test failures (generated debugging artifacts)
 packages/producer/tests/*/failures/
+packages/producer/tests/distributed/*/failures/
 packages/producer/tests/parity/fixtures/hyperframe.runtime.iife.js
 
 # Player perf test results (generated each run, attached as CI artifact)
@@ -43,6 +44,7 @@ packages/player/tests/perf/results/
 output/
 renders/
 !packages/producer/tests/*/output/
+!packages/producer/tests/distributed/*/output/
 
 # Composition source media (large binaries)
 compositions/**/*.mp4
@@ -64,9 +66,15 @@ tmp/
 packages/core/src/generated/
 packages/producer/src/services/fontData.generated.ts
 
-# Test artifacts
+# Local proof / test artifacts
+qa-artifacts/
 my-video/
-/examples/
+examples/*
+# Tracked OSS examples — negations override the blanket `examples/*` ignore.
+!examples/aws-lambda
+!examples/aws-lambda/**
+!examples/k8s-jobs
+!examples/k8s-jobs/**
 packages/studio/data/
 
 .desloppify/
@@ -113,16 +121,8 @@ raycast-*/
 test-runs/
 test-outputs/
 
-# Review package (rater review copy, not part of repo)
-review-package/
-
-# Session scratch files
-beat1-*.png
-studio-overview.png
-studio-check.png
-eval-page.html
-scripts/generate-eval-page.ts
-transcript.json
-
-# Claude Code project cache
-.claude/projects/
+# Claude Code worktrees + superpowers docs
+.claude/worktrees/
+.claude/
+docs/superpowers/
+.worktrees

@@ -7,6 +7,7 @@ interface CompositionThumbnailProps {
   labelColor: string;
   accentColor?: string;
   selector?: string;
+  selectorIndex?: number;
   seekTime?: number;
   duration?: number;
   width?: number;
@@ -14,7 +15,39 @@ interface CompositionThumbnailProps {
 }
 
 const CLIP_HEIGHT = 66;
-const THUMBNAIL_URL_VERSION = "v2";
+const THUMBNAIL_URL_VERSION = "v3";
+const COMPOSITION_THUMBNAIL_LABEL_Z_INDEX = 10;
+
+export function buildCompositionThumbnailUrl({
+  previewUrl,
+  seekTime = 2,
+  duration = 5,
+  selector,
+  selectorIndex,
+  origin,
+}: {
+  previewUrl: string;
+  seekTime?: number;
+  duration?: number;
+  selector?: string;
+  selectorIndex?: number;
+  origin: string;
+}): string {
+  const thumbnailBase = previewUrl
+    .replace("/preview/comp/", "/thumbnail/")
+    .replace(/\/preview$/, "/thumbnail/index.html");
+  const midTime = seekTime + duration / 2;
+  const thumbnailUrl = new URL(thumbnailBase, origin);
+  thumbnailUrl.searchParams.set("t", midTime.toFixed(2));
+  thumbnailUrl.searchParams.set("v", THUMBNAIL_URL_VERSION);
+  if (selector) {
+    thumbnailUrl.searchParams.set("selector", selector);
+    if (selectorIndex != null && selectorIndex > 0) {
+      thumbnailUrl.searchParams.set("selectorIndex", String(selectorIndex));
+    }
+  }
+  return thumbnailUrl.toString();
+}
 
 export const CompositionThumbnail = memo(function CompositionThumbnail({
   previewUrl,
@@ -22,6 +55,7 @@ export const CompositionThumbnail = memo(function CompositionThumbnail({
   labelColor,
   accentColor = "#6B7280",
   selector,
+  selectorIndex,
   seekTime = 2,
   duration = 5,
 }: CompositionThumbnailProps) {
@@ -48,15 +82,14 @@ export const CompositionThumbnail = memo(function CompositionThumbnail({
     roRef.current?.disconnect();
   });
 
-  const thumbnailBase = previewUrl
-    .replace("/preview/comp/", "/thumbnail/")
-    .replace(/\/preview$/, "/thumbnail/index.html");
-  const midTime = seekTime + duration / 2;
-  const thumbnailUrl = new URL(thumbnailBase, window.location.origin);
-  thumbnailUrl.searchParams.set("t", midTime.toFixed(2));
-  thumbnailUrl.searchParams.set("v", THUMBNAIL_URL_VERSION);
-  if (selector) thumbnailUrl.searchParams.set("selector", selector);
-  const url = thumbnailUrl.toString();
+  const url = buildCompositionThumbnailUrl({
+    previewUrl,
+    seekTime,
+    duration,
+    selector,
+    selectorIndex,
+    origin: window.location.origin,
+  });
   const frameW = Math.max(48, Math.round(CLIP_HEIGHT * aspect));
   const frameCount = containerWidth > 0 ? Math.max(1, Math.ceil(containerWidth / frameW)) : 1;
 
@@ -66,7 +99,7 @@ export const CompositionThumbnail = memo(function CompositionThumbnail({
         src={url}
         alt=""
         draggable={false}
-        loading="lazy"
+        loading="eager"
         onLoad={(e) => {
           const img = e.currentTarget;
           if (img.naturalWidth > 0 && img.naturalHeight > 0) {
@@ -111,7 +144,10 @@ export const CompositionThumbnail = memo(function CompositionThumbnail({
         }}
       />
 
-      <div className="absolute left-2 top-2 z-10">
+      <div
+        className="absolute left-2 top-2"
+        style={{ zIndex: COMPOSITION_THUMBNAIL_LABEL_Z_INDEX }}
+      >
         <span
           className="block max-w-full truncate rounded-md px-1.5 py-0.5 text-[9px] font-semibold uppercase leading-none"
           style={{
@@ -125,8 +161,9 @@ export const CompositionThumbnail = memo(function CompositionThumbnail({
       </div>
 
       <div
-        className="absolute bottom-0 left-0 right-0 z-10 px-1.5 pb-0.5 pt-3"
+        className="absolute bottom-0 left-0 right-0 px-1.5 pb-0.5 pt-3"
         style={{
+          zIndex: COMPOSITION_THUMBNAIL_LABEL_Z_INDEX,
           background:
             "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)",
         }}

@@ -23,12 +23,23 @@ import {
   type BeforeCaptureHook,
 } from "./frameCapture.js";
 import { DEFAULT_CONFIG, type EngineConfig } from "../config.js";
+import { assertSwiftShader } from "../utils/assertSwiftShader.js";
+import { readWebGlVendorInfoFromCanvas } from "../utils/readWebGlVendorInfoFromCanvas.js";
 
 export interface WorkerTask {
   workerId: number;
   startFrame: number;
   endFrame: number;
   outputDir: string;
+  /**
+   * Offset subtracted from the absolute frame index when naming the captured
+   * file (`frame_<i - outputFrameOffset>.{ext}`). Default 0. Distributed
+   * chunks set this to the chunk's absolute startFrame so file names land
+   * 0-indexed within the chunk's range — the encoder reads frames
+   * sequentially without an `-start_number` override. The per-frame TIME
+   * calculation still uses the absolute frame index.
+   */
+  outputFrameOffset?: number;
 }
 
 export interface WorkerResult {
@@ -64,8 +75,23 @@ export interface WorkerSizingConfig extends Partial<
 
 const MEMORY_PER_WORKER_MB = 256;
 const MIN_WORKERS = 1;
-const ABSOLUTE_MAX_WORKERS = 10;
-const DEFAULT_SAFE_MAX_WORKERS = 6;
+// Hard ceiling on explicit `--workers N` requests. Above this, the cost of
+// CDP-protocol dispatch through Node's main event loop and OS scheduling
+// noise overwhelms any further parallelism. Bumped from 10 → 24 in hf#732
+// follow-up so high-core hosts (32-96+ cores) can actually surface the
+// hardware to renders that are CPU-bound on DOM capture.
+const ABSOLUTE_MAX_WORKERS = 24;
+// `auto` concurrency picks this many workers as the upper bound. Bumped
+// from a hardcoded 6 → CPU-scaled value (floor(cpuCount/8), floor at 6,
+// ceiling at 16) in hf#732 follow-up. Rationale: the prior fixed cap of 6
+// left ~90 cores idle on the validation host and forced users to pass
+// `--workers N` to opt in. Now `auto` matches what a thoughtful operator
+// would pick by hand. The /8 divisor leaves headroom for each Chrome
+// worker's SwiftShader compositor + the shader-blend thread pool, both of
+// which are themselves CPU-heavy.
+function defaultSafeMaxWorkers(): number {
+  return Math.max(6, Math.min(16, Math.floor(cpus().length / 8)));
+}
 const MIN_FRAMES_PER_WORKER = 30;
 
 export function calculateOptimalWorkers(
@@ -79,7 +105,7 @@ export function calculateOptimalWorkers(
     if (concurrency !== "auto") {
       return Math.max(MIN_WORKERS, Math.min(ABSOLUTE_MAX_WORKERS, Math.floor(concurrency)));
     }
-    return DEFAULT_SAFE_MAX_WORKERS;
+    return defaultSafeMaxWorkers();
   })();
   const effectiveCoresPerWorker = config?.coresPerWorker ?? DEFAULT_CONFIG.coresPerWorker;
   const effectiveMinParallelFrames = config?.minParallelFrames ?? DEFAULT_CONFIG.minParallelFrames;
@@ -133,24 +159,36 @@ export function distributeFrames(
   totalFrames: number,
   workerCount: number,
   workDir: string,
+  rangeStart: number = 0,
 ): WorkerTask[] {
   const tasks: WorkerTask[] = [];
   const framesPerWorker = Math.ceil(totalFrames / workerCount);
 
   for (let i = 0; i < workerCount; i++) {
-    const startFrame = i * framesPerWorker;
-    const endFrame = Math.min((i + 1) * framesPerWorker, totalFrames);
-    if (startFrame >= totalFrames) break;
+    const startFrame = rangeStart + i * framesPerWorker;
+    const endFrame = Math.min(rangeStart + (i + 1) * framesPerWorker, rangeStart + totalFrames);
+    if (startFrame >= rangeStart + totalFrames) break;
 
     tasks.push({
       workerId: i,
       startFrame,
       endFrame,
       outputDir: join(workDir, `worker-${i}`),
+      outputFrameOffset: rangeStart,
     });
   }
 
   return tasks;
+}
+
+/**
+ * Decide whether a parallel worker should run the per-worker SwiftShader
+ * assertion. Gated to worker 0 only: workers within a chunk share the same
+ * Chrome binary, flags, and OS/driver state, so one verification per chunk
+ * is sufficient. See `heygen-com/hyperframes#955`.
+ */
+export function shouldVerifyWorkerGpu(workerId: number, config?: Partial<EngineConfig>): boolean {
+  return config?.browserGpuMode === "software" && workerId === 0;
 }
 
 async function executeWorkerTask(
@@ -179,21 +217,45 @@ async function executeWorkerTask(
       createBeforeCaptureHook(),
       config,
     );
+    // Per-worker SwiftShader assertion, gated to worker 0 only.
+    // When `browserGpuMode: "software"` is declared, the chunk's GL backend
+    // must be verified as SwiftShader before the first frame — a host that
+    // falls back to a hardware GL backend (or silently fails to load
+    // SwiftShader) would otherwise produce non-deterministic pixels and
+    // break the distributed byte-identical-retry contract. Running this
+    // probe on every worker means N concurrent navigations to a WebGL
+    // probe page per chunk; with `chunkWorkerCount=6` × 3 chunks, that's
+    // 18 simultaneous CDP page-loads, which inflated c=3 worst-case wall
+    // by ~24s vs c=6/c=8 on the texture-launch bench. Workers in the same
+    // chunk share the same Chrome binary, flags, and OS/driver state, so
+    // worker 0's success is representative — gate it there and skip the
+    // rest. See `heygen-com/hyperframes#955` for the bench data and the
+    // pre-warmup probe interaction (which `renderChunk` already skips
+    // when `chunkWorkerCount > 1`).
+    if (shouldVerifyWorkerGpu(task.workerId, config)) {
+      await assertSwiftShader(session.page, readWebGlVendorInfoFromCanvas);
+    }
     await initializeSession(session);
 
+    const outputOffset = task.outputFrameOffset ?? 0;
     for (let i = task.startFrame; i < task.endFrame; i++) {
       if (signal?.aborted) {
         throw new Error("Parallel worker cancelled");
       }
-      const time = i / captureOptions.fps;
+      // captureOptions.fps is an Fps rational; collapse to decimal for the
+      // frame-index → time math. The 1-in-1001 ULP loss for NTSC is invisible
+      // at our scales (frame count tops out at single-digit thousands).
+      const time = (i * captureOptions.fps.den) / captureOptions.fps.num;
+      const fileFrameIdx = i - outputOffset;
 
       if (onFrameBuffer) {
-        // Streaming mode: capture to buffer and invoke callback
-        const { buffer } = await captureFrameToBuffer(session, i, time);
+        // The streaming-encode callback receives the absolute index `i`
+        // (not `fileFrameIdx`) so the encoder sequences frames against the
+        // composition's timeline.
+        const { buffer } = await captureFrameToBuffer(session, fileFrameIdx, time);
         await onFrameBuffer(i, buffer);
       } else {
-        // Disk mode: capture to file
-        await captureFrame(session, i, time);
+        await captureFrame(session, fileFrameIdx, time);
       }
       framesCaptured++;
 

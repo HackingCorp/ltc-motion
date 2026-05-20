@@ -1,10 +1,9 @@
 import type { TimelineTrackStyle } from "./timelineTheme";
-// TimelineClip — Visual clip component for the NLE timeline.
 
 import { memo, type ReactNode } from "react";
 import type { TimelineElement } from "../store/playerStore";
 import { defaultTimelineTheme, getClipHandleOpacity, type TimelineTheme } from "./timelineTheme";
-import { getTimelineEditCapabilities } from "./timelineEditing";
+import type { TimelineEditCapabilities } from "./timelineEditing";
 
 interface TimelineClipProps {
   el: TimelineElement;
@@ -14,6 +13,7 @@ interface TimelineClipProps {
   isHovered: boolean;
   isDragging?: boolean;
   hasCustomContent: boolean;
+  capabilities: TimelineEditCapabilities;
   theme?: TimelineTheme;
   trackStyle: TimelineTrackStyle;
   isComposition: boolean;
@@ -34,6 +34,7 @@ export const TimelineClip = memo(function TimelineClip({
   isHovered,
   isDragging = false,
   hasCustomContent,
+  capabilities,
   theme = defaultTimelineTheme,
   trackStyle,
   isComposition,
@@ -48,6 +49,7 @@ export const TimelineClip = memo(function TimelineClip({
   const leftPx = el.start * pps;
   const widthPx = Math.max(el.duration * pps, 4);
   const handleOpacity = getClipHandleOpacity({ isHovered, isSelected, isDragging });
+
   const borderColor = isSelected
     ? theme.clipBorderActive
     : isHovered
@@ -60,7 +62,6 @@ export const TimelineClip = memo(function TimelineClip({
       : isHovered
         ? theme.clipShadowHover
         : theme.clipShadow;
-  const capabilities = getTimelineEditCapabilities(el);
   const displayLabel = el.label || el.id || el.tag;
   const showHandles = handleOpacity > 0.01;
 
@@ -93,8 +94,8 @@ export const TimelineClip = memo(function TimelineClip({
       }}
       title={
         isComposition
-          ? `${el.compositionSrc} \u2022 Double-click to open`
-          : `${displayLabel} \u2022 ${el.start.toFixed(1)}s \u2013 ${(el.start + el.duration).toFixed(1)}s`
+          ? `${el.compositionSrc} • Double-click to open`
+          : `${displayLabel} • ${el.start.toFixed(1)}s – ${(el.start + el.duration).toFixed(1)}s`
       }
       onPointerEnter={onHoverStart}
       onPointerLeave={onHoverEnd}

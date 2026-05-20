@@ -296,7 +296,7 @@ function patchVideoSrc(
 ): void {
   const htmlFiles = readdirSync(dir, { withFileTypes: true, recursive: true })
     .filter((e) => e.isFile() && e.name.endsWith(".html"))
-    .map((e) => join(e.parentPath ?? e.path, e.name));
+    .map((e) => join(e.parentPath, e.name));
 
   for (const file of htmlFiles) {
     let content = readFileSync(file, "utf-8");
@@ -510,9 +510,11 @@ async function scaffoldProject(
 ): Promise<void> {
   mkdirSync(destDir, { recursive: true });
 
-  // Use bundled template if available, otherwise fetch from GitHub
+  // Use bundled template if available, otherwise fetch from GitHub.
+  // Check for index.html inside the dir — an empty directory left by the
+  // build toolchain should not prevent the remote fetch fallback.
   const templateDir = getStaticTemplateDir(templateId);
-  if (existsSync(templateDir)) {
+  if (existsSync(join(templateDir, "index.html"))) {
     cpSync(templateDir, destDir, { recursive: true });
   } else {
     await fetchRemoteTemplate(templateId, destDir);
@@ -630,7 +632,7 @@ export default defineCommand({
     resolution: {
       type: "string",
       description:
-        "Canvas resolution preset: landscape (1920x1080), portrait (1080x1920), landscape-4k (3840x2160), portrait-4k (2160x3840). Aliases: 1080p, 4k, uhd. Default: keep template dimensions (typically 1920x1080).",
+        "Canvas resolution preset: landscape (1920x1080), portrait (1080x1920), landscape-4k (3840x2160), portrait-4k (2160x3840), square (1080x1080), square-4k (2160x2160). Aliases: 1080p, 4k, uhd, 1080p-square, square-1080p, 4k-square. Default: keep template dimensions (typically 1920x1080).",
     },
   },
   async run({ args }) {
@@ -670,7 +672,8 @@ export default defineCommand({
         console.error(
           c.error(
             `Invalid --resolution: "${args.resolution}". ` +
-              `Use one of: landscape, portrait, landscape-4k, portrait-4k (or aliases 1080p, 4k, uhd).`,
+              `Use one of: landscape, portrait, landscape-4k, portrait-4k, square, square-4k ` +
+              `(or aliases 1080p, 4k, uhd, 1080p-square, square-1080p, 4k-square).`,
           ),
         );
         process.exit(1);

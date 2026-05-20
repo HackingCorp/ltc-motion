@@ -13,6 +13,7 @@ import { createProjectWatcher, type ProjectWatcher } from "./fileWatcher.js";
 import { loadRuntimeSource } from "./runtimeSource.js";
 import { VERSION as version } from "../version.js";
 import {
+  createStudioManualEditsRenderBodyScript,
   createStudioApi,
   createProjectSignature,
   getMimeType,
@@ -22,6 +23,8 @@ import {
 } from "@hyperframes/core/studio-api";
 import { getElementScreenshotClip } from "@hyperframes/core/studio-api/screenshot-clip";
 import type { ScreenshotClip } from "@hyperframes/core/studio-api/screenshot-clip";
+
+const STUDIO_MANUAL_EDITS_PATH = ".hyperframes/studio-manual-edits.json";
 
 // ── Path resolution ─────────────────────────────────────────────────────────
 
@@ -78,10 +81,41 @@ function resolveRuntimePath(): string {
   return builtPath;
 }
 
-// ── Shared thumbnail browser (singleton per process) ────────────────────────
-// One browser instance is reused across all composition thumbnail requests.
-// Spawning a new Puppeteer process per request adds 2-5s overhead and causes
-// contention when the sidebar requests multiple thumbnails simultaneously.
+function readStudioManualEditManifestContent(projectDir: string): string {
+  const manifestPath = join(projectDir, STUDIO_MANUAL_EDITS_PATH);
+  if (!existsSync(manifestPath)) return "";
+  try {
+    return readFileSync(manifestPath, "utf-8");
+  } catch {
+    return "";
+  }
+}
+
+async function applyStudioManualEditsToThumbnailPage(
+  page: import("puppeteer-core").Page,
+  manifestContent: string,
+  activeCompositionPath: string,
+): Promise<void> {
+  const script = createStudioManualEditsRenderBodyScript(manifestContent, {
+    activeCompositionPath,
+  });
+  if (!script) return;
+  await page.addScriptTag({ content: script });
+}
+
+async function reapplyStudioManualEditsToThumbnailPage(
+  page: import("puppeteer-core").Page,
+): Promise<void> {
+  await page.evaluate(() => {
+    const apply = (window as Window & { __hfStudioManualEditsApply?: () => number })
+      .__hfStudioManualEditsApply;
+    if (typeof apply === "function") apply();
+  });
+}
+
+// ── Shared thumbnail browser (pool-backed) ──────────────────────────────────
+// Uses the engine's browser pool so the thumbnail browser and render workers
+// share a single Chrome process instead of running two independent ones.
 
 let _thumbnailBrowser: import("puppeteer-core").Browser | null = null;
 let _thumbnailBrowserInitializing: Promise<import("puppeteer-core").Browser | null> | null = null;
@@ -104,16 +138,31 @@ async function getThumbnailBrowser(): Promise<import("puppeteer-core").Browser |
         /* continue — acquireBrowser will try its own resolution */
       }
 
-      const acquired = await acquireBrowser(buildChromeArgs({ width: 1920, height: 1080 }), {
-        enableBrowserPool: false,
-      });
+      const acquired = await acquireBrowser(
+        buildChromeArgs({ width: 1920, height: 1080, captureMode: "screenshot" }),
+        { forceScreenshot: true },
+      );
       _thumbnailBrowser = acquired.browser;
       _thumbnailBrowser.on("disconnected", () => {
         _thumbnailBrowser = null;
         _thumbnailBrowserInitializing = null;
       });
+      // Release the pool ref on process exit so the browser closes cleanly.
+      const onExit = async () => {
+        const { releaseBrowser } = await import("@hyperframes/engine");
+        if (_thumbnailBrowser) {
+          await releaseBrowser(_thumbnailBrowser).catch(() => {});
+          _thumbnailBrowser = null;
+        }
+      };
+      process.once("SIGTERM", () => void onExit());
+      process.once("SIGINT", () => void onExit());
       return _thumbnailBrowser;
-    } catch {
+    } catch (err) {
+      console.warn(
+        "[Studio] Failed to launch thumbnail browser:",
+        err instanceof Error ? err.message : err,
+      );
       _thumbnailBrowserInitializing = null;
       return null;
     }
@@ -174,6 +223,12 @@ export function createStudioServer(options: StudioServerOptions): StudioServer {
       }
     },
 
+    async transformPreviewHtml({ html }) {
+      const { injectDeterministicFontFaces } =
+        await import("../../../producer/src/services/deterministicFonts.js");
+      return injectDeterministicFontFaces(html);
+    },
+
     getProjectSignature(dir: string): string {
       if (resolve(dir) !== resolve(projectDir)) return createProjectSignature(dir);
       cachedProjectSignature ??= createProjectSignature(projectDir);
@@ -212,11 +267,17 @@ export function createStudioServer(options: StudioServerOptions): StudioServer {
             // Continue without — acquireBrowser will try its own resolution
           }
 
+          const manifestContent = readStudioManualEditManifestContent(opts.project.dir);
+          const manualEditsRenderScript = createStudioManualEditsRenderBodyScript(manifestContent);
           const job = createRenderJob({
-            fps: opts.fps as 24 | 30 | 60,
+            // opts.fps is already an Fps rational — see vite-config-studio
+            // adapter for the same convention.
+            fps: opts.fps,
             quality: opts.quality as "draft" | "standard" | "high",
             format: opts.format,
             outputResolution: opts.outputResolution,
+            ...(manualEditsRenderScript ? { renderBodyScripts: [manualEditsRenderScript] } : {}),
+            ...(opts.composition ? { entryFile: opts.composition } : {}),
           });
           const startTime = Date.now();
           const onProgress = (j: { progress: number; currentStage?: string }) => {
@@ -247,37 +308,50 @@ export function createStudioServer(options: StudioServerOptions): StudioServer {
     },
 
     async generateThumbnail(opts): Promise<Buffer | null> {
-      // Reuse a single browser across all thumbnail requests for this server
-      // instance — avoids paying the ~2s Puppeteer startup cost per composition.
-      // The browser is created lazily and kept alive until the process exits.
       const browser = await getThumbnailBrowser();
-      if (!browser) return null;
+      if (!browser) {
+        console.warn("[Studio] Thumbnail: no browser available — Chrome may not be installed");
+        return null;
+      }
       let page: import("puppeteer-core").Page | null = null;
       try {
         page = await browser.newPage();
         await page.setViewport({ width: opts.width || 1920, height: opts.height || 1080 });
-        // domcontentloaded instead of networkidle2 — CDN scripts (GSAP, Lottie,
-        // fonts) never reach "idle" and cause a 15s timeout per thumbnail.
         await page.goto(opts.previewUrl, { waitUntil: "domcontentloaded", timeout: 10000 });
-        // Wait for the runtime to register timelines (up to 5s, non-fatal).
         await page
-          .waitForFunction(() => !!(window as any).__timelines || !!(window as any).__playerReady, {
-            timeout: 5000,
-          })
+          .waitForFunction(
+            () => {
+              const w = window as Window & {
+                __timelines?: Record<string, unknown>;
+              };
+              return !!(w.__timelines && Object.keys(w.__timelines).length > 0);
+            },
+            { timeout: 5000 },
+          )
           .catch(() => {});
         await page.evaluate((t: number) => {
-          const win = window as any;
-          if (win.__player?.seek) win.__player.seek(t);
-          else if (win.__timeline?.seek) {
-            win.__timeline.pause();
-            win.__timeline.seek(t);
+          const w = window as Window & {
+            __player?: { seek?: (time: number) => void };
+            __timelines?: Record<string, { pause?: (time?: number) => void }>;
+            gsap?: { ticker?: { tick?: () => void } };
+          };
+          if (typeof w.__player?.seek === "function") {
+            w.__player.seek(t);
+          } else if (w.__timelines) {
+            for (const tl of Object.values(w.__timelines)) {
+              tl?.pause?.(t);
+            }
+            w.gsap?.ticker?.tick?.();
           }
         }, opts.seekTime);
-        // Let the seek render settle.
+        const manifestContent = readStudioManualEditManifestContent(opts.project.dir);
+        await applyStudioManualEditsToThumbnailPage(page, manifestContent, opts.compPath);
+        await page.evaluate(() => document.fonts?.ready);
         await new Promise((r) => setTimeout(r, 200));
+        await reapplyStudioManualEditsToThumbnailPage(page);
         let clip: ScreenshotClip | undefined;
         if (opts.selector) {
-          clip = await page.evaluate(getElementScreenshotClip, opts.selector);
+          clip = await page.evaluate(getElementScreenshotClip, opts.selector, opts.selectorIndex);
         }
         const screenshot = (await page.screenshot(
           opts.format === "png"
@@ -292,11 +366,36 @@ export function createStudioServer(options: StudioServerOptions): StudioServer {
               },
         )) as Buffer;
         return screenshot;
-      } catch {
+      } catch (err) {
+        console.warn(
+          "[Studio] Thumbnail generation failed:",
+          err instanceof Error ? err.message : err,
+        );
         return null;
       } finally {
         await page?.close().catch(() => {});
       }
+    },
+
+    async listRegistryCatalog() {
+      const { listRegistryItems, loadAllItems } = await import("../registry/resolver.js");
+      const entries = await listRegistryItems();
+      const blockAndComponentEntries = entries.filter(
+        (e) => e.type === "hyperframes:block" || e.type === "hyperframes:component",
+      );
+      return loadAllItems(blockAndComponentEntries);
+    },
+
+    async installRegistryBlock(opts) {
+      const { resolveItem } = await import("../registry/resolver.js");
+      const { installItem } = await import("../registry/installer.js");
+      const item = await resolveItem(opts.blockName);
+      const { written } = await installItem(item, { destDir: opts.project.dir });
+      const relativePaths = written.map((abs) => {
+        const rel = abs.startsWith(opts.project.dir) ? abs.slice(opts.project.dir.length + 1) : abs;
+        return rel;
+      });
+      return { written: relativePaths, block: item };
     },
   };
 
@@ -333,8 +432,8 @@ export function createStudioServer(options: StudioServerOptions): StudioServer {
 
   app.get("/api/events", (c) => {
     return streamSSE(c, async (stream) => {
-      const listener = () => {
-        stream.writeSSE({ event: "file-change", data: "{}" }).catch(() => {});
+      const listener = (path: string) => {
+        stream.writeSSE({ event: "file-change", data: JSON.stringify({ path }) }).catch(() => {});
       };
       watcher.addListener(listener);
       while (true) {
@@ -371,6 +470,7 @@ export function createStudioServer(options: StudioServerOptions): StudioServer {
   };
   app.get("/assets/*", serveStudioStaticFile);
   app.get("/icons/*", serveStudioStaticFile);
+  app.get("/favicon.svg", serveStudioStaticFile);
 
   // SPA fallback
   app.get("*", (c) => {

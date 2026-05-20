@@ -26,7 +26,11 @@ import { removeElementFromHtml } from "../helpers/sourceMutation.js";
  * Returns null (and sends an error response) if anything is invalid.
  */
 interface RouteContext {
-  req: { param: (name: string) => string; path: string };
+  req: {
+    param: (name: string) => string;
+    path: string;
+    query: (name: string) => string | undefined;
+  };
   json: (data: unknown, status?: number) => Response;
 }
 
@@ -135,8 +139,15 @@ export function registerFileRoutes(api: Hono, adapter: StudioApiAdapter): void {
   // ── Read ──
 
   api.get("/projects/:id/files/*", async (c) => {
-    const res = await resolveProjectFile(c, adapter, { mustExist: true });
+    const res = await resolveProjectFile(c, adapter);
     if ("error" in res) return res.error;
+
+    if (!existsSync(res.absPath)) {
+      if (c.req.query("optional") === "1") {
+        return c.json({ filename: res.filePath, content: "" });
+      }
+      return c.json({ error: "not found" }, 404);
+    }
 
     const content = readFileSync(res.absPath, "utf-8");
     return c.json({ filename: res.filePath, content });
@@ -306,8 +317,21 @@ export function registerFileRoutes(api: Hono, adapter: StudioApiAdapter): void {
       const skipped: string[] = [];
       const invalid: Array<{ name: string; reason: string }> = [];
 
-      for (const [, value] of formData.entries()) {
-        if (!(value instanceof File)) continue;
+      // @types/node v25 narrows the ambient `FormData.entries()` to
+      // `[string, string]` in workspaces where another dep declares an
+      // `onmessage` global (it trips the worker branch of v25's conditional
+      // File type). At runtime the value is still `File | string` — cast the
+      // iterator so the rest of this block keeps type-checking on every
+      // bun-install layout (hoisted on Windows surfaces this; isolated on
+      // Linux happens to keep v24 in scope).
+      type FileLike = {
+        readonly name: string;
+        readonly size: number;
+        arrayBuffer(): Promise<ArrayBuffer>;
+      };
+      const entries = formData.entries() as unknown as Iterable<[string, FileLike | string]>;
+      for (const [, value] of entries) {
+        if (typeof value === "string") continue;
 
         // Strip path separators — browsers may include directory components
         const name = value.name.split("/").pop()?.split("\\").pop() ?? "";

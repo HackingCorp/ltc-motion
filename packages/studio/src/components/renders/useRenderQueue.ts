@@ -14,8 +14,14 @@ export interface RenderJob {
 // Mirrors `CanvasResolution` from @hyperframes/core. Kept local because
 // studio's tsconfig doesn't include node types, and the core barrel
 // transitively pulls in modules with `node:fs` imports. Drift risk is
-// low (4 string literals tied to a stable enum).
-export type ResolutionPreset = "landscape" | "portrait" | "landscape-4k" | "portrait-4k";
+// low (6 string literals kept in sync manually with CANVAS_DIMENSIONS).
+export type ResolutionPreset =
+  | "landscape"
+  | "portrait"
+  | "landscape-4k"
+  | "portrait-4k"
+  | "square"
+  | "square-4k";
 
 export interface StartRenderOptions {
   fps?: number;
@@ -23,6 +29,8 @@ export interface StartRenderOptions {
   format?: "mp4" | "webm" | "mov";
   /** `"auto"` (default) renders at the composition's authored dimensions. */
   resolution?: ResolutionPreset | "auto";
+  /** Render a specific composition file instead of index.html. */
+  composition?: string;
 }
 
 export function useRenderQueue(projectId: string | null) {
@@ -80,17 +88,25 @@ export function useRenderQueue(projectId: string | null) {
       const quality = opts.quality ?? "standard";
       const format = opts.format ?? "mp4";
       const resolution = opts.resolution;
+      const composition = opts.composition;
 
       const startTime = Date.now();
       // "auto" / undefined means "render at the composition's authored size".
       // Omit the field entirely — sending "auto" would trip the route's
       // enum validation set.
-      const body: { fps: number; quality: string; format: string; resolution?: string } = {
+      const body: {
+        fps: number;
+        quality: string;
+        format: string;
+        resolution?: string;
+        composition?: string;
+      } = {
         fps,
         quality,
         format,
       };
       if (resolution && resolution !== "auto") body.resolution = resolution;
+      if (composition) body.composition = composition;
       let res: Response;
       try {
         res = await fetch(`/api/projects/${projectId}/render`, {
