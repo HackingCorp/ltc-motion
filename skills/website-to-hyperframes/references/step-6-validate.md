@@ -90,7 +90,7 @@ Every other frame described as "black," "blank," "no visible content," or "loadi
 
 1. **Read `snapshots/descriptions.md`** — Gemini's objective written analysis of every frame. Read every line. Do not skim.
 
-2. **View `snapshots/contact-sheet.jpg`** — the full grid. Look at every cell.
+2. **View `snapshots/contact-sheet.jpg` cell-by-cell.** Not a glance. Look at every cell, name what's in it. Past agents have reported "contact sheet looks good" after a single scan and missed: a beat that was visually black for 80% of its duration, a logo placed off-screen, a headline clipped at the canvas edge, captions running off the bottom. The contact sheet is the only place these failures are visible together. **For each cell, write one sentence: what's in frame, what's moving, which brand assets are present, anything that looks wrong.** If you find yourself wanting to summarize the contact sheet as a whole, stop and go back to cell-by-cell.
 
 After reading both, write a per-beat verdict for every beat:
 

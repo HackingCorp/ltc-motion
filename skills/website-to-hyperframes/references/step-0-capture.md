@@ -31,13 +31,13 @@ Read every file below. After each one, **write a 3-4 sentence summary** of what 
 
 ### Read these
 
-1. **View the contact sheets** — these are labeled grids that let you see many images at once instead of opening them one by one. Contact sheets are paginated: look for `contact-sheet-1.jpg`, `contact-sheet-2.jpg`, etc. (or `contact-sheet.jpg` for older single-page captures). View ALL pages for each category.
+1. **View the contact sheets — carefully, every cell, not a glance.** Contact sheets are labeled grids that let you see many images at once. They are paginated: look for `contact-sheet-1.jpg`, `contact-sheet-2.jpg`, etc. (or `contact-sheet.jpg` for older captures). View ALL pages for each category. **For each page, name at least 5 specific assets you can see in it before moving on** — this forces you to actually look at every cell instead of scrolling past. Past agents have reported "viewed the contact sheet" after literally one glance, then later in Step 3 they wrote beats using assets that didn't exist or missed the brand logo entirely. Don't be that agent. The contact sheet is your single best opportunity to learn what's actually available in the capture.
    - `capture/screenshots/contact-sheet-*.jpg` — scroll screenshots grid. View FIRST. Each cell numbered with scroll percentage. List the directory if unsure how many pages exist.
    - `capture/assets/contact-sheet-*.jpg` — all downloaded raster images grid. Each cell labeled with filename.
    - `capture/assets/svgs/contact-sheet-*.jpg` — all SVGs rendered as thumbnails. Each cell labeled with filename. Check `capture/assets/` root too — some captures store SVGs there instead of `svgs/`.
    - `capture/screenshots/full-page.png` — the entire page as one tall image. Useful for scrolling animation videos.
 
-   After viewing the screenshot contact sheets, write 3-4 sentences describing the site's visual mood, layout patterns, color strategy, and overall feel.
+   After viewing the screenshot contact sheets, write 3-4 sentences describing the site's visual mood, layout patterns, color strategy, and overall feel. Then list, by filename, the 5-10 captured assets that look most promising for video use (logo, hero illustration, brand mark, gradient backgrounds, product art). **Open and view those promising assets individually** — the contact sheet thumbnails are too small to judge fine detail, but once you've narrowed to the 5-10 candidates, read each one carefully. Don't just trust the thumbnail.
 
 2. **`capture/extracted/tokens.json`** — Note the top 5-7 colors (HEX), all font families with their weights (e.g. `Inter (400,700)` or `Sohne (100-900 variable)`), number of sections, and number of headings/CTAs.
 

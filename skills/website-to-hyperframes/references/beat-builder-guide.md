@@ -194,12 +194,16 @@ The storyboard tells you the shot framing (close-up / medium / wide / etc.) and 
 
 **Patterns that turn a shot back into a webpage:**
 
-- ❌ **macOS / browser window chrome reproduced in CSS** — traffic-light dots (`.red`, `.yellow`, `.green` circles), URL bars, browser tabs reconstructed from divs. UNLESS the storyboard explicitly says the chrome IS the subject. (A captured product screenshot from `capture/assets/` that happens to include chrome is fine — that's documentary footage of the brand. The rule is about hand-rolling fake chrome to frame a CSS rebuild.)
-- ❌ **Full webpage layout** (sidebar + header + footer + main content area) when the storyboard called for a moment, not a tour. The beat is about _the kanban moment_, not _the kanban app_.
-- ❌ **Parked-camera composition** — centered card with 60–120px margins on all sides and no camera move. Either give it a real push-in / dolly / parallax, or reframe.
+These are defaults to avoid, **not absolute prohibitions.** If the storyboard genuinely calls for "the kanban app interface" or "the browser chrome" as the subject of a specific beat (a product tour, a "this is how it works" demo, a stylized window mockup for the closer), then build it. The rule is: don't reach for these patterns by default when the storyboard didn't ask for them.
+
+- ⚠ **macOS / browser window chrome reproduced in CSS** — traffic-light dots, URL bars, browser tabs. Fine when the storyboard makes the chrome the subject (e.g. "stylized macOS window framing the product UI" for a closer). NOT fine when it's a frame you added around a card "to make it look like an app."
+- ⚠ **Full webpage layout** (sidebar + header + footer + main content area) — fine when the beat is genuinely a product tour shot. NOT fine when the beat was supposed to be about _the kanban moment_ and you defaulted to drawing the whole app around it.
+- ❌ **Parked-camera composition** — centered card with 60–120px margins on all sides and no camera move. Almost always wrong. Either give it a real push-in / dolly / parallax, or reframe.
 - ❌ **"Hold with breathing"** implemented as `y: ±1–2px` or `scale: 1.01` — invisible at 1920×1080+ scale. If continuous motion is required, use camera dolly (scale 1.0 → 1.05), parallax pan (x/y ±30–80px), or progressive reveals.
 - ❌ **Hover-state simulations** — videos have no hover. If the brand uses hover effects, show the BEFORE and AFTER as discrete frames in the timeline.
 - ❌ **Counter pulses + dot pulses + tiny scale wobbles** as the only motion during the hold — these are "I ran out of ideas" filler.
+
+The test: if the storyboard says _"this beat is the product tour, viewer sees the app interface"_, building a CSS dashboard with chrome is correct. If the storyboard says _"this beat is the kanban moment, single card sliding home"_, drawing the full app around it is wrong. Read the beat spec carefully.
 
 **Patterns that ARE shots (do these freely):**
 
