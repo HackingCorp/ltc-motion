@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>scene-07-logo-cloud</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0b10; }
+
+    [data-composition-id="scene-07-logo-cloud"] {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: radial-gradient(ellipse 1600px 1000px at 50% 50%, #14171f 0%, #06070b 70%);
+      font-family: "Inter", -apple-system, sans-serif;
+      color: #f0f0f0;
+    }
+
+    .eyebrow {
+      position: absolute;
+      top: 96px; left: 0; right: 0;
+      text-align: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 13px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+    }
+    .headline {
+      position: absolute;
+      top: 140px; left: 0; right: 0;
+      text-align: center;
+      font-family: "Inter", sans-serif;
+      font-weight: 800;
+      font-size: 64px;
+      letter-spacing: -0.025em;
+      color: #f4f4f7;
+    }
+    .headline .accent { color: #5b8dff; }
+
+    /* Logo grid: 4 cols × 3 rows = 12 logos */
+    .grid {
+      position: absolute;
+      top: 320px; left: 160px; right: 160px;
+      bottom: 200px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .logo-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+      border-radius: 14px;
+      opacity: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-cell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(91,141,255,0.08) 0%, transparent 50%);
+      opacity: 0;
+      transition: none;
+    }
+
+    .logo-wordmark {
+      font-family: "Inter", sans-serif;
+      font-weight: 800;
+      font-size: 38px;
+      letter-spacing: -0.025em;
+      color: rgba(255,255,255,0.7);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-mark {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Inter", sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    /* Per-logo color marks (fictional brands, composed) */
+    .lc-1 .logo-mark { background: linear-gradient(135deg, #5b8dff, #3a5bdc); }
+    .lc-2 .logo-mark { background: linear-gradient(135deg, #f59e0b, #d97757); border-radius: 50%; }
+    .lc-3 .logo-mark { background: #34d399; border-radius: 4px; transform: rotate(45deg); }
+    .lc-3 .logo-mark span { transform: rotate(-45deg); display: block; }
+    .lc-4 .logo-mark { background: #a78bfa; }
+    .lc-5 .logo-mark { background: #f472b6; border-radius: 50%; }
+    .lc-6 .logo-mark { background: #1d1c19; border: 2px solid #f4f4f7; }
+    .lc-7 .logo-mark { background: linear-gradient(180deg, #ef4444, #b91c1c); }
+    .lc-8 .logo-mark { background: linear-gradient(135deg, #06b6d4, #0e7490); border-radius: 50%; }
+    .lc-9 .logo-mark { background: #10b981; }
+    .lc-10 .logo-mark { background: linear-gradient(135deg, #8b5cf6, #6d28d9); border-radius: 4px; }
+    .lc-11 .logo-mark { background: #fb923c; border-radius: 50%; }
+    .lc-12 .logo-mark { background: linear-gradient(135deg, #ec4899, #be185d); }
+
+    /* Bottom caption */
+    .caption {
+      position: absolute;
+      bottom: 96px; left: 0; right: 0;
+      text-align: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 14px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+    }
+    .caption b { color: #f4f4f7; font-weight: 600; }
+
+    .scene-label {
+      position: absolute;
+      left: 24px; bottom: 18px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.06em;
+    }
+    .scene-label b { color: rgba(255,255,255,0.65); }
+  </style>
+</head>
+<body>
+  <div
+    id="scene-07-logo-cloud"
+    data-composition-id="scene-07-logo-cloud"
+    data-start="0"
+    data-duration="7"
+    data-width="1920"
+    data-height="1080"
+  >
+    <div class="eyebrow">CUSTOMERS · 12 SHOWN · 847 SHIPPING WITH HYPERFRAMES</div>
+    <div class="headline">Trusted by <span class="accent">teams that ship</span>.</div>
+
+    <div class="grid">
+      <div class="logo-cell lc-1"><div class="logo-wordmark"><div class="logo-mark">N</div>Northshore</div></div>
+      <div class="logo-cell lc-2"><div class="logo-wordmark"><div class="logo-mark">A</div>Atlas Labs</div></div>
+      <div class="logo-cell lc-3"><div class="logo-wordmark"><div class="logo-mark"><span>P</span></div>Prism</div></div>
+      <div class="logo-cell lc-4"><div class="logo-wordmark"><div class="logo-mark">V</div>Voltsy</div></div>
+      <div class="logo-cell lc-5"><div class="logo-wordmark"><div class="logo-mark">L</div>Loomwave</div></div>
+      <div class="logo-cell lc-6"><div class="logo-wordmark"><div class="logo-mark">S</div>Sable</div></div>
+      <div class="logo-cell lc-7"><div class="logo-wordmark"><div class="logo-mark">R</div>Rivet</div></div>
+      <div class="logo-cell lc-8"><div class="logo-wordmark"><div class="logo-mark">H</div>Helio</div></div>
+      <div class="logo-cell lc-9"><div class="logo-wordmark"><div class="logo-mark">F</div>Foundry</div></div>
+      <div class="logo-cell lc-10"><div class="logo-wordmark"><div class="logo-mark">M</div>Meridian</div></div>
+      <div class="logo-cell lc-11"><div class="logo-wordmark"><div class="logo-mark">K</div>Kestrel</div></div>
+      <div class="logo-cell lc-12"><div class="logo-wordmark"><div class="logo-mark">O</div>Orbit</div></div>
+    </div>
+
+    <div class="caption"><b>847</b> TEAMS · <b>11K</b> VIDEOS SHIPPED · <b>$2.3M</b> ARR — Q1 2026</div>
+
+    <div class="scene-label">Section 12 · <b>Logo Cloud</b> · 12-brand customer grid with stagger-from-center reveal</div>
+  </div>
+
+  <script>
+    (function () {
+      var BEAT = 7;
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // Eyebrow + headline fade in
+      tl.fromTo(".eyebrow",
+        { opacity: 0, y: -6 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, 0);
+
+      tl.fromTo(".headline",
+        { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.7, ease: "expo.out" }, 0.2);
+
+      // 12 logo cells reveal with stagger from center — gives a "fanning out from the middle" feel
+      tl.fromTo(".logo-cell",
+        { opacity: 0, scale: 0.85, y: 12 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.55, ease: "back.out(1.6)",
+          stagger: { from: "center", amount: 1.0, grid: [3, 4] } },
+        0.9);
+
+      // Caption fade in after grid completes
+      tl.fromTo(".caption",
+        { opacity: 0, y: 6 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 2.6);
+
+      // === Hold (3.0-6.4s): continuous spotlight on rotating logos ===
+      // Cycle through 6 logos, each highlighted briefly via the gradient overlay + scale
+      var highlights = [0, 4, 8, 1, 5, 9, 2, 6, 10]; // indices into .logo-cell
+      highlights.forEach(function (idx, i) {
+        var t = 3.2 + i * 0.35;
+        var selector = ".logo-cell:nth-child(" + (idx + 1) + ")";
+        tl.to(selector, { scale: 1.06, duration: 0.2, ease: "back.out(2)" }, t);
+        tl.to(selector + "::before", { opacity: 1, duration: 0.2 }, t);
+        tl.to(selector, { scale: 1, duration: 0.3, ease: "power2.out" }, t + 0.25);
+      });
+
+      // Headline accent breathes
+      tl.to(".headline .accent",
+        { color: "#3a5bdc", duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 1 },
+        4.0);
+
+      // Caption numbers pulse at end
+      tl.to(".caption b",
+        { scale: 1.08, transformOrigin: "center", duration: 0.3, ease: "back.out(2)", stagger: 0.1 },
+        5.8);
+      tl.to(".caption b",
+        { scale: 1, duration: 0.3, ease: "power2.out", stagger: 0.1 },
+        6.15);
+
+      window.__timelines["scene-07-logo-cloud"] = tl;
+    })();
+  </script>
+</body>
+</html>

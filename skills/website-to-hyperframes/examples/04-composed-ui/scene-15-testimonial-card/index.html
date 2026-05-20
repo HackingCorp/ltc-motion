@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>scene-15-testimonial-card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #fafaf6; }
+
+    [data-composition-id="scene-15-testimonial-card"] {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: radial-gradient(ellipse 1600px 1100px at 50% 50%, #fff 0%, #f0eee5 70%);
+      font-family: "Inter", -apple-system, sans-serif;
+      color: #1d1c19;
+    }
+
+    /* Eyebrow */
+    .eyebrow {
+      position: absolute;
+      top: 90px; left: 0; right: 0;
+      text-align: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 13px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: #8a7a5a;
+    }
+
+    /* Centered testimonial card */
+    .testimonial {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      width: 1280px;
+      padding: 80px 100px;
+      background: #fff;
+      border-radius: 24px;
+      box-shadow:
+        0 1px 2px rgba(0,0,0,0.04),
+        0 24px 60px rgba(80,40,10,0.08);
+      border: 1px solid rgba(0,0,0,0.05);
+      opacity: 0;
+      transform: translate(-50%, -50%) translateY(20px);
+    }
+
+    .quote-mark {
+      position: absolute;
+      top: 36px; left: 48px;
+      font-family: "Fraunces", serif;
+      font-style: italic;
+      font-size: 200px;
+      font-weight: 500;
+      color: #b8320e;
+      line-height: 0.8;
+      opacity: 0.15;
+    }
+
+    .quote-body {
+      font-family: "Fraunces", serif;
+      font-size: 52px;
+      font-weight: 400;
+      letter-spacing: -0.018em;
+      line-height: 1.25;
+      color: #1d1c19;
+      margin-bottom: 56px;
+      position: relative;
+      z-index: 1;
+    }
+    .quote-body .accent {
+      color: #b8320e;
+      font-style: italic;
+      font-weight: 500;
+    }
+    .quote-body .word {
+      opacity: 0;
+      display: inline-block;
+    }
+
+    /* Author + company row */
+    .author-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding-top: 32px;
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .avatar {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #d97757 0%, #b8320e 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Inter", sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(184, 50, 14, 0.25);
+    }
+
+    .author-info {
+      flex: 1;
+    }
+    .author-name {
+      font-family: "Inter", sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #1d1c19;
+      letter-spacing: -0.01em;
+    }
+    .author-title {
+      font-family: "Inter", sans-serif;
+      font-size: 16px;
+      color: #6b5a3f;
+      margin-top: 4px;
+    }
+    .author-title b { color: #1d1c19; font-weight: 600; }
+
+    /* Company logo (right-aligned in author row) — composed from divs to avoid asset deps */
+    .company-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-mark {
+      width: 44px; height: 44px;
+      background: #1d1c19;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-family: "Inter", sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+    .logo-wordmark {
+      font-family: "Inter", sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #1d1c19;
+    }
+
+    /* Star rating */
+    .rating {
+      position: absolute;
+      top: 36px; right: 56px;
+      display: flex;
+      gap: 4px;
+      opacity: 0;
+    }
+    .star {
+      font-size: 24px;
+      color: #f59e0b;
+    }
+
+    /* Sub-caption */
+    .sub-caption {
+      position: absolute;
+      bottom: 90px; left: 0; right: 0;
+      text-align: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(29, 28, 25, 0.4);
+    }
+
+    .scene-label {
+      position: absolute;
+      left: 24px; bottom: 18px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      color: rgba(29, 28, 25, 0.35);
+      letter-spacing: 0.06em;
+    }
+    .scene-label b { color: rgba(29, 28, 25, 0.65); }
+  </style>
+</head>
+<body>
+  <div
+    id="scene-15-testimonial-card"
+    data-composition-id="scene-15-testimonial-card"
+    data-start="0"
+    data-duration="8"
+    data-width="1920"
+    data-height="1080"
+  >
+    <div class="eyebrow">CUSTOMER STORY · ACCOUNT EXPANSION</div>
+
+    <div class="testimonial" id="card">
+      <div class="quote-mark">"</div>
+
+      <div class="rating" id="rating">
+        <span class="star">★</span>
+        <span class="star">★</span>
+        <span class="star">★</span>
+        <span class="star">★</span>
+        <span class="star">★</span>
+      </div>
+
+      <div class="quote-body" id="quote">
+        <span class="word">We&nbsp;</span>
+        <span class="word">shipped&nbsp;</span>
+        <span class="word">our&nbsp;</span>
+        <span class="word">launch&nbsp;</span>
+        <span class="word">video&nbsp;</span>
+        <span class="word">in&nbsp;</span>
+        <span class="word accent">forty&nbsp;</span>
+        <span class="word accent">minutes</span>
+        <span class="word">&mdash;&nbsp;</span>
+        <span class="word">not&nbsp;</span>
+        <span class="word">six&nbsp;</span>
+        <span class="word">weeks.</span>
+      </div>
+
+      <div class="author-row" id="author-row">
+        <div class="avatar">MJ</div>
+        <div class="author-info">
+          <div class="author-name">Maya Jensen</div>
+          <div class="author-title">Head of Brand at <b>Northshore</b></div>
+        </div>
+        <div class="company-logo">
+          <div class="logo-mark">N</div>
+          <div class="logo-wordmark">Northshore</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-caption">42 TESTIMONIALS · AVG TIME-TO-SHIP DOWN 89% · Q1 2026</div>
+
+    <div class="scene-label">Section 04 · <b>Testimonial Card</b> · quote + avatar + author + company logo + 5-star rating</div>
+  </div>
+
+  <script>
+    (function () {
+      var BEAT = 8;
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // Eyebrow + sub-caption fade in
+      tl.fromTo(".eyebrow",
+        { opacity: 0, y: -4 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0);
+
+      tl.fromTo(".sub-caption",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.6, ease: "power2.out" }, 0.2);
+
+      // Card drops in
+      tl.fromTo("#card",
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.8, ease: "expo.out" }, 0.4);
+
+      // Quote mark fades in (decorative — sets the editorial tone)
+      tl.fromTo(".quote-mark",
+        { opacity: 0, scale: 0.7, transformOrigin: "left top" },
+        { opacity: 0.15, scale: 1, duration: 0.6, ease: "expo.out" }, 0.8);
+
+      // Quote body words type in one at a time (give the eye time to read)
+      tl.to(".quote-body .word",
+        { opacity: 1, duration: 0.25, stagger: 0.08, ease: "power2.out" },
+        1.1);
+
+      // Author row fades in after the quote
+      tl.fromTo("#author-row",
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 3.4);
+
+      // Avatar pops in with bounce
+      tl.fromTo(".avatar",
+        { scale: 0 },
+        { scale: 1, duration: 0.5, ease: "back.out(2.5)" }, 3.6);
+
+      // Stars cascade in (back.out for each)
+      tl.fromTo(".star",
+        { opacity: 0, scale: 0, transformOrigin: "center" },
+        { opacity: 1, scale: 1, duration: 0.3, stagger: 0.08, ease: "back.out(2)" }, 3.9);
+
+      // Rating container appears
+      tl.fromTo("#rating",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.2, ease: "power2.out" }, 3.85);
+
+      // === Hold (5.0-7.5s): continuous gentle motion ===
+      // Card subtle lift
+      tl.to("#card", { y: -8, duration: 1.2, ease: "sine.inOut", yoyo: true, repeat: 1 }, 5.0);
+
+      // Stars sparkle (subtle pulse, staggered)
+      tl.to(".star", { scale: 1.15, transformOrigin: "center", duration: 0.4, ease: "sine.inOut", yoyo: true, repeat: 1, stagger: { from: "center", amount: 0.4 } }, 5.5);
+
+      // Quote breathes (italic accent words pulse color)
+      tl.to(".quote-body .accent", { color: "#d97757", duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, 6.4);
+
+      window.__timelines["scene-15-testimonial-card"] = tl;
+    })();
+  </script>
+</body>
+</html>

@@ -101,6 +101,7 @@ Need a specific technique? Use this table to find the canonical scene.
 | Claude Code / AI agent IDE mockup with prompt + tool calls | [`04-composed-ui/scene-12-claude-code-ide/`](04-composed-ui/scene-12-claude-code-ide/) |
 | Figma-style design inspector panel with cycling values | [`04-composed-ui/scene-13-design-inspector/`](04-composed-ui/scene-13-design-inspector/) |
 | **3-tier SaaS pricing card reveal** (featured center card with "Most Popular" badge + deterministic price counters) | [`04-composed-ui/scene-14-pricing-card-reveal/`](04-composed-ui/scene-14-pricing-card-reveal/) |
+| **Customer testimonial card** (Fraunces italic quote + avatar + author + company logo + 5-star cascade) | [`04-composed-ui/scene-15-testimonial-card/`](04-composed-ui/scene-15-testimonial-card/) |
 | WebGL fragment shader + Canvas 2D fallback | [`07-html-in-canvas/scene-01-webgl-shader/`](07-html-in-canvas/scene-01-webgl-shader/) |
 | Canvas 2D procedural ASCII art + lightning | [`07-html-in-canvas/scene-02-canvas-ascii/`](07-html-in-canvas/scene-02-canvas-ascii/) |
 | Canvas 2D cursor blur + chromatic aberration text | [`07-html-in-canvas/scene-03-cursor-blur-sweeps/`](07-html-in-canvas/scene-03-cursor-blur-sweeps/) |
@@ -118,6 +119,7 @@ Need a specific technique? Use this table to find the canonical scene.
 | Aurora end-card + particles + tri-color text gradient | [`10-particles-and-ambient/scene-02-aurora-end-card/`](10-particles-and-ambient/scene-02-aurora-end-card/) |
 | Scan-line CRT grid + telemetry HUD | [`10-particles-and-ambient/scene-03-scan-line-grid/`](10-particles-and-ambient/scene-03-scan-line-grid/) |
 | **Audio-viz hero** (beat grid + 40-bar amber spectrum + telemetry corners + "Beat drop." with deterministic beat-pulse choreography) | [`10-particles-and-ambient/scene-04-audio-viz-hero/`](10-particles-and-ambient/scene-04-audio-viz-hero/) |
+| **CTA hero** (massive headline + gradient CTA button + shimmer + 24 deterministic particles + aurora bg) | [`10-particles-and-ambient/scene-05-cta-hero/`](10-particles-and-ambient/scene-05-cta-hero/) |
 | CSS 3D torus (16-segment orbital ring) | [`11-3d-and-parallax/scene-01-css-3d-torus/`](11-3d-and-parallax/scene-01-css-3d-torus/) |
 | Three.js pyramid roll with multi-material faces | [`11-3d-and-parallax/scene-02-vercel-triangle-roll/`](11-3d-and-parallax/scene-02-vercel-triangle-roll/) |
 | CSS 3D card tumble + clip-path wipe (6 cards) | [`11-3d-and-parallax/scene-03-card-flyby-deck/`](11-3d-and-parallax/scene-03-card-flyby-deck/) |
@@ -129,6 +131,7 @@ Need a specific technique? Use this table to find the canonical scene.
 | **Brand moodboard** (crown + swatches + logo card + sticky note + reference cards + SVG hub-spoke connectors) | [`12-combined-vignettes/scene-04-brand-moodboard/`](12-combined-vignettes/scene-04-brand-moodboard/) |
 | **Cinematic minimal opener** (light-ball bloom → beam → title fade-up — canonical Beat 1 reference) | [`12-combined-vignettes/scene-05-cinematic-opener/`](12-combined-vignettes/scene-05-cinematic-opener/) |
 | **Design extraction beat** (MacBook + animated DESIGN.md + callout tags pinned on screen elements) | [`12-combined-vignettes/scene-06-design-extraction/`](12-combined-vignettes/scene-06-design-extraction/) |
+| **Customer logo cloud** (12-brand grid with center-out stagger + spotlight cycle) | [`12-combined-vignettes/scene-07-logo-cloud/`](12-combined-vignettes/scene-07-logo-cloud/) |
 | BAD EXAMPLE: slideshow trap | [`13-anti-patterns/scene-01-slideshow-trap/`](13-anti-patterns/scene-01-slideshow-trap/) |
 | BAD EXAMPLE: static after entrance | [`13-anti-patterns/scene-02-static-after-entrance/`](13-anti-patterns/scene-02-static-after-entrance/) |
 | BAD EXAMPLE: power2.out everywhere | [`13-anti-patterns/scene-03-power2-everywhere/`](13-anti-patterns/scene-03-power2-everywhere/) |
@@ -144,10 +147,10 @@ Need a specific technique? Use this table to find the canonical scene.
 
 ## Stitched Grand Tour reel
 
-All 74 scenes concatenated back-to-back as a single 8:30 MP4. Useful for visual-gestalt review or for sharing the library at a glance:
+All 77 scenes concatenated back-to-back as a single 8:52 MP4. Useful for visual-gestalt review or for sharing the library at a glance:
 
-- **Grand Tour reel:** https://www.heygenverse.com/s/aefd8761-7ae5-4399-bed4-3c33ea7dc3bf/raw
-- **Browsable gallery (per-section grid, all 74 scenes as embedded videos):** https://www.heygenverse.com/a/1636f2fe-3ddc-4543-9a56-0d0b99538807
+- **Grand Tour reel:** https://www.heygenverse.com/s/417ac325-e606-48f1-b716-8f8747b44d87/raw
+- **Browsable gallery (per-section grid, all 77 scenes as embedded videos):** https://www.heygenverse.com/a/1636f2fe-3ddc-4543-9a56-0d0b99538807
 
 Rebuild the reel after adding scenes: `ffmpeg -f concat -safe 0 -i /tmp/concat-list.txt -c copy out.mp4` where the concat list orders all scene MP4s in section sequence.
 

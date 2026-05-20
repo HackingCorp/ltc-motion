@@ -1,17 +1,17 @@
 # HANDOFF — Examples Library (Sessions May 19, 2026)
 
-> **READ THIS BEFORE PICKING UP THE EXAMPLES LIBRARY WORK.** This is the followup to `HANDOFF.md`. This doc covers what was built May 19: the HyperFrames Capability Showcase example library, **74 scenes across 13 sections**, all rendered and uploaded, gallery app live, skill wiring updated to 3-mode framework, second-pass production-project survey (batch 10), plus four rounds of hand-authored gap-fillers (batches 11/12/13/14).
+> **READ THIS BEFORE PICKING UP THE EXAMPLES LIBRARY WORK.** This is the followup to `HANDOFF.md`. This doc covers what was built May 19: the HyperFrames Capability Showcase example library, **77 scenes across 13 sections**, all rendered and uploaded, gallery app live, skill wiring updated to 3-mode framework, second-pass production-project survey (batch 10), plus five rounds of hand-authored gap-fillers (batches 11/12/13/14/15).
 
 ---
 
 ## TL;DR
 
-**What got built:** **74 production-grade example scenes** at `skills/website-to-hyperframes/examples/`, covering every HyperFrames technique. Each scene is standalone-renderable, lint-clean, snapshot-verified, composed 100% from HTML/CSS/SVG/GSAP/Canvas — zero captured screenshots. Plus a single concatenated "Grand Tour" reel (**8:30 MP4**) that plays all 74 back-to-back.
+**What got built:** **77 production-grade example scenes** at `skills/website-to-hyperframes/examples/`, covering every HyperFrames technique. Each scene is standalone-renderable, lint-clean, snapshot-verified, composed 100% from HTML/CSS/SVG/GSAP/Canvas — zero captured screenshots. Plus a single concatenated "Grand Tour" reel (**8:52 MP4**) that plays all 77 back-to-back.
 
 **Why:** `HANDOFF.md` Recommendation 1 said skill prose was exhausted as a lever (11 eval branches all produced slideshow videos regardless of prose changes). Recommendation 2 said: **show, don't tell** — build production-grade reference examples agents can use. This library is that.
 
 **Gallery is live:** https://www.heygenverse.com/a/1636f2fe-3ddc-4543-9a56-0d0b99538807
-**Grand Tour reel (all 74 scenes, 8:30):** https://www.heygenverse.com/s/aefd8761-7ae5-4399-bed4-3c33ea7dc3bf/raw
+**Grand Tour reel (all 77 scenes, 8:52):** https://www.heygenverse.com/s/417ac325-e606-48f1-b716-8f8747b44d87/raw
 
 **Skill wiring is active AND updated** (May 19 evening): the skill now explicitly names **three legitimate modes** for using examples — `copy+mutate` (1:1 fit), `recombine` (2-3 scenes layered), `fresh` (author from scratch with examples as taste reference). Examples are NEVER finished beats — non-negotiable customization rule applies in every mode. See **[Skill Wiring](#skill-wiring)** below for the patch summary.
 
@@ -20,9 +20,15 @@
 - **step-5-build.md**: mode-aware build process; explicit "fresh ≠ paste, recombine ≠ frankenstein".
 - **beat-builder-guide.md**: 3-mode table is the FIRST mandatory read; "non-negotiable in every mode: customize."
 
-**Branch:** `feat/pipeline-quality-v2` (continued from prior session). **21 commits** total this session.
+**Branch:** `feat/pipeline-quality-v2` (continued from prior session). **22 commits** total this session.
 
-**Library is internally consistent.** Every scene appears in (a) its section README, (b) the master lookup table in `examples/README.md`, (c) the rendered MP4 list, and (d) the Verse asset ID table below. The technique-pick checklist in step-3 has reliable coverage — an agent can find any of the 74 scenes from the lookup table without grepping the directory.
+**Library is internally consistent.** Every scene appears in (a) its section README, (b) the master lookup table in `examples/README.md`, (c) the rendered MP4 list, and (d) the Verse asset ID table below. The technique-pick checklist in step-3 has reliable coverage — an agent can find any of the 77 scenes from the lookup table without grepping the directory.
+
+### What batch 15 added (3 more hand-authored scenes — common product-video patterns)
+
+- **04-15 Testimonial Card**: customer quote pattern. Fraunces italic quote with red accent on key phrase ("forty minutes"), author row (MJ avatar gradient circle + "Maya Jensen / Head of Brand at Northshore" + composed Northshore logo card), 5-star rating cascading in. Quote types word-by-word.
+- **10-05 CTA Hero**: SaaS closer pattern. Massive headline "Ship your launch video *today*." (gradient italic accent), sub-headline, primary CTA button "Start free trial →" with gradient + glow halo + shimmer that sweeps twice, secondary "Watch demo" link, credibility row (No watermark / Cancel anytime / 847 teams shipping / 4K export). Aurora bg + 24 deterministic particles drifting.
+- **12-07 Logo Cloud**: customer/brand grid. 4×3 grid of 12 fictional brands (Northshore, Atlas Labs, Prism, Voltsy, Loomwave, Sable, Rivet, Helio, Foundry, Meridian, Kestrel, Orbit) — each with a colored brand mark (different gradients/shapes per brand) + wordmark. Cells reveal via `stagger.from: "center", grid: [3, 4]` (center-out wave). After grid completes, spotlight cycles through 6 cells in sequence. Bottom credibility row "847 TEAMS · 11K VIDEOS · $2.3M ARR" with number pulses.
 
 ### What batch 14 added (3 more hand-authored scenes — easing/shader/data references)
 
@@ -111,15 +117,15 @@ skills/website-to-hyperframes/examples/
 ├── 01-typography/              README.md + 11 scene dirs (~100K total)
 ├── 02-markers-and-emphasis/    README.md + 6 scene dirs
 ├── 03-easing-variety/          README.md + 3 scene dirs
-├── 04-composed-ui/             README.md + 14 scene dirs
+├── 04-composed-ui/             README.md + 15 scene dirs
 ├── 05-transitions-shader/      README.md + 3 scene dirs
 ├── 06-transitions-css/         README.md + 3 scene dirs
 ├── 07-html-in-canvas/          README.md + 5 scene dirs
 ├── 08-svg-and-path/            README.md + 3 scene dirs
 ├── 09-counters-and-data/       README.md + 5 scene dirs
-├── 10-particles-and-ambient/   README.md + 4 scene dirs
+├── 10-particles-and-ambient/   README.md + 5 scene dirs
 ├── 11-3d-and-parallax/         README.md + 5 scene dirs
-├── 12-combined-vignettes/      README.md + 6 scene dirs
+├── 12-combined-vignettes/      README.md + 7 scene dirs
 └── 13-anti-patterns/           README.md + 4 scene dirs
 ```
 
@@ -138,7 +144,7 @@ skills/website-to-hyperframes/examples/
 
 ---
 
-## THE 74 SCENES — FULL INVENTORY
+## THE 77 SCENES — FULL INVENTORY
 
 ### Section 01 — Typography (11 scenes)
 
@@ -177,7 +183,7 @@ skills/website-to-hyperframes/examples/
 | `scene-02-easing-race` | 6s | 7 balls race the same track over same 2s duration — visceral easing-comparison teaching scene |
 | `scene-03-stagger-origin-showcase` | 6s | 4 panels with same 15 dots — `from: "start" / "center" / "edges" / "end"` side-by-side |
 
-### Section 04 — Composed UI (14 scenes)
+### Section 04 — Composed UI (15 scenes)
 
 | Scene | Duration | Technique |
 |-------|----------|-----------|
@@ -195,6 +201,7 @@ skills/website-to-hyperframes/examples/
 | `scene-12-claude-code-ide` | 8s | Claude Code AI agent chat panel — chrome dots + prompt type-on + tool-call badges + DESIGN.md output |
 | `scene-13-design-inspector` | 9s | Figma-style design inspector — HEADLINE on left, panel with cycling Color/Font/Size values, stacked-absolute-span swap pattern (fully seekable) |
 | `scene-14-pricing-card-reveal` | 8s | 3-tier SaaS pricing — Starter / Pro (featured + "Most Popular" badge, $0→$29 counter) / Business (counter to $79). Featured card uses different motion shape for emphasis. |
+| `scene-15-testimonial-card` | 8s | Customer testimonial — Fraunces italic quote + MJ avatar + Northshore company logo + 5-star rating cascade. Quote types word-by-word. |
 
 ### Section 05 — Transitions Shader (2 scenes)
 
@@ -240,7 +247,7 @@ skills/website-to-hyperframes/examples/
 | `scene-04-bar-chart-rise` | 7s | 6-bar quarterly growth chart with staggered rise + deterministic value counters + peak bar in amber |
 | `scene-05-sparkline-draw` | 7s | 4-card live-metrics dashboard with SVG sparklines (filled area + stroked line + end-dot pulse), value counters, delta arrows |
 
-### Section 10 — Particles and Ambient (4 scenes)
+### Section 10 — Particles and Ambient (5 scenes)
 
 | Scene | Duration | Technique |
 |-------|----------|-----------|
@@ -248,6 +255,7 @@ skills/website-to-hyperframes/examples/
 | `scene-02-aurora-end-card` | 8s | Radial gradient + 12 particles + tri-color wordmark + install command type-on |
 | `scene-03-scan-line-grid` | 5.6s | CRT-adjacent: 3 sweep passes + grid overlay + telemetry HUD |
 | `scene-04-audio-viz-hero` | 7s | Audio-reactive aesthetic — 32-tick beat grid + 40-bar amber spectrum + 4 corner telemetry + "Beat drop." hero with 7 scheduled beat-pulse moments |
+| `scene-05-cta-hero` | 7s | "Ship your launch video today." + gradient CTA button + shimmer + 24 deterministic particles + aurora bg — canonical SaaS closer beat |
 
 ### Section 11 — 3D and Parallax (5 scenes)
 
@@ -259,7 +267,7 @@ skills/website-to-hyperframes/examples/
 | `scene-04-anamorphic-text-crt` | 15s | Three.js 3D text morphing MOTION↔DESIGN + CRT HUD |
 | `scene-05-iphone-device-gesture` | 6.5s | CSS 3D iPhone with tap/swipe gesture overlays + composed app screen |
 
-### Section 12 — Combined Vignettes (6 scenes)
+### Section 12 — Combined Vignettes (7 scenes)
 
 | Scene | Duration | Technique |
 |-------|----------|-----------|
@@ -269,6 +277,7 @@ skills/website-to-hyperframes/examples/
 | `scene-04-brand-moodboard` | 10s | Aurora Studio brand book — monogram + 6 swatches + sticky note + 5 reference cards + Fraunces/Archivo + SVG hub-spoke connectors from logo |
 | `scene-05-cinematic-opener` | 6s | The canonical minimal cinematic opener — light-ball bloom → beam → HYPER·FRAMES title fade-up → settled hold → fade |
 | `scene-06-design-extraction` | 11s | MacBook with composed LUMEN landing + animated DESIGN.md panel writing line-by-line + 16 callout tags pinning on screen elements + EXTRACTING→EXTRACTED stamp |
+| `scene-07-logo-cloud` | 7s | 12-brand customer grid (4×3) with `stagger.from: "center"` reveal + spotlight cycle through 6 cells + bottom credibility row with number pulses |
 
 ### Section 13 — Anti-Patterns (4 scenes)
 
@@ -421,6 +430,7 @@ All 53 scenes rendered to MP4 at draft quality (24fps) and uploaded. URLs follow
 | scene-02-aurora-end-card | add9f284-3d4e-4b8c-b82f-c9283cc6bf23 |
 | scene-03-scan-line-grid | 54740f7f-4c50-4af5-b379-4b741de8cfd3 |
 | scene-04-audio-viz-hero | 6f105968-7dd8-41b3-8ef5-80801aaa3420 |
+| scene-05-cta-hero | 77184156-e3c7-4ae2-8697-5017def4ddba |
 
 ### Section 11 — 3D and Parallax
 | Scene | Asset ID |
@@ -437,6 +447,7 @@ All 53 scenes rendered to MP4 at draft quality (24fps) and uploaded. URLs follow
 | scene-12-claude-code-ide | 958d51b0-9e27-4627-8b65-7253b44ac8ab |
 | scene-13-design-inspector | 2477d6d8-2748-42e4-9fd3-45d8d96c0bdb |
 | scene-14-pricing-card-reveal | 1c4cf975-301e-4d6d-b30e-8ca385ffaaa0 |
+| scene-15-testimonial-card | 1b56b2f2-841d-4c8c-ad69-7457c8a0f313 |
 
 ### Section 12 — Combined Vignettes
 | Scene | Asset ID |
@@ -447,11 +458,13 @@ All 53 scenes rendered to MP4 at draft quality (24fps) and uploaded. URLs follow
 | scene-04-brand-moodboard | 3ef3db80-8a84-422b-8661-52f1586b768b |
 | scene-05-cinematic-opener | 826f3732-cea7-4be3-8eb7-e2ba379a2137 |
 | scene-06-design-extraction | ece0bdfe-e57e-4ae1-b19d-548ea38c6bba |
+| scene-07-logo-cloud | 09168ff7-6319-44c3-a841-527448f755f7 |
 
 ### Grand Tour Reel
 | Reel | Asset ID | Duration |
 |---|---|---|
-| grand-tour-74-scenes (current) | aefd8761-7ae5-4399-bed4-3c33ea7dc3bf | 8:30 |
+| grand-tour-77-scenes (current) | 417ac325-e606-48f1-b716-8f8747b44d87 | 8:52 |
+| grand-tour-74-scenes (superseded) | aefd8761-7ae5-4399-bed4-3c33ea7dc3bf | 8:30 |
 | grand-tour-71-scenes (superseded) | 2637bc07-ef26-43f2-8ef3-83c21d7aad88 | 8:11 |
 | grand-tour-68-scenes (superseded) | bbe43a50-4eda-4fd9-b248-38c5ae73e64d | 7:50 |
 | grand-tour-65-scenes (superseded) | efb24629-1c60-41f9-bd3f-a78d2181d774 | 7:31 |
@@ -654,10 +667,11 @@ batch_upload_assets supports up to 20 files at once. PUTs can run in parallel vi
 
 ---
 
-## THE 21 COMMITS
+## THE 22 COMMITS
 
 ```
-[pending]  feat(skill): examples library batch 14 — 3 hand-authored gap-fillers (74 scenes total)
+[pending]  feat(skill): examples library batch 15 — 3 hand-authored common-pattern scenes (77 scenes total)
+9c667175  feat(skill): examples library batch 14 — 3 hand-authored gap-fillers (74 scenes)
 21cd7f9d  feat(skill): examples library batch 13 — 3 hand-authored gap-fillers (71 scenes)
 9513192b  feat(skill): examples library batch 12 — 3 hand-authored gap-fillers (68 scenes)
 04b46a13  feat(skill): examples library batch 11 — 3 hand-authored gap-fillers (65 scenes)
@@ -680,7 +694,7 @@ a877da70  feat(skill): examples library section 04 — composed UI, 8 scenes
 04827b98  feat(skill): examples library scaffold + section 01 (typography) — 10 scenes
 ```
 
-All on branch `feat/pipeline-quality-v2`, ahead of `origin/feat/pipeline-quality-v2` by 21 commits.
+All on branch `feat/pipeline-quality-v2`, ahead of `origin/feat/pipeline-quality-v2` by 22 commits.
 
 ### What batches 8 + 9 did (docs sync after batch 7)
 
