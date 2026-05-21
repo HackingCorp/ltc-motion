@@ -3,6 +3,7 @@ import { useMountEffect } from "../../hooks/useMountEffect";
 import { formatFrameTime, frameToSeconds, stepFrameTime, formatTime } from "../lib/time";
 import { shouldMutePreviewAudio } from "../lib/timelineIframeHelpers";
 import { usePlayerStore, liveTime } from "../store/playerStore";
+import { trackStudioEvent } from "../../utils/studioTelemetry";
 
 const SPEED_OPTIONS = [0.25, 0.5, 1, 1.5, 2] as const;
 const SEEK_EDGE_SNAP_PX = 8;
@@ -337,7 +338,10 @@ export const PlayerControls = memo(function PlayerControls({
       <button
         type="button"
         aria-label={isPlaying ? "Pause" : "Play"}
-        onClick={onTogglePlay}
+        onClick={() => {
+          trackStudioEvent("playback", { action: isPlaying ? "pause" : "play" });
+          onTogglePlay();
+        }}
         disabled={controlsDisabled}
         className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg disabled:opacity-30 disabled:pointer-events-none transition-colors"
         style={{ background: "rgba(255,255,255,0.06)" }}
@@ -463,7 +467,10 @@ export const PlayerControls = memo(function PlayerControls({
       <button
         type="button"
         onClick={() => {
-          if (!audioAutoMuted) setAudioMuted(!audioMuted);
+          if (!audioAutoMuted) {
+            trackStudioEvent("playback", { action: "mute_toggle", muted: !audioMuted });
+            setAudioMuted(!audioMuted);
+          }
         }}
         disabled={controlsDisabled || audioAutoMuted}
         title={muteButtonLabel}
@@ -530,6 +537,7 @@ export const PlayerControls = memo(function PlayerControls({
               <button
                 key={rate}
                 onClick={() => {
+                  trackStudioEvent("playback", { action: "speed_change", rate });
                   setPlaybackRate(rate);
                   setShowSpeedMenu(false);
                 }}
@@ -555,7 +563,10 @@ export const PlayerControls = memo(function PlayerControls({
 
       <button
         type="button"
-        onClick={() => setLoopEnabled(!loopEnabled)}
+        onClick={() => {
+          trackStudioEvent("playback", { action: "loop_toggle", enabled: !loopEnabled });
+          setLoopEnabled(!loopEnabled);
+        }}
         disabled={disabled}
         className={`h-7 w-7 flex items-center justify-center rounded-md border transition-colors ${
           loopEnabled

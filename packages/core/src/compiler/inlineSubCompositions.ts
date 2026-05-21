@@ -61,6 +61,15 @@ export interface InlineSubCompositionsOptions {
   flattenInnerRoot?: (innerRoot: Element) => Element;
 
   /**
+   * When true, CSS selectors targeting the authored root use a compound
+   * selector (`[scope][root]`) instead of a descendant (`[scope] [root]`).
+   * Enable this in the producer path where the inner root merges onto
+   * the host element via innerHTML — both attributes end up on the same
+   * element and a descendant selector won't match.
+   */
+  compoundAuthoredRoot?: boolean;
+
+  /**
    * Read declared variable defaults from a sub-composition's `<html>` element.
    * The bundler passes `readDeclaredDefaults`; the producer can omit this.
    */
@@ -140,6 +149,7 @@ export function inlineSubCompositions(
     hostIdentityMap,
     rewriteInlineStyles = false,
     flattenInnerRoot,
+    compoundAuthoredRoot,
     readVariableDefaults,
     parseHostVariables,
     buildScopeSelector = defaultBuildScopeSelector,
@@ -214,7 +224,9 @@ export function inlineSubCompositions(
         const css = rewriteCssAssetUrls(s.textContent || "", src);
         styles.push(
           scopeCompId
-            ? scopeCssToComposition(css, scopeCompId, runtimeScope || undefined, authoredRootId)
+            ? scopeCssToComposition(css, scopeCompId, runtimeScope || undefined, authoredRootId, {
+                compoundAuthoredRoot: compoundAuthoredRoot === true,
+              })
             : css,
         );
       }
@@ -244,7 +256,9 @@ export function inlineSubCompositions(
       const css = rewriteCssAssetUrls(s.textContent || "", src);
       styles.push(
         scopeCompId
-          ? scopeCssToComposition(css, scopeCompId, runtimeScope || undefined, authoredRootId)
+          ? scopeCssToComposition(css, scopeCompId, runtimeScope || undefined, authoredRootId, {
+              compoundAuthoredRoot: compoundAuthoredRoot === true,
+            })
           : css,
       );
       s.remove();

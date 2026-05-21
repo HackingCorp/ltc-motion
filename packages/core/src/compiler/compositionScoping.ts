@@ -101,6 +101,7 @@ function scopeSelector(
   scope: string,
   compositionId: string,
   authoredRootId?: string | null,
+  compoundAuthoredRoot?: boolean,
 ): string {
   const selectorWithoutAuthoredRootId = normalizeAuthoredRootIdSelector(selector, authoredRootId);
   const selectorWithoutRootTiming = normalizeCompositionRootSelector(
@@ -120,6 +121,15 @@ function scopeSelector(
   }
   const leading = selectorWithoutRootTiming.match(/^\s*/)?.[0] ?? "";
   const trailing = selectorWithoutRootTiming.match(/\s*$/)?.[0] ?? "";
+  if (compoundAuthoredRoot) {
+    const authoredRootAttr = authoredRootId
+      ? `[${AUTHORED_ROOT_ID_ATTR}="${escapeCssAttributeValue(authoredRootId)}"]`
+      : null;
+    if (authoredRootAttr && trimmed.startsWith(authoredRootAttr)) {
+      const rest = trimmed.slice(authoredRootAttr.length);
+      return `${leading}${scope}${authoredRootAttr}${rest}${trailing}`;
+    }
+  }
   return `${leading}${scope} ${trimmed}${trailing}`;
 }
 
@@ -158,6 +168,7 @@ export function scopeCssToComposition(
   compositionId: string,
   scopeSelectorOverride?: string,
   authoredRootId?: string | null,
+  options?: { compoundAuthoredRoot?: boolean },
 ): string {
   const trimmedCompositionId = compositionId.trim();
   if (!css || !trimmedCompositionId) return css;
@@ -169,7 +180,13 @@ export function scopeCssToComposition(
   root.walkRules((rule) => {
     if (isInsideGlobalAtRule(rule)) return;
     rule.selectors = rule.selectors.map((selector) =>
-      scopeSelector(selector, scope, trimmedCompositionId, authoredRootId),
+      scopeSelector(
+        selector,
+        scope,
+        trimmedCompositionId,
+        authoredRootId,
+        options?.compoundAuthoredRoot,
+      ),
     );
   });
 

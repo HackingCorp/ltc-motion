@@ -1,5 +1,3 @@
-import { Input, UrlSource, ALL_FORMATS } from "mediabunny";
-
 export interface MediaProbeResult {
   duration: number;
   width?: number;
@@ -11,6 +9,20 @@ export interface MediaProbeResult {
 const cache = new Map<string, MediaProbeResult>();
 const inflight = new Map<string, Promise<MediaProbeResult | null>>();
 
+let mediabunnyModule: typeof import("mediabunny") | null | false = null;
+
+async function loadMediabunny() {
+  if (mediabunnyModule === false) return null;
+  if (mediabunnyModule) return mediabunnyModule;
+  try {
+    mediabunnyModule = await import("mediabunny");
+    return mediabunnyModule;
+  } catch {
+    mediabunnyModule = false;
+    return null;
+  }
+}
+
 function normalizeUrl(url: string): string {
   try {
     return new URL(url, window.location.href).href;
@@ -20,9 +32,12 @@ function normalizeUrl(url: string): string {
 }
 
 async function probeOne(url: string): Promise<MediaProbeResult | null> {
-  const input = new Input({
-    source: new UrlSource(url),
-    formats: ALL_FORMATS,
+  const mb = await loadMediabunny();
+  if (!mb) return null;
+
+  const input = new mb.Input({
+    source: new mb.UrlSource(url),
+    formats: mb.ALL_FORMATS,
   });
   try {
     const duration = await input.getDurationFromMetadata();

@@ -8,6 +8,7 @@ import {
 } from "react";
 import { CompositionsTab } from "./CompositionsTab";
 import { AssetsTab } from "./AssetsTab";
+import { trackStudioEvent } from "../../utils/studioTelemetry";
 import { BlocksTab } from "./BlocksTab";
 import { FileTree } from "../editor/FileTree";
 import { STUDIO_BLOCKS_PANEL_ENABLED } from "../editor/manualEditingAvailability";
@@ -90,6 +91,7 @@ export const LeftSidebar = memo(
     const selectTab = useCallback((t: SidebarTab) => {
       setTab(t);
       localStorage.setItem(STORAGE_KEY, t);
+      trackStudioEvent("tab_switch", { panel: "left_sidebar", tab: t });
     }, []);
 
     useImperativeHandle(ref, () => ({ selectTab }), [selectTab]);

@@ -74,7 +74,10 @@ function TimingSection({
   onSetAttribute: (attr: string, value: string) => void | Promise<void>;
 }) {
   const start = Number.parseFloat(element.dataAttributes.start ?? "0") || 0;
-  const duration = Number.parseFloat(element.dataAttributes.duration ?? "0") || 0;
+  const duration =
+    Number.parseFloat(
+      element.dataAttributes.duration ?? element.dataAttributes["hf-authored-duration"] ?? "0",
+    ) || 0;
   const end = start + duration;
 
   const commitStart = (nextValue: string) => {

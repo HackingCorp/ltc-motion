@@ -236,4 +236,35 @@ describe("inlineSubCompositions – #ID selector scoping divergence", () => {
 
     expect(host.getAttribute("data-composition-id")).toBe("intro");
   });
+
+  it("producer path: scoped CSS matches host element when both attributes coexist", () => {
+    const document = makeHostDocument("intro");
+    const host = document.querySelector('[data-composition-src="intro.html"]')!;
+
+    const result = inlineSubCompositions(document, [host], {
+      resolveHtml: () => SUB_COMP_HTML,
+      parseHtml: (html) => parseHTML(html).document,
+      compoundAuthoredRoot: true,
+    });
+
+    // After inlining, the host has both data-composition-id and data-hf-authored-id.
+    // CSS selectors targeting the root must be compound (no space) so they match
+    // when both attributes are on the same element.
+    expect(host.getAttribute("data-composition-id")).toBe("intro");
+    expect(host.getAttribute("data-hf-authored-id")).toBe("intro");
+
+    const scopedCss = result.styles.join("\n");
+
+    // Root-only selector: must be compound
+    expect(scopedCss).toMatch(/\[data-composition-id="intro"\]\[data-hf-authored-id="intro"\]/);
+    // Must NOT have a descendant combinator between the two attribute selectors
+    expect(scopedCss).not.toMatch(
+      /\[data-composition-id="intro"\]\s+\[data-hf-authored-id="intro"\]\s*\{/,
+    );
+
+    // Descendant selector: compound root + space + child
+    expect(scopedCss).toMatch(
+      /\[data-composition-id="intro"\]\[data-hf-authored-id="intro"\]\s+\.title/,
+    );
+  });
 });

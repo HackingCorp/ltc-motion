@@ -575,6 +575,7 @@ function inlineSubCompositions(
       },
       parseHtml: (htmlStr: string) => parseHTML(htmlStr).document as unknown as Document,
       scriptErrorLabel: "[Compiler] Composition script failed",
+      compoundAuthoredRoot: true,
     },
   );
 
@@ -871,6 +872,23 @@ export interface CompileForRenderOptions {
   failClosedFontFetch?: boolean;
 }
 
+const GSAP_CDN_BASE = "https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/";
+
+function rewriteUnresolvableGsapToCdn(html: string, projectDir: string): string {
+  return html.replace(
+    /(<script\b[^>]*\bsrc=["'])([^"']*gsap[^"']*\/dist\/([^"']+))(["'][^>]*>)/gi,
+    (full, prefix, src, file, suffix) => {
+      if (/^https?:\/\//i.test(src)) return full;
+      const absPath = resolve(projectDir, src);
+      if (existsSync(absPath)) return full;
+      console.log(
+        `[Compiler] Rewriting missing gsap script to CDN: ${src} → ${GSAP_CDN_BASE}${file}`,
+      );
+      return `${prefix}${GSAP_CDN_BASE}${file}${suffix}`;
+    },
+  );
+}
+
 /**
  * Compile an HTML composition project into a single self-contained HTML string
  * with all media metadata resolved.
@@ -881,7 +899,7 @@ export async function compileForRender(
   downloadDir: string,
   options: CompileForRenderOptions = {},
 ): Promise<CompiledComposition> {
-  const rawHtml = readFileSync(htmlPath, "utf-8");
+  const rawHtml = rewriteUnresolvableGsapToCdn(readFileSync(htmlPath, "utf-8"), projectDir);
   const { html: compiledHtml, unresolvedCompositions } = await compileHtmlFile(
     rawHtml,
     projectDir,
