@@ -2,15 +2,29 @@ import type { RuntimePlayer, RuntimeTimelineLike } from "./types";
 import { quantizeTimeToFrame } from "../inline-scripts/parityContract";
 import { swallow } from "./diagnostics";
 
+const guardSwallowed = new Set<string>();
+
 /** Safely read `.time()` from a timeline that may not fully conform to the interface. */
 function safeTimelineTime(tl: RuntimeTimelineLike | null | undefined): number {
-  if (!tl || typeof tl.time !== "function") return 0;
+  if (!tl || typeof tl.time !== "function") {
+    if (tl && !guardSwallowed.has("time")) {
+      guardSwallowed.add("time");
+      swallow("player.safeTimelineTime", new Error("timeline missing .time()"));
+    }
+    return 0;
+  }
   return Math.max(0, Number(tl.time()) || 0);
 }
 
 /** Safely read `.duration()` from a timeline that may not fully conform to the interface. */
 function safeTimelineDuration(tl: RuntimeTimelineLike | null | undefined): number {
-  if (!tl || typeof tl.duration !== "function") return 0;
+  if (!tl || typeof tl.duration !== "function") {
+    if (tl && !guardSwallowed.has("duration")) {
+      guardSwallowed.add("duration");
+      swallow("player.safeTimelineDuration", new Error("timeline missing .duration()"));
+    }
+    return 0;
+  }
   return Math.max(0, Number(tl.duration()) || 0);
 }
 
