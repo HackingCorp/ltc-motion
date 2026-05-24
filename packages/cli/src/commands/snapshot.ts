@@ -97,16 +97,12 @@ async function captureSnapshots(
 
   const numFrames = opts.frames ?? 5;
 
-  // 1. Bundle. `bundleToSingleHtml` now inlines the runtime IIFE by default,
-  // so the previous post-bundle runtime substitution is no longer needed.
   const html = await bundleToSingleHtml(projectDir);
-
   const server = await serveStaticProjectHtml(projectDir, html);
 
   const savedPaths: string[] = [];
 
   try {
-    // 3. Launch headless Chrome
     const browser = await ensureBrowser();
     const puppeteer = await import("puppeteer-core");
     const chromeBrowser = await puppeteer.default.launch({
@@ -131,60 +127,33 @@ async function captureSnapshots(
         timeout: 10000,
       });
 
-      // Wait for runtime to initialize and sub-compositions to load
+      // __renderReady is set after the player is constructed AND the root
+      // timeline is bound — waiting for it guarantees renderSeek will work.
       const timeoutMs = opts.timeout ?? 5000;
-      await page
-        .waitForFunction(() => !!(window as any).__timelines || !!(window as any).__playerReady, {
-          timeout: timeoutMs,
-        })
-        .catch(() => {});
+      const runtimeReady = await page
+        .waitForFunction(() => !!(window as any).__renderReady, { timeout: timeoutMs })
+        .then(() => true)
+        .catch(() => false);
 
-      // Wait for ALL sub-compositions to be mounted by the runtime.
-      // The old check resolved when the first sub-timeline registered, causing
-      // "last beat black" bugs: beat-5's sub-comp hadn't loaded yet when the
-      // snapshot seeked into its time range. Now we count data-composition-src
-      // host elements and wait until we have a matching number of sub-timelines.
-      await page
-        .waitForFunction(
-          () => {
-            const tls = (window as any).__timelines;
-            if (!tls) return false;
-            const hosts = document.querySelectorAll("[data-composition-src]").length;
-            if (hosts === 0) return Object.keys(tls).length >= 1;
-            const subKeys = Object.keys(tls).filter((k) => k !== "main");
-            return subKeys.length >= hosts;
-          },
-          { timeout: timeoutMs },
-        )
-        .catch(() => {});
+      if (!runtimeReady) {
+        console.warn(
+          `\n   ${c.warn("⚠")} Runtime did not become render-ready within ${timeoutMs}ms — snapshots may be inaccurate`,
+        );
+      }
 
-      // Wait for shader transition pre-rendering to complete (if active).
-      //
-      // Two failure modes existed with the previous overlay-only check:
-      //   1. Cold cache: HyperShader creates [data-hyper-shader-loading] but never
-      //      removes it from the DOM — it only sets display:none. Checking for
-      //      element *absence* never resolved, so the wait always timed out at 60s.
-      //   2. Warm cache: HyperShader loads frames from IndexedDB without showing
-      //      the overlay at all. Checking for element absence resolved instantly
-      //      (no element) while hydration was still running in the background.
-      //
-      // Fix: use window.__hf.shaderTransitions[].ready as the primary signal
-      // (set after both warm and cold cache paths complete), with the overlay
-      // display:none as a fallback for older builds that lack the ready state.
+      // Wait for shader transition pre-rendering (HyperShader IndexedDB hydration).
+      // Uses the ready state flag as primary signal, with the loading overlay
+      // display:none as a fallback for older builds.
       await page
         .waitForFunction(
           () => {
             const win = window as unknown as {
               __hf?: { shaderTransitions?: Record<string, { ready?: boolean }> };
             };
-            // Primary: HyperShader ready state — authoritative for both cache paths
             const shaderTransitions = win.__hf?.shaderTransitions;
             if (shaderTransitions !== undefined) {
               return Object.values(shaderTransitions).every((s) => s.ready === true);
             }
-            // Fallback: overlay visibility (older builds without ready state).
-            // Check display:none rather than element absence — element stays in
-            // the DOM when hidden.
             const overlay = document.querySelector(
               "[data-hyper-shader-loading]",
             ) as HTMLElement | null;
@@ -193,9 +162,14 @@ async function captureSnapshots(
           },
           { timeout: 90_000 },
         )
-        .catch(() => {});
+        .catch(() => {
+          console.warn(`   ${c.warn("⚠")} Shader transitions did not finish pre-rendering`);
+        });
 
-      // Extra settle time for media, fonts, and animations to initialize
+      // Wait for fonts to finish loading before capturing
+      await page.evaluate(() => document.fonts.ready).catch(() => {});
+
+      // Extra settle time for media and animations to initialize
       await new Promise((r) => setTimeout(r, 1500));
 
       // Font verification — report which fonts loaded vs fell back
@@ -221,20 +195,14 @@ async function captureSnapshots(
         }
       }
 
-      // Get composition duration
       const duration = await page.evaluate(() => {
         const win = window as any;
-        const pd = win.__player?.duration;
-        if (pd != null) return typeof pd === "function" ? pd() : pd;
+        if (typeof win.__player?.getDuration === "function") {
+          const d = win.__player.getDuration();
+          if (Number.isFinite(d) && d > 0) return d;
+        }
         const root = document.querySelector("[data-composition-id][data-duration]");
         if (root) return parseFloat(root.getAttribute("data-duration") ?? "0");
-        const tls = win.__timelines;
-        if (tls) {
-          for (const key in tls) {
-            const d = tls[key]?.duration;
-            if (d != null) return typeof d === "function" ? d() : d;
-          }
-        }
         return 0;
       });
 
@@ -249,27 +217,21 @@ async function captureSnapshots(
           ? [duration / 2]
           : Array.from({ length: numFrames }, (_, i) => (i / (numFrames - 1)) * duration);
 
-      // Create output directory and clear previous frames so old captures
-      // don't mix with the current run in contact sheets.
       const snapshotDir = join(projectDir, "snapshots");
       mkdirSync(snapshotDir, { recursive: true });
       try {
-        const { readdirSync, rmSync } = await import("node:fs");
+        const { readdirSync } = await import("node:fs");
         for (const file of readdirSync(snapshotDir)) {
           if (/\.(png|jpg|jpeg)$/i.test(file)) {
             rmSync(join(snapshotDir, file), { force: true });
           }
         }
       } catch {
-        /* best-effort clear — proceed even if cleanup fails */
+        /* best-effort — proceed even if cleanup fails */
       }
 
-      // Lazily load the engine's <img>-overlay injector. Chrome-headless cannot
-      // reliably advance <video>.currentTime mid-seek (the setter is accepted but
-      // the decoder ignores it without user activation), so the render pipeline
-      // already extracts each frame via FFmpeg and injects it as an <img> sibling
-      // over the <video>. We reuse that same primitive here so `snapshot` and
-      // `render` behave identically for timed <video data-start> elements.
+      // Chrome-headless ignores programmatic <video>.currentTime writes, so
+      // we extract frames via FFmpeg and overlay them as <img> elements.
       type InjectFn = (
         page: unknown,
         updates: Array<{ videoId: string; dataUri: string }>,
@@ -306,57 +268,36 @@ async function captureSnapshots(
         return pending;
       };
 
-      // Seek and capture each frame
+      const hasPlayer = await page.evaluate(() => !!(window as any).__player);
+      if (!hasPlayer) {
+        console.warn(`   ${c.warn("⚠")} No player API — seeks will be skipped`);
+      }
+
       for (let i = 0; i < positions.length; i++) {
         const time = positions[i]!;
 
         await page.evaluate((t: number) => {
-          const win = window as any;
-          if (win.__player?.seek) {
-            win.__player.seek(t);
-          } else {
-            const tls = win.__timelines;
-            if (tls) {
-              for (const key in tls) {
-                if (tls[key]?.seek) {
-                  // Sub-composition timelines run in local time relative to
-                  // their data-start. Seeking them to global time causes beats
-                  // with exit animations to appear black (global t clamps past
-                  // the exit). Compute local time: global_t - data_start.
-                  const host = document.querySelector<HTMLElement>(
-                    `[data-composition-id="${key}"]`,
-                  );
-                  const dataStart = host
-                    ? parseFloat(host.getAttribute("data-start") ?? "0") || 0
-                    : 0;
-                  const localTime = Math.max(0, t - dataStart);
-                  tls[key].pause();
-                  tls[key].seek(localTime);
-                }
-              }
-            }
+          const player = (window as any).__player;
+          if (!player) return;
+          const safe = Math.max(0, Number(t) || 0);
+          if (typeof player.renderSeek === "function") {
+            player.renderSeek(safe);
+          } else if (typeof player.seek === "function") {
+            player.seek(safe);
+          }
+          if ((window as any).gsap?.ticker?.tick) {
+            (window as any).gsap.ticker.tick();
           }
         }, time);
 
-        // Wait for rendering to settle after seek
-        await page.evaluate(
-          () =>
-            new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))),
-        );
-        await new Promise((r) => setTimeout(r, 200));
+        await page.evaluate(`new Promise(function(r) {
+          var settled = false;
+          function finish() { if (settled) return; settled = true; r(); }
+          window.setTimeout(finish, 100);
+          requestAnimationFrame(function() { requestAnimationFrame(finish); });
+        })`);
 
-        // ─── Inject real video frames over any active <video data-start> ───
-        // Without this, Chrome-headless renders them blank/first-frame because
-        // it silently drops programmatic `currentTime` writes during capture.
-        // No-op when the composition has no timed videos (basecamp, linear, etc.)
         if (injectVideoFramesBatch && syncVideoFrameVisibility) {
-          // Mirror the runtime's media math in packages/core/src/runtime/media.ts
-          // so clips with non-1 `defaultPlaybackRate` get the right active
-          // window and the right `relTime`:
-          //   playbackRate = clamp(defaultPlaybackRate, 0.1, 5) — default 1
-          //   duration fallback = (sourceDuration - mediaStart) / playbackRate
-          //   relTime = (t - start) * playbackRate + mediaStart
-          //   active  = t >= start && t < start+duration && relTime >= 0
           const active = await page.evaluate((t: number) => {
             return Array.from(document.querySelectorAll("video[data-start]"))
               .map((el) => {
@@ -392,11 +333,6 @@ async function captureSnapshots(
 
           const updates: Array<{ videoId: string; dataUri: string }> = [];
           for (const v of active) {
-            // The page-served URL (http://127.0.0.1:PORT/relative/path.mp4)
-            // maps 1:1 to <projectDir>/relative/path.mp4. decodeURIComponent
-            // the pathname — the file server decodes inbound requests, so a
-            // file with spaces in its path lives at the decoded name on disk
-            // while `new URL().pathname` preserves the %-encoding.
             let filePath: string | null = null;
             try {
               const url = new URL(v.src);
@@ -422,12 +358,7 @@ async function captureSnapshots(
             });
           }
 
-          // Always run the visibility sync — even when `active` is empty and
-          // no new updates were injected. Without this, stale __render_frame__
-          // <img> overlays left by a previous seek (where different clips were
-          // active) remain visible in later snapshots, because the runtime's
-          // visibility toggles act on the <video> element but not its injected
-          // <img> sibling.
+          // Sync visibility even when empty — clears stale overlays from prior seeks
           try {
             if (updates.length > 0) {
               await injectVideoFramesBatch(page, updates);
@@ -437,8 +368,7 @@ async function captureSnapshots(
               active.map((a) => a.id),
             );
           } catch {
-            // If either step fails, fall through to the plain screenshot —
-            // no worse than the pre-fix behaviour.
+            /* fall through to plain screenshot */
           }
         }
 
