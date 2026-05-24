@@ -129,9 +129,14 @@
           {
             "group": "HTML-in-Canvas",
             "pages": [
+              "catalog/blocks/ios26-liquid-glass",
+              "catalog/blocks/liquid-glass-context-menu",
+              "catalog/blocks/liquid-glass-media-controls",
+              "catalog/blocks/liquid-glass-notification",
+              "catalog/blocks/liquid-glass-widgets",
+              "catalog/blocks/macos-tahoe-liquid-glass",
               "catalog/blocks/vfx-iphone-device",
               "catalog/blocks/vfx-liquid-background",
-              "catalog/blocks/vfx-liquid-glass",
               "catalog/blocks/vfx-magnetic",
               "catalog/blocks/vfx-portal",
               "catalog/blocks/vfx-shatter",

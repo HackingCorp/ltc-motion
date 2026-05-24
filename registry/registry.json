@@ -340,7 +340,27 @@
       "type": "hyperframes:block"
     },
     {
-      "name": "vfx-liquid-glass",
+      "name": "liquid-glass-notification",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "liquid-glass-context-menu",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "liquid-glass-media-controls",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "liquid-glass-widgets",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "ios26-liquid-glass",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "macos-tahoe-liquid-glass",
       "type": "hyperframes:block"
     },
     {
