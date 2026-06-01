@@ -1185,3 +1185,147 @@ describe("fromTo in-place mutation", () => {
     expect(reparsed.animations[0].properties.scale).toBe(2.2);
   });
 });
+
+// ── Native GSAP keyframes parsing ──────────────────────────────────────────
+
+describe("native GSAP keyframes parsing", () => {
+  it("parses percentage keyframes format", () => {
+    const script = `
+      const tl = gsap.timeline({ paused: true });
+      tl.to("#hero", {
+        keyframes: { "0%": { x: 0, opacity: 1 }, "50%": { x: 100, ease: "power2.out" }, "100%": { x: 200 } },
+        duration: 5
+      }, 0);
+    `;
+    const result = parseGsapScript(script);
+    expect(result.animations).toHaveLength(1);
+    const anim = result.animations[0];
+    expect(anim.keyframes).toBeDefined();
+    expect(anim.keyframes!.format).toBe("percentage");
+    expect(anim.keyframes!.keyframes).toHaveLength(3);
+
+    expect(anim.keyframes!.keyframes[0].percentage).toBe(0);
+    expect(anim.keyframes!.keyframes[0].properties.x).toBe(0);
+    expect(anim.keyframes!.keyframes[0].properties.opacity).toBe(1);
+
+    expect(anim.keyframes!.keyframes[1].percentage).toBe(50);
+    expect(anim.keyframes!.keyframes[1].properties.x).toBe(100);
+    expect(anim.keyframes!.keyframes[1].ease).toBe("power2.out");
+
+    expect(anim.keyframes!.keyframes[2].percentage).toBe(100);
+    expect(anim.keyframes!.keyframes[2].properties.x).toBe(200);
+  });
+
+  it("parses object array keyframes format", () => {
+    const script = `
+      const tl = gsap.timeline({ paused: true });
+      tl.to("#hero", {
+        keyframes: [
+          { x: 0, opacity: 1, duration: 0.5 },
+          { x: 100, duration: 1, ease: "power2.out" },
+          { x: 200, duration: 0.8 }
+        ]
+      }, 0);
+    `;
+    const result = parseGsapScript(script);
+    expect(result.animations).toHaveLength(1);
+    const anim = result.animations[0];
+    expect(anim.keyframes).toBeDefined();
+    expect(anim.keyframes!.format).toBe("object-array");
+    expect(anim.keyframes!.keyframes).toHaveLength(3);
+
+    // Total duration = 0.5 + 1 + 0.8 = 2.3
+    expect(anim.keyframes!.keyframes[0].percentage).toBe(0);
+    expect(anim.keyframes!.keyframes[0].properties.x).toBe(0);
+    expect(anim.keyframes!.keyframes[0].properties.opacity).toBe(1);
+
+    // Second: cumulative = 0.5, pct = round(0.5/2.3 * 100) = 22
+    expect(anim.keyframes!.keyframes[1].percentage).toBe(22);
+    expect(anim.keyframes!.keyframes[1].properties.x).toBe(100);
+    expect(anim.keyframes!.keyframes[1].ease).toBe("power2.out");
+
+    // Third: cumulative = 1.5, pct = round(1.5/2.3 * 100) = 65
+    expect(anim.keyframes!.keyframes[2].percentage).toBe(65);
+    expect(anim.keyframes!.keyframes[2].properties.x).toBe(200);
+  });
+
+  it("parses simple array keyframes format", () => {
+    const script = `
+      const tl = gsap.timeline({ paused: true });
+      tl.to("#hero", {
+        keyframes: { x: [0, 100, 200, 0], opacity: [0, 1, 1, 0], easeEach: "power2.inOut" },
+        duration: 5
+      }, 0);
+    `;
+    const result = parseGsapScript(script);
+    expect(result.animations).toHaveLength(1);
+    const anim = result.animations[0];
+    expect(anim.keyframes).toBeDefined();
+    expect(anim.keyframes!.format).toBe("simple-array");
+    expect(anim.keyframes!.easeEach).toBe("power2.inOut");
+    expect(anim.keyframes!.keyframes).toHaveLength(4);
+
+    // Evenly spaced: 0%, 33%, 67%, 100%
+    expect(anim.keyframes!.keyframes[0].percentage).toBe(0);
+    expect(anim.keyframes!.keyframes[0].properties.x).toBe(0);
+    expect(anim.keyframes!.keyframes[0].properties.opacity).toBe(0);
+
+    expect(anim.keyframes!.keyframes[1].percentage).toBe(33);
+    expect(anim.keyframes!.keyframes[1].properties.x).toBe(100);
+    expect(anim.keyframes!.keyframes[1].properties.opacity).toBe(1);
+
+    expect(anim.keyframes!.keyframes[2].percentage).toBe(67);
+    expect(anim.keyframes!.keyframes[2].properties.x).toBe(200);
+    expect(anim.keyframes!.keyframes[2].properties.opacity).toBe(1);
+
+    expect(anim.keyframes!.keyframes[3].percentage).toBe(100);
+    expect(anim.keyframes!.keyframes[3].properties.x).toBe(0);
+    expect(anim.keyframes!.keyframes[3].properties.opacity).toBe(0);
+  });
+
+  it("parses three-level easing", () => {
+    const script = `
+      const tl = gsap.timeline({ paused: true });
+      tl.to("#hero", {
+        keyframes: { "0%": { x: 0 }, "50%": { x: 100, ease: "back.out(1.7)" }, "100%": { x: 200 } },
+        ease: "none",
+        easeEach: "power2.out",
+        duration: 5
+      }, 0);
+    `;
+    const result = parseGsapScript(script);
+    const anim = result.animations[0];
+
+    // Tween-level ease
+    expect(anim.ease).toBe("none");
+    // easeEach on keyframes data (set from tween-level)
+    expect(anim.keyframes!.easeEach).toBe("power2.out");
+    // Per-keyframe ease
+    expect(anim.keyframes!.keyframes[1].ease).toBe("back.out(1.7)");
+  });
+
+  it("flat tween without keyframes still works", () => {
+    const script = `
+      const tl = gsap.timeline({ paused: true });
+      tl.to("#el", { x: 100, duration: 1 }, 0);
+    `;
+    const result = parseGsapScript(script);
+    expect(result.animations).toHaveLength(1);
+    expect(result.animations[0].keyframes).toBeUndefined();
+    expect(result.animations[0].properties.x).toBe(100);
+  });
+
+  it("keyframes tween has empty top-level properties", () => {
+    const script = `
+      const tl = gsap.timeline({ paused: true });
+      tl.to("#hero", {
+        keyframes: { "0%": { x: 0 }, "100%": { x: 200 } },
+        duration: 5
+      }, 0);
+    `;
+    const result = parseGsapScript(script);
+    const anim = result.animations[0];
+    expect(anim.keyframes).toBeDefined();
+    expect(Object.keys(anim.properties)).toHaveLength(0);
+  });
+});

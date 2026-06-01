@@ -10,7 +10,13 @@
  */
 import * as recast from "recast";
 import { parse as babelParse } from "@babel/parser";
-import { type GsapAnimation, type GsapMethod, type ParsedGsap } from "./gsapSerialize";
+import {
+  type GsapAnimation,
+  type GsapKeyframesData,
+  type GsapMethod,
+  type GsapPercentageKeyframe,
+  type ParsedGsap,
+} from "./gsapSerialize";
 
 export type {
   GsapAnimation,
@@ -448,7 +454,7 @@ function findAllTweenCalls(
 const BUILTIN_VAR_KEYS = new Set(["duration", "ease", "delay"]);
 
 /** Keys that are never preserved (callbacks / advanced patterns). */
-const DROPPED_VAR_KEYS = new Set(["keyframes", "onComplete", "onStart", "onUpdate", "onRepeat"]);
+const DROPPED_VAR_KEYS = new Set(["onComplete", "onStart", "onUpdate", "onRepeat"]);
 
 /** Keys that belong in `extras` — non-editable GSAP config that must survive round-trips. */
 const EXTRAS_KEYS = new Set([
@@ -466,17 +472,221 @@ const EXTRAS_KEYS = new Set([
  * Returns the printed source of the value node, suitable for verbatim re-emission.
  */
 function extractRawPropertySource(varsArgNode: any, key: string): string | undefined {
+  const node = findPropertyNode(varsArgNode, key);
+  return node ? recast.print(node).code : undefined;
+}
+
+/** Find the raw AST node for a named property inside an ObjectExpression. */
+function findPropertyNode(varsArgNode: any, key: string): any | undefined {
   if (varsArgNode?.type !== "ObjectExpression") return undefined;
   for (const prop of varsArgNode.properties ?? []) {
-    if (prop.type !== "ObjectProperty" && prop.type !== "Property") continue;
-    const propKey = prop.key?.name ?? prop.key?.value;
-    if (propKey === key) {
-      return recast.print(prop.value).code;
-    }
+    if (!isObjectProperty(prop)) continue;
+    if (propKeyName(prop) === key) return prop.value;
   }
   return undefined;
 }
 
+// ── Native GSAP Keyframes Parsing ──────────────────────────────────────────
+
+const PERCENTAGE_KEY_RE = /^(\d+(?:\.\d+)?)%$/;
+
+/** Extract a string-valued ease or easeEach from an AST property node. */
+function tryResolveStringProp(propValue: any, scope: ScopeBindings): string | undefined {
+  const val = resolveNode(propValue, scope);
+  return typeof val === "string" ? val : undefined;
+}
+
+/**
+ * Parse a `keyframes` property value from a tween vars AST node into a
+ * normalized `GsapKeyframesData` structure. Handles all three GSAP formats:
+ * percentage objects, object arrays, and simple (property-array) objects.
+ */
+// fallow-ignore-next-line complexity
+function parseKeyframesNode(node: any, scope: ScopeBindings): GsapKeyframesData | undefined {
+  if (!node) return undefined;
+
+  // ── Object array format: keyframes: [ { x: 0, duration: 0.5 }, ... ] ──
+  if (node.type === "ArrayExpression") {
+    return parseObjectArrayKeyframes(node, scope);
+  }
+
+  if (node.type !== "ObjectExpression") return undefined;
+
+  // Distinguish percentage vs simple-array by inspecting property keys/values.
+  const props = node.properties ?? [];
+  let hasPercentageKey = false;
+  let hasArrayValue = false;
+
+  for (const prop of props) {
+    if (prop.type !== "ObjectProperty" && prop.type !== "Property") continue;
+    const key = prop.key?.value ?? prop.key?.name;
+    if (typeof key === "string" && PERCENTAGE_KEY_RE.test(key)) {
+      hasPercentageKey = true;
+      break;
+    }
+    if (prop.value?.type === "ArrayExpression") {
+      hasArrayValue = true;
+    }
+  }
+
+  if (hasPercentageKey) return parsePercentageKeyframes(node, scope);
+  if (hasArrayValue) return parseSimpleArrayKeyframes(node, scope);
+
+  return undefined;
+}
+
+// fallow-ignore-next-line complexity
+function parsePercentageKeyframes(node: any, scope: ScopeBindings): GsapKeyframesData {
+  const keyframes: GsapPercentageKeyframe[] = [];
+  let ease: string | undefined;
+  let easeEach: string | undefined;
+
+  for (const prop of node.properties ?? []) {
+    if (prop.type !== "ObjectProperty" && prop.type !== "Property") continue;
+    const key = prop.key?.value ?? prop.key?.name;
+    if (typeof key !== "string") continue;
+
+    const pctMatch = PERCENTAGE_KEY_RE.exec(key);
+    if (pctMatch) {
+      const percentage = Number.parseFloat(pctMatch[1]!);
+      const record = objectExpressionToRecord(prop.value, scope);
+      const properties: Record<string, number | string> = {};
+      let kfEase: string | undefined;
+      for (const [k, v] of Object.entries(record)) {
+        if (k === "ease" && typeof v === "string") {
+          kfEase = v;
+        } else if (typeof v === "number" || typeof v === "string") {
+          properties[k] = v;
+        }
+      }
+      keyframes.push({ percentage, properties, ...(kfEase ? { ease: kfEase } : {}) });
+    } else if (key === "ease") {
+      ease = tryResolveStringProp(prop.value, scope) ?? ease;
+    } else if (key === "easeEach") {
+      easeEach = tryResolveStringProp(prop.value, scope) ?? easeEach;
+    }
+  }
+
+  keyframes.sort((a, b) => a.percentage - b.percentage);
+
+  return {
+    format: "percentage",
+    keyframes,
+    ...(ease ? { ease } : {}),
+    ...(easeEach ? { easeEach } : {}),
+  };
+}
+
+// fallow-ignore-next-line complexity
+function parseObjectArrayKeyframes(node: any, scope: ScopeBindings): GsapKeyframesData {
+  const elements = node.elements ?? [];
+  const raw: Array<{
+    properties: Record<string, number | string>;
+    duration?: number;
+    ease?: string;
+  }> = [];
+
+  for (const el of elements) {
+    if (!el || (el.type !== "ObjectExpression" && el.type !== "ObjectProperty")) {
+      // Skip non-object elements
+      if (el?.type !== "ObjectExpression") continue;
+    }
+    const record = objectExpressionToRecord(el, scope);
+    const properties: Record<string, number | string> = {};
+    let duration: number | undefined;
+    let ease: string | undefined;
+    for (const [k, v] of Object.entries(record)) {
+      if (k === "duration" && typeof v === "number") {
+        duration = v;
+      } else if (k === "ease" && typeof v === "string") {
+        ease = v;
+      } else if (typeof v === "number" || typeof v === "string") {
+        properties[k] = v;
+      }
+    }
+    raw.push({ properties, duration, ease });
+  }
+
+  // Convert durations to percentage positions. If durations are present, use
+  // cumulative ratios; otherwise distribute evenly.
+  const totalDuration = raw.reduce((sum, r) => sum + (r.duration ?? 0), 0);
+  const keyframes: GsapPercentageKeyframe[] = [];
+
+  if (totalDuration > 0) {
+    let cumulative = 0;
+    for (const entry of raw) {
+      const percentage = Math.round((cumulative / totalDuration) * 100);
+      keyframes.push({
+        percentage,
+        properties: entry.properties,
+        ...(entry.ease ? { ease: entry.ease } : {}),
+      });
+      cumulative += entry.duration ?? 0;
+    }
+  } else {
+    for (let i = 0; i < raw.length; i++) {
+      const entry = raw[i]!;
+      const percentage = raw.length > 1 ? Math.round((i / (raw.length - 1)) * 100) : 0;
+      keyframes.push({
+        percentage,
+        properties: entry.properties,
+        ...(entry.ease ? { ease: entry.ease } : {}),
+      });
+    }
+  }
+
+  return { format: "object-array", keyframes };
+}
+
+// fallow-ignore-next-line complexity
+function parseSimpleArrayKeyframes(node: any, scope: ScopeBindings): GsapKeyframesData {
+  const arrayProps: Map<string, (number | string)[]> = new Map();
+  let ease: string | undefined;
+  let easeEach: string | undefined;
+
+  for (const prop of node.properties ?? []) {
+    if (prop.type !== "ObjectProperty" && prop.type !== "Property") continue;
+    const key = prop.key?.name ?? prop.key?.value;
+    if (typeof key !== "string") continue;
+
+    if (prop.value?.type === "ArrayExpression") {
+      const values: (number | string)[] = [];
+      for (const el of prop.value.elements ?? []) {
+        const val = resolveNode(el, scope);
+        if (typeof val === "number" || typeof val === "string") {
+          values.push(val);
+        }
+      }
+      if (values.length > 0) arrayProps.set(key, values);
+    } else if (key === "ease") {
+      ease = tryResolveStringProp(prop.value, scope) ?? ease;
+    } else if (key === "easeEach") {
+      easeEach = tryResolveStringProp(prop.value, scope) ?? easeEach;
+    }
+  }
+
+  // Zip arrays into percentage keyframes (evenly spaced).
+  const maxLen = Math.max(...[...arrayProps.values()].map((a) => a.length), 0);
+  const keyframes: GsapPercentageKeyframe[] = [];
+
+  for (let i = 0; i < maxLen; i++) {
+    const percentage = maxLen > 1 ? Math.round((i / (maxLen - 1)) * 100) : 0;
+    const properties: Record<string, number | string> = {};
+    for (const [key, values] of arrayProps) {
+      if (i < values.length) properties[key] = values[i]!;
+    }
+    keyframes.push({ percentage, properties });
+  }
+
+  return {
+    format: "simple-array",
+    keyframes,
+    ...(ease ? { ease } : {}),
+    ...(easeEach ? { easeEach } : {}),
+  };
+}
+
+// fallow-ignore-next-line complexity
 function tweenCallToAnimation(
   call: TweenCallInfo,
   scope: ScopeBindings,
@@ -484,10 +694,22 @@ function tweenCallToAnimation(
   const vars = objectExpressionToRecord(call.varsArg, scope);
   const properties: Record<string, number | string> = {};
   const extras: Record<string, unknown> = {};
+  let keyframesData: GsapKeyframesData | undefined;
 
   for (const [key, val] of Object.entries(vars)) {
     if (BUILTIN_VAR_KEYS.has(key)) continue;
     if (DROPPED_VAR_KEYS.has(key)) continue;
+
+    if (key === "keyframes") {
+      const kfNode = findPropertyNode(call.varsArg, "keyframes");
+      keyframesData = parseKeyframesNode(kfNode, scope);
+      continue;
+    }
+
+    if (key === "easeEach") {
+      // easeEach is only meaningful alongside keyframes — handled below.
+      continue;
+    }
 
     if (EXTRAS_KEYS.has(key)) {
       // For extras, prefer the raw AST source so complex objects like
@@ -504,6 +726,11 @@ function tweenCallToAnimation(
     if (typeof val === "number" || typeof val === "string") {
       properties[key] = val;
     }
+  }
+
+  // Apply tween-level easeEach to keyframes data.
+  if (keyframesData && typeof vars.easeEach === "string") {
+    keyframesData.easeEach = vars.easeEach as string;
   }
 
   let fromProperties: Record<string, number | string> | undefined;
@@ -533,6 +760,7 @@ function tweenCallToAnimation(
     ease,
   };
   if (Object.keys(extras).length > 0) anim.extras = extras;
+  if (keyframesData) anim.keyframes = keyframesData;
   return anim;
 }
 
