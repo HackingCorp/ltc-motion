@@ -17,6 +17,7 @@ import { usePreviewInteraction } from "./usePreviewInteraction";
 import { useDomEditCommits } from "./useDomEditCommits";
 import { useGsapScriptCommits } from "./useGsapScriptCommits";
 import { useGsapAnimationsForElement, useGsapCacheVersion } from "./useGsapTweenCache";
+import { tryGsapDragIntercept } from "./gsapRuntimeBridge";
 
 // ── Types ──
 
@@ -212,6 +213,7 @@ export function useDomEditSession({
   );
 
   const {
+    commitMutation: gsapCommitMutation,
     updateGsapProperty,
     updateGsapMeta,
     deleteGsapAnimation,
@@ -273,6 +275,29 @@ export function useDomEditSession({
     refreshDomEditSelectionFromPreview,
     buildDomSelectionFromTarget,
   });
+
+  // Wrap the CSS-based path offset commit with GSAP-awareness: when the
+  // selected element has GSAP animations controlling x/y, read the actual
+  // interpolated position from the iframe runtime and commit via the GSAP
+  // script mutation path instead of the CSS translate offset.
+  const handleGsapAwarePathOffsetCommit = useCallback(
+    (selection: DomEditSelection, next: { x: number; y: number }) => {
+      if (
+        gsapCommitMutation &&
+        tryGsapDragIntercept(
+          selection,
+          next,
+          selectedGsapAnimations,
+          previewIframeRef.current,
+          gsapCommitMutation,
+        )
+      ) {
+        return;
+      }
+      handleDomPathOffsetCommit(selection, next);
+    },
+    [handleDomPathOffsetCommit, selectedGsapAnimations, gsapCommitMutation, previewIframeRef],
+  );
 
   const handleGsapUpdateProperty = useCallback(
     (animId: string, prop: string, value: number | string) => {
@@ -495,7 +520,7 @@ export function useDomEditSession({
     handleDomStyleCommit,
     handleDomAttributeCommit,
     handleDomHtmlAttributeCommit,
-    handleDomPathOffsetCommit,
+    handleDomPathOffsetCommit: handleGsapAwarePathOffsetCommit,
     handleDomGroupPathOffsetCommit,
     handleDomBoxSizeCommit,
     handleDomRotationCommit,
