@@ -189,7 +189,7 @@ export function TimelineToolbar({
               <button
                 type="button"
                 onClick={onToggleKeyframe}
-                className={`flex h-6 w-6 items-center justify-center rounded transition-colors ${
+                className={`flex h-7 w-7 items-center justify-center rounded transition-colors ${
                   keyframeState === "active"
                     ? "text-studio-accent"
                     : keyframeState === "inactive"
@@ -197,7 +197,7 @@ export function TimelineToolbar({
                       : "text-neutral-600 hover:text-neutral-400"
                 }`}
               >
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+                <svg width="18" height="18" viewBox="0 0 10 10" fill="currentColor">
                   {keyframeState === "active" ? (
                     <path d="M5 0.5L9.5 5L5 9.5L0.5 5Z" />
                   ) : (
