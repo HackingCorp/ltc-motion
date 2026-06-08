@@ -65,6 +65,7 @@ export type UseDomEditOverlayGesturesOptions = {
   groupGestureRef: RefObject<GroupGestureState | null>;
   blockedMoveRef: RefObject<BlockedMoveState | null>;
   rafPausedRef: RefObject<boolean>;
+  rafSelectionOnlyPausedRef: RefObject<boolean>;
   suppressNextBoxClickRef: RefObject<boolean>;
   setOverlayRect: (next: OverlayRect | null) => void;
   setGroupOverlayItems: (next: GroupOverlayItem[]) => void;
@@ -391,11 +392,11 @@ export function createDomEditOverlayGestureHandlers(opts: UseDomEditOverlayGestu
 
     if (!g || !sel) {
       opts.gestureRef.current = null;
-      opts.rafPausedRef.current = false;
+      opts.rafSelectionOnlyPausedRef.current = false;
       return;
     }
     opts.gestureRef.current = null;
-    opts.rafPausedRef.current = false;
+    opts.rafSelectionOnlyPausedRef.current = false;
     const movedDistance = Math.hypot(e.clientX - g.startX, e.clientY - g.startY);
 
     if (g.kind === "drag" && movedDistance < BLOCKED_MOVE_THRESHOLD_PX) {
@@ -522,6 +523,7 @@ export function createDomEditOverlayGestureHandlers(opts: UseDomEditOverlayGestu
     opts.groupGestureRef.current = null;
     opts.gestureRef.current = null;
     opts.rafPausedRef.current = false;
+    opts.rafSelectionOnlyPausedRef.current = false;
   };
 
   return { startGesture, startGroupDrag, onPointerMove, onPointerUp, clearPointerState };

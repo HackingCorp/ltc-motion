@@ -154,7 +154,7 @@ export function startGesture(
   e.preventDefault();
   e.stopPropagation();
   e.currentTarget.setPointerCapture(e.pointerId);
-  opts.rafPausedRef.current = true;
+  opts.rafSelectionOnlyPausedRef.current = true;
   opts.gestureRef.current = {
     kind,
     mode,

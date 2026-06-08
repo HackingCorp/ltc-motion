@@ -25,6 +25,8 @@ interface UseDomEditOverlayRectsOptions {
   groupSelectionsRef: RefObject<DomEditSelection[]>;
   hoverSelectionRef: RefObject<DomEditSelection | null>;
   rafPausedRef: RefObject<boolean>;
+  /** When true, the RAF loop skips only the main selection rect — hover and group rects keep updating. */
+  rafSelectionOnlyPausedRef?: RefObject<boolean>;
 }
 
 interface UseDomEditOverlayRectsResult {
@@ -47,6 +49,7 @@ export function useDomEditOverlayRects({
   groupSelectionsRef,
   hoverSelectionRef,
   rafPausedRef,
+  rafSelectionOnlyPausedRef,
 }: UseDomEditOverlayRectsOptions): UseDomEditOverlayRectsResult {
   const [overlayRect, setOverlayRectState] = useState<OverlayRect | null>(null);
   const [hoverRect, setHoverRectState] = useState<OverlayRect | null>(null);
@@ -104,6 +107,7 @@ export function useDomEditOverlayRects({
       frame = requestAnimationFrame(update);
       if (rafPausedRef.current) return;
 
+      const selectionOnlyPaused = rafSelectionOnlyPausedRef?.current ?? false;
       const sel = selectionRef.current;
       const iframe = iframeRef.current;
       const overlayEl = overlayRef.current;
@@ -124,21 +128,23 @@ export function useDomEditOverlayRects({
         return;
       }
 
-      if (sel) {
-        const el = resolveElementForOverlay(
-          doc,
-          sel,
-          activeCompositionPathRef.current,
-          resolvedElementRef as ResolvedElementRef,
-        );
-        if (el && isElementVisibleForOverlay(el)) {
-          setOverlayRect(toOverlayRect(overlayEl, iframe, el));
+      if (!selectionOnlyPaused) {
+        if (sel) {
+          const el = resolveElementForOverlay(
+            doc,
+            sel,
+            activeCompositionPathRef.current,
+            resolvedElementRef as ResolvedElementRef,
+          );
+          if (el && isElementVisibleForOverlay(el)) {
+            setOverlayRect(toOverlayRect(overlayEl, iframe, el));
+          } else {
+            setOverlayRect(null);
+          }
         } else {
+          resolvedElementRef.current = null;
           setOverlayRect(null);
         }
-      } else {
-        resolvedElementRef.current = null;
-        setOverlayRect(null);
       }
 
       const group = groupSelectionsRef.current;

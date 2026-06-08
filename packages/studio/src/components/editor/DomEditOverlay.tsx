@@ -98,6 +98,7 @@ export const DomEditOverlay = memo(function DomEditOverlay({
   const suppressNextOverlayMouseDownRef = useRef(false);
   const snapGuidesRef = useRef<SnapGuidesState | null>(null);
   const rafPausedRef = useRef(false);
+  const rafSelectionOnlyPausedRef = useRef(false);
 
   const selectionRef = useRef(selection);
   selectionRef.current = selection;
@@ -142,6 +143,7 @@ export const DomEditOverlay = memo(function DomEditOverlay({
     groupSelectionsRef,
     hoverSelectionRef,
     rafPausedRef,
+    rafSelectionOnlyPausedRef,
   });
 
   const [compRect, setCompRect] = useState({
@@ -199,6 +201,7 @@ export const DomEditOverlay = memo(function DomEditOverlay({
     groupGestureRef,
     blockedMoveRef,
     rafPausedRef,
+    rafSelectionOnlyPausedRef,
     suppressNextBoxClickRef,
     setOverlayRect,
     setGroupOverlayItems,
