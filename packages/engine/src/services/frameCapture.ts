@@ -1237,10 +1237,12 @@ async function prepareFrameForCapture(
     if (window.__hf && typeof window.__hf.seek === "function") {
       window.__hf.seek(t);
     }
-    // Force a synchronous layout flush so the compositor resolves all pending
-    // CSS cascade changes (including inherited properties like `color`) before
-    // the screenshot. Without this, GSAP's inline style cleanup after seek
-    // can leave inherited values unresolved in headless capture mode.
+    // seek() mutates the DOM synchronously (GSAP inline styles, adapter
+    // state, CSS class changes). Page.captureScreenshot can fire before
+    // Chrome finishes style recalc, leaving inherited CSS properties
+    // (color, font-size, etc.) unresolved. A layout read forces a
+    // synchronous recalc. Harmless under BeginFrame — the rAF-driven
+    // composite already includes a full style pass.
     void document.body.offsetHeight;
     return !!(window as unknown as { __hf_page_composite_pending?: boolean })
       .__hf_page_composite_pending;
