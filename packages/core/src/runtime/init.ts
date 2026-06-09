@@ -988,6 +988,15 @@ export function initSandboxRuntimeModular(): void {
       const dur = String(rootDuration > 0 ? rootDuration : 1);
       const seen = new Set<Element>();
 
+      // Elements inside a sub-composition host are managed by the host's
+      // clip window — stamping them with root-level timing makes the
+      // visibility system treat them as always-visible, overriding the
+      // parent's hidden state after the clip ends.
+      const isInsideSubComposition = (el: Element): boolean => {
+        const host = el.closest("[data-composition-src],[data-composition-file]");
+        return host !== null && host !== rootComp;
+      };
+
       // Stamp GSAP-targeted elements
       if (state.capturedTimeline.getChildren) {
         try {
@@ -998,6 +1007,7 @@ export function initSandboxRuntimeModular(): void {
               if (target === rootComp) continue;
               if (target.hasAttribute("data-start")) continue;
               if (seen.has(target)) continue;
+              if (isInsideSubComposition(target)) continue;
               seen.add(target);
               target.setAttribute("data-start", "0");
               target.setAttribute("data-duration", dur);
@@ -1018,6 +1028,7 @@ export function initSandboxRuntimeModular(): void {
           if (el.hasAttribute("data-start")) continue;
           if (seen.has(el)) continue;
           if (el.tagName === "SCRIPT" || el.tagName === "STYLE" || el.tagName === "LINK") continue;
+          if (isInsideSubComposition(el)) continue;
           seen.add(el);
           el.setAttribute("data-start", "0");
           el.setAttribute("data-duration", dur);
