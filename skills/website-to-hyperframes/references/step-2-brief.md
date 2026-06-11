@@ -139,15 +139,15 @@ Note these per-beat overrides — they go into the storyboard.
 
 ### "Let me see options"
 
-Propose 2–3 brief creative directions (3–4 sentences each) with different **narrative arcs** — what story the video tells, not what assets it shows. Each option leads with the message and the arc; visuals are composed scenes that serve them.
+Propose 2–3 brief creative directions (3–4 sentences each) with different **narrative arcs** — what story the video tells. Each option leads with the message and the arc; visuals are whatever serves the arc (captured assets, composed scenes, or both layered).
 
-> **Option A — Problem → Solution (cinematic, narrated):** Open with the problem stated as kinetic typography over a dark canvas with a single accent glow. Cut to a composed kanban board where chaotic cards animate into organized columns as narration lands the value prop. Closer: brand mark drawn stroke-by-stroke on a shader bloom of the brand gradient. Apple-keynote register. ~25s with full VO.
+> **Option A — Problem → Solution (cinematic, narrated, composition-leaning):** Open with the problem stated as kinetic typography over a dark canvas with a single accent glow. Cut to a composed kanban board where chaotic cards animate into organized columns as narration lands the value prop. Closer: brand mark drawn stroke-by-stroke on a shader bloom of the brand gradient. Apple-keynote register. ~25s with full VO.
 >
-> **Option B — Reveal arc (announcement, music-led):** Cold open: particles converging in darkness, no copy. The product wordmark draws itself across the frame as the first beat lands. Three composed feature panels each unveiled by a hard cut — kinetic typography labels, brand color washes, no screenshots. Closes on the mark + tagline + macOS hint. ~15s, music-driven, minimal narration.
+> **Option B — Reveal arc (announcement, music-led, layered):** Cold open: particles converging in darkness, no copy. The product wordmark draws itself across the frame as the first beat lands. Three feature panels each unveiled by a hard cut — each layering a captured product asset (hero illustration / signature diagram / partner-logo grid built from real SVGs) with composed kinetic-typography labels and brand color washes. Closes on the mark + tagline. ~15s, music-driven, minimal narration.
 >
-> **Option C — Demonstration (narrated walkthrough):** Three composed UI scenes — kanban from cards-as-divs, AI chat with typewriter narration sync, command palette with character-typed search — each in the brand palette with the captured logo stamped top-left as identity. CSS crossfades between. Narration walks each one. ~35s, full VO.
+> **Option C — Demonstration (narrated walkthrough, asset-leaning):** Three product-led scenes — the real captured dashboard screenshot in a 3D MacBook mockup with composed glow; the captured AI-chat interface with typewriter narration sync over its real frame; the captured command-palette UI with character-typed search animating on its real surface. CSS crossfades between. The captured wordmark holds in the closer. Narration walks each one. ~35s, full VO.
 
-Each option states: the arc, the composed visuals carrying it, where (if anywhere) a captured asset shows up as an accent. **Never** an option whose primary content is "the screenshot of X" — if you find yourself writing one, flip it: name what gets composed, then where the brand accent lands on top.
+Each option names: the arc, the dominant visual approach (composition-leaning / layered / asset-leaning), and a sample of what carries each beat. **The three options should vary in approach** so the user sees a meaningful spectrum — proposing three composition-heavy options or three asset-heavy options doesn't give the user a real choice. The agent picks per-beat technique downstream regardless of which option the user picks.
 
 Let the user pick one or combine elements.
 
