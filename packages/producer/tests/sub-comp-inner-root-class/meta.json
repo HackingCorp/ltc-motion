@@ -1,0 +1,12 @@
+{
+  "name": "Sub-composition inner root class preservation",
+  "description": "Verifies that classes on a sub-composition inner root element (e.g. .scene_1-root) survive the producer flatten step so scoped CSS selectors resolve correctly.",
+  "tags": ["sub-composition", "regression", "flatten"],
+  "minPsnr": 25,
+  "maxFrameFailures": 5,
+  "minAudioCorrelation": 0.0,
+  "maxAudioLagWindows": 120,
+  "renderConfig": {
+    "fps": 24
+  }
+}
