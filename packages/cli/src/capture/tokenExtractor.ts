@@ -326,7 +326,7 @@ const EXTRACT_SCRIPT = `(() => {
       if (anchor) {
         var href = anchor.getAttribute('href') || '';
         if (href === '/' || href === '#' || href === './' ||
-            /^https?:\/\/[^/]+\/?$/.test(href)) {
+            /^https?:\\/\\/[^/]+\\/?$/.test(href)) {
           isLogo = true;
         }
       }

@@ -81,7 +81,7 @@ export async function catalogAssets(page: Page): Promise<CatalogedAsset[]> {
       if (homeAnchor) {
         var aHref = homeAnchor.getAttribute('href') || '';
         ctx.inHomeLink = aHref === '/' || aHref === '#' || aHref === './' ||
-                         /^https?:\/\/[^/]+\/?$/.test(aHref);
+                         /^https?:\\/\\/[^/]+\\/?$/.test(aHref);
       }
       // 3. matchesTitleBrand: alt/aria-label/title contains the brand
       //    segment of the page title (everything before " - " / " | " /
