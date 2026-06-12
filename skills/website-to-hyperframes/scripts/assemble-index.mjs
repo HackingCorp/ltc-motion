@@ -127,13 +127,23 @@ const useHyperShader = shaderTransitions != null;
 const anomalies = [];
 
 // ---------- helper: pull the root <div>'s data-duration ----------
-// The root is the element carrying id="root"; match its full opening tag (same
-// shape check-compositions.mjs uses) and read data-duration off THAT tag, not
-// some inner clip's. Returns null if the file has no id="root" tag or that tag
-// carries no data-duration (check-compositions already gates both — here a null
-// just skips the cross-check rather than guessing).
-function rootDataDuration(html) {
-  const tagM = html.match(/<div\b[^>]*\bid=["']root["'][^>]*>/i);
+// w2h beats use `id="<beat-id>"` (= the scene's sid, matching data-composition-id)
+// on the root <div>, NOT `id="root"`. The starter templates + the
+// _beat-skeleton.html boilerplate both teach the beat-id pattern, and real
+// builds (heygen-com, huly, heygen-showcase) all emit it. Match against the
+// scene's sid so the cross-check actually fires; an earlier `id="root"`-only
+// match silently skipped this check for every w2h project ever built.
+//
+// We accept either `id="<sid>"` OR `data-composition-id="<sid>"` (matching by
+// either identifies the root unambiguously since they're equal by contract).
+function rootDataDuration(html, sid) {
+  // Build escaped sid for embedding in a regex pattern.
+  const sidPattern = sid.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const tagRe = new RegExp(
+    `<div\\b[^>]*\\b(?:id|data-composition-id)=["']${sidPattern}["'][^>]*>`,
+    "is",
+  );
+  const tagM = html.match(tagRe);
   if (!tagM) return null;
   const durM = tagM[0].match(/\bdata-duration=["']([\d.]+)["']/);
   return durM ? parseFloat(durM[1]) : null;
@@ -155,10 +165,10 @@ for (const { sid, scene } of playOrder) {
       `${sid}: group_spec estimatedDuration_s missing or non-positive (${scene.estimatedDuration_s})`,
     );
   }
-  const rootDur = rootDataDuration(readFileSync(compAbs, "utf8"));
+  const rootDur = rootDataDuration(readFileSync(compAbs, "utf8"), sid);
   if (rootDur == null) {
     anomalies.push(
-      `${sid}: could not read root data-duration from ${compRel} — skipped duration cross-check`,
+      `${sid}: could not read root data-duration from ${compRel} (no <div id="${sid}"...> or data-composition-id="${sid}" with data-duration) — skipped duration cross-check`,
     );
   } else if (Math.abs(rootDur - specDur) > DUR_EPSILON) {
     durMismatches.push(`${sid}: worker root data-duration=${rootDur}s but group_spec=${specDur}s`);
