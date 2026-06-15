@@ -28,6 +28,22 @@ import { type DirectTimelineAdapter } from "./timeline-adapters.js";
 const MIN_PLAYBACK_RATE = 0.1;
 const MAX_PLAYBACK_RATE = 5;
 
+export type ColorLookTarget =
+  | string
+  | {
+      id?: string | null;
+      hfId?: string | null;
+      selector?: string | null;
+      selectorIndex?: number | null;
+    };
+
+export type ColorLookCompareState = {
+  enabled: boolean;
+  position?: number;
+  softness?: number;
+  lineWidth?: number;
+};
+
 function clampPlaybackRate(rate: number): number {
   if (!Number.isFinite(rate) || rate <= 0) return 1;
   return Math.max(MIN_PLAYBACK_RATE, Math.min(MAX_PLAYBACK_RATE, rate));
@@ -301,6 +317,25 @@ class HyperframesPlayer extends HTMLElement {
     this._paused = true;
     this.controlsApi?.updatePlaying(false);
     this.controlsApi?.updateTime(this._currentTime, this._duration);
+  }
+
+  setColorLook(target: ColorLookTarget, look: unknown) {
+    this._sendControl("set-color-look", { target, look });
+  }
+
+  clearColorLook(target: ColorLookTarget) {
+    this._sendControl("set-color-look", { target, look: null });
+  }
+
+  setColorLookCompare(target: ColorLookTarget, compare: ColorLookCompareState) {
+    this._sendControl("set-color-look-compare", { target, compare });
+  }
+
+  clearColorLookCompare(target: ColorLookTarget) {
+    this._sendControl("set-color-look-compare", {
+      target,
+      compare: { enabled: false },
+    });
   }
 
   get currentTime() {

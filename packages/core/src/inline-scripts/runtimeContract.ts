@@ -17,6 +17,8 @@ export const HYPERFRAME_CONTROL_ACTIONS = [
   "seek",
   "set-muted",
   "set-playback-rate",
+  "set-color-look",
+  "set-color-look-compare",
   "enable-pick-mode",
   "disable-pick-mode",
 ] as const;

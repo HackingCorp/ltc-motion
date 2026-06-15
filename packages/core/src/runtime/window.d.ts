@@ -1,4 +1,5 @@
 import type { RuntimeTimelineMessage, RuntimeTimelineLike } from "./types";
+import type { RuntimeColorLooksApi } from "./colorLooks";
 import type { HyperframePickerApi } from "../inline-scripts/pickerApi";
 import type { PlayerAPI } from "../core.types";
 
@@ -29,6 +30,14 @@ declare global {
     __timelines: Record<string, RuntimeTimelineLike>;
     __player?: PlayerAPI;
     __clipManifest?: RuntimeTimelineMessage;
+    __hf?: {
+      colorLooks?: RuntimeColorLooksApi;
+      onSwallowed?: (label: string, err: unknown) => void;
+      seek?: (time: number) => void;
+      duration?: number;
+      transitions?: unknown;
+      shaderTransitions?: unknown;
+    };
     __playerReady?: boolean;
     __renderReady?: boolean;
     __hfRuntimeTeardown?: (() => void) | null;

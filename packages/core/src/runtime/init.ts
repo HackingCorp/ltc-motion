@@ -22,6 +22,7 @@ import { collectRuntimeTimelinePayload } from "./timeline";
 import { createRuntimeStartTimeResolver } from "./startResolver";
 import { loadExternalCompositions, loadInlineTemplateCompositions } from "./compositionLoader";
 import { applyCaptionOverrides } from "./captionOverrides";
+import { createColorLooksRuntime, type RuntimeColorLooksApi } from "./colorLooks";
 import { TransportClock } from "./clock";
 import { WebAudioTransport } from "./webAudioTransport";
 import { quantizeTimeToFrame } from "../inline-scripts/parityContract";
@@ -34,6 +35,7 @@ const AUTHORED_END_ATTR = "data-hf-authored-end";
 
 export function initSandboxRuntimeModular(): void {
   const state = createRuntimeState();
+  let colorLooksRuntime: RuntimeColorLooksApi | null = null;
   let runtimeErrorListener: ((event: ErrorEvent) => void) | null = null;
   let runtimeUnhandledRejectionListener: ((event: PromiseRejectionEvent) => void) | null = null;
   const runtimeCleanupCallbacks: Array<() => void> = [];
@@ -1532,6 +1534,9 @@ export function initSandboxRuntimeModular(): void {
         }
       }
       rawNode.style.visibility = isVisibleNow ? "visible" : "hidden";
+      if (rawNode instanceof HTMLVideoElement || rawNode instanceof HTMLImageElement) {
+        colorLooksRuntime?.setSourceVisibility(rawNode, isVisibleNow);
+      }
     }
   };
 
@@ -1647,6 +1652,13 @@ export function initSandboxRuntimeModular(): void {
   });
   picker.installPickerApi();
 
+  const colorLooks = createColorLooksRuntime();
+  colorLooksRuntime = colorLooks;
+  registerRuntimeCleanup(() => {
+    colorLooks.destroy();
+    colorLooksRuntime = null;
+  });
+
   const applyPlaybackRate = (nextRate: number) => {
     const parsed = Number(nextRate);
     if (!Number.isFinite(parsed) || parsed <= 0) {
@@ -1704,7 +1716,9 @@ export function initSandboxRuntimeModular(): void {
     },
     onDeterministicPause: () => runAdapters("pause"),
     onDeterministicPlay: () => runAdapters("play"),
-    onRenderFrameSeek: () => {},
+    onRenderFrameSeek: () => {
+      colorLooks.redraw();
+    },
     onShowNativeVideos: () => {},
     getSafeDuration: () => getSafeTimelineDurationSeconds(state.capturedTimeline, 0),
   });
@@ -1769,6 +1783,12 @@ export function initSandboxRuntimeModular(): void {
       applyPlaybackRate(rate);
       if (state.transportClock) state.transportClock.setRate(state.playbackRate);
       applyWebAudioRate();
+    },
+    onSetColorLook: (target, look) => {
+      colorLooks.setLook(target, look);
+    },
+    onSetColorLookCompare: (target, compare) => {
+      colorLooks.setCompare(target, compare);
     },
     onTick: () => {
       if (state.tornDown || !clock.isPlaying()) return;
@@ -2229,6 +2249,7 @@ export function initSandboxRuntimeModular(): void {
     if (webAudioReady) scheduleWebAudioForActiveClips();
     runAdapters("play");
     syncMediaForCurrentState();
+    colorLooks.redraw();
     postState(true);
   };
 
@@ -2245,6 +2266,7 @@ export function initSandboxRuntimeModular(): void {
     if (tl) tl.pause();
     runAdapters("pause");
     syncMediaForCurrentState();
+    colorLooks.redraw();
     postState(true);
   };
 
@@ -2266,6 +2288,7 @@ export function initSandboxRuntimeModular(): void {
     seekTimelineAndAdapters(state.currentTime);
     runAdapters("pause");
     syncMediaForCurrentState();
+    colorLooks.redraw();
     postState(true);
   };
 
@@ -2281,6 +2304,7 @@ export function initSandboxRuntimeModular(): void {
     state.mediaForceSyncNextTick = true;
     seekTimelineAndAdapters(state.currentTime, { activateChildren: true });
     syncMediaForCurrentState();
+    colorLooks.redraw();
     postState(true);
   };
 

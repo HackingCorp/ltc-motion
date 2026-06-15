@@ -1,3 +1,5 @@
+import type { HfLookTarget } from "../colorLooks";
+
 export type RuntimeJson =
   | string
   | number
@@ -24,6 +26,9 @@ export type RuntimeBridgeControlMessage = {
   muted?: boolean;
   volume?: number;
   playbackRate?: number;
+  target?: HfLookTarget | string | null;
+  look?: RuntimeJson;
+  compare?: RuntimeJson;
   seekMode?: "drag" | "commit";
 };
 

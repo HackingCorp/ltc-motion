@@ -921,6 +921,38 @@ describe("bundleToSingleHtml", () => {
     expect(bundled).toContain("margin: 0");
   });
 
+  it("inlines cube LUT files referenced from data-hf-look", async () => {
+    const dir = makeTempProject({
+      "index.html": `<!doctype html>
+<html><body>
+  <div data-composition-id="root" data-width="320" data-height="180">
+    <video
+      id="clip"
+      src="clip.mp4"
+      data-hf-look='{"lut":{"src":"assets/luts/identity.cube","intensity":0.5}}'></video>
+  </div>
+  <script>window.__timelines = window.__timelines || {}; window.__timelines.root = {}</script>
+</body></html>`,
+      "assets/luts/identity.cube": `LUT_3D_SIZE 2
+0 0 0
+1 0 0
+0 1 0
+1 1 0
+0 0 1
+1 0 1
+0 1 1
+1 1 1`,
+    });
+
+    const bundled = await bundleToSingleHtml(dir);
+    const { document } = parseHTML(bundled);
+    const rawLook = document.getElementById("clip")?.getAttribute("data-hf-look") ?? "";
+    const parsed = JSON.parse(rawLook) as { lut?: { src?: string } };
+
+    expect(parsed.lut?.src).toMatch(/^data:text\/plain;base64,/);
+    expect(parsed.lut?.src).not.toContain("assets/luts/identity.cube");
+  });
+
   it("resolves nested CSS @import chains", async () => {
     const dir = makeTempProject({
       "index.html": `<!doctype html>

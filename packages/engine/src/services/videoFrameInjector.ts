@@ -146,6 +146,26 @@ function createFrameSourceCache(
 
 export const __testing = { createFrameSourceCache };
 
+async function redrawRuntimeColorLooks(page: Page): Promise<void> {
+  await page.evaluate(async () => {
+    const hf = (
+      window as Window & {
+        __hf?: {
+          colorLooks?: { redraw?: () => unknown };
+        };
+      }
+    ).__hf;
+    const redraw = hf?.colorLooks?.redraw;
+    if (typeof redraw !== "function") return;
+    try {
+      await Promise.resolve(redraw());
+    } catch {
+      // Color looks are optional; render should continue if a page-side
+      // shader layer is unavailable or fails to redraw.
+    }
+  });
+}
+
 /**
  * Creates a BeforeCaptureHook that injects pre-extracted video frames
  * into the page, replacing native <video> elements with frame images.
@@ -226,6 +246,7 @@ export function createVideoFrameInjector(
         }, time);
       }
     }
+    await redrawRuntimeColorLooks(page);
   };
 }
 

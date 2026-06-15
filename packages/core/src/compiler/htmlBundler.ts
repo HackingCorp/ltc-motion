@@ -19,6 +19,7 @@ import { getHyperframeRuntimeScript } from "../generated/runtime-inline";
 import { readDeclaredDefaults } from "../runtime/getVariables";
 import { inlineSubCompositions } from "./inlineSubCompositions";
 import { isSafePath, resolveWithinProject } from "../safePath.js";
+import { HF_LOOK_ATTR } from "../colorLooks";
 
 const DEFAULT_RUNTIME_SCRIPT_URL = "";
 
@@ -201,6 +202,7 @@ const INLINE_MIME: Record<string, string> = {
   ".svg": "image/svg+xml",
   ".json": "application/json",
   ".txt": "text/plain",
+  ".cube": "text/plain",
   ".xml": "application/xml",
 };
 
@@ -217,6 +219,34 @@ function maybeInlineRelativeAssetUrl(urlValue: string, projectDir: string): stri
   if (content == null) return null;
   const dataUrl = `data:${mimeType};base64,${content.toString("base64")}`;
   return appendSuffixToUrl(dataUrl, suffix);
+}
+
+function isJsonRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function rewriteLookLutWithInlinedAssets(value: string, projectDir: string): string {
+  if (!value.trim().startsWith("{")) return value;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(value);
+  } catch {
+    return value;
+  }
+  if (!isJsonRecord(parsed)) return value;
+
+  const lut = parsed.lut;
+  if (typeof lut === "string") {
+    const inlined = maybeInlineRelativeAssetUrl(lut, projectDir);
+    if (!inlined) return value;
+    parsed.lut = inlined;
+    return JSON.stringify(parsed);
+  }
+  if (!isJsonRecord(lut) || typeof lut.src !== "string") return value;
+  const inlined = maybeInlineRelativeAssetUrl(lut.src, projectDir);
+  if (!inlined) return value;
+  lut.src = inlined;
+  return JSON.stringify(parsed);
 }
 
 function rewriteSrcsetWithInlinedAssets(srcsetValue: string, projectDir: string): string {
@@ -946,6 +976,10 @@ export async function bundleToSingleHtml(
       "style",
       rewriteCssUrlsWithInlinedAssets(el.getAttribute("style") || "", projectDir),
     );
+  }
+  for (const el of [...document.querySelectorAll(`[${HF_LOOK_ATTR}]`)]) {
+    const value = el.getAttribute(HF_LOOK_ATTR);
+    if (value) el.setAttribute(HF_LOOK_ATTR, rewriteLookLutWithInlinedAssets(value, projectDir));
   }
 
   return document.toString();

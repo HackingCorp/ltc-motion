@@ -11,6 +11,8 @@ function createMockDeps() {
     onSetVolume: vi.fn(),
     onSetMediaOutputMuted: vi.fn(),
     onSetPlaybackRate: vi.fn(),
+    onSetColorLook: vi.fn(),
+    onSetColorLookCompare: vi.fn(),
     onEnablePickMode: vi.fn(),
     onDisablePickMode: vi.fn(),
   };
@@ -109,6 +111,30 @@ describe("installRuntimeControlBridge", () => {
     const handler = installRuntimeControlBridge(deps);
     handler(makeControlMessage("set-playback-rate"));
     expect(deps.onSetPlaybackRate).toHaveBeenCalledWith(1);
+  });
+
+  it("dispatches set-color-look command with target and look payload", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    const look = { preset: "warm-clean", intensity: 0.7 };
+    const target = { id: "hero-video", selectorIndex: 0 };
+    handler(makeControlMessage("set-color-look", { target, look }));
+    expect(deps.onSetColorLook).toHaveBeenCalledWith(
+      { id: "hero-video", hfId: null, selector: null, selectorIndex: 0 },
+      look,
+    );
+  });
+
+  it("dispatches set-color-look-compare command with target and compare payload", () => {
+    const deps = createMockDeps();
+    const handler = installRuntimeControlBridge(deps);
+    const compare = { enabled: true, position: 0.42 };
+    const target = { id: "hero-video", selectorIndex: 0 };
+    handler(makeControlMessage("set-color-look-compare", { target, compare }));
+    expect(deps.onSetColorLookCompare).toHaveBeenCalledWith(
+      { id: "hero-video", hfId: null, selector: null, selectorIndex: 0 },
+      compare,
+    );
   });
 
   it("dispatches tick command", () => {
