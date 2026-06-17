@@ -230,14 +230,16 @@ FE is a **faceless** explainer: there are no captured assets, no product screens
 Therefore:
 
 - **`assetCandidates` is `[]` for every scene by default.** This is the normal, correct value — it tells downstream "this scene is invented from the brief."
-- **The only exception:** the user explicitly provided a real image and placed it in `public/`. Then add one entry `{ "path": "public/<basename>", "description": "<≤25 words: what it is + visual notes>" }`. Do not invent paths, do not reference `capture/`, do not fabricate basenames — a path to a nonexistent file is a downstream fatal.
+- **The only exception (pre-supplied):** the user explicitly provided a real image and placed it in `public/`. Then add one entry `{ "path": "public/<basename>", "description": "<≤25 words: what it is + visual notes>" }`. Do not invent paths, do not reference `capture/`, do not fabricate basenames — a path to a nonexistent file is a downstream fatal.
+- **Real-world entities the LLM cannot invent → `assetNeeds` (opt-in).** When a scene genuinely turns on a *real* thing you cannot draw faithfully from imagination — a specific **company / brand logo**, a **real person's** likeness, a named **real product** — add an optional `assetNeeds` entry on that scene: `{ "type": "icon"|"image", "entity": "<canonical name>", "intent": "<what to show + why, ≤15 words>", "treatment"?: "cutout" }`. Leave `assetCandidates: []`; the **Source phase** (Step 2a, after you return) resolves each need via the media-use skill, freezes the file into `public/`, and fills `assetCandidates` for you. If media-use / a search backend isn't installed it degrades to faceless automatically — so emitting `assetNeeds` is always safe.
+  - **Be conservative — `assetNeeds` is the rare case, not the default.** A scene that explains a concept, claim, process, number, or comparison stays **faceless** (`[]`, no `assetNeeds`): typography / diagram / data-viz carry it better than a fetched image. Only reach for `assetNeeds` when the *real* entity itself is the point (you name Google, show the actual product, a real person) and an invented graphic would be a worse, less credible substitute. Most explainers emit zero `assetNeeds`.
 - Do **not** describe the intended diagram/typography here as if it were an asset. Visual intent belongs in `narrativeRole` + the transition `description`; the visual phase reads those.
 
 ## Validation Checklist
 
 - Does every scene have complete Narrative Intent (all 5 fields)?
 - Does every scene have `transition` — `continuity` (break/continue), `intent` (one of the 5, a soft hint), and `description` (10–30 words)? Is scene 1 `continuity: break`? Is every `continue` run at most 3 scenes?
-- Is `assetCandidates` present on every scene as an array? Is it `[]` everywhere except where the user supplied a real `public/<basename>`?
+- Is `assetCandidates` present on every scene as an array, `[]` unless a real `public/<basename>` was supplied? If a scene turns on a real entity that must appear (a logo / real person / real product), did you add an `assetNeeds` entry for it instead of inventing it — and only there (concept / process scenes stay faceless)?
 - Does the emotional arc have meaningful variation (not monotone)? Does it match the structure (concept = gap → comprehension; story = calm → tension → insight)?
 - Is the sequence driven by narrative, not by the input text's paragraph order?
 - Is there a coherent body that builds cumulatively (a run of `feature_showcase` / `benefit_highlight` / `product_intro`, interleaving allowed per structure) — not a single isolated body scene? Are `continue` runs used only where scenes share a continuous stage, each run ≤3 scenes, separated by a `break`?
@@ -288,7 +290,8 @@ Field rules (use exact field names above; wrong names are fatal in `validate-nar
 
 - Every scene must have a `transition` field (`continuity` + `intent` + `description`; add `sharedMotif` for morph), including scene 1 (`continuity: "break"` + `intent: "cut"`). **Scene 1 has no previous scene, so its `transition` does not generate any transition downstream (downstream ignores it) — `intent: "cut"` is just a placeholder.**
 - `continuity` is **decoupled from `intent`** (a soft hint). `continue` = same worker (a run of up to 3 scenes); `break` = new worker. `validate-narrator.mjs` checks only enum membership + scene 1 = `break`.
-- `assetCandidates` is a **required** field and must be an array. For FE it is `[]` on essentially every scene; only a user-provided `public/<basename>` image yields a `{path, description}` entry.
+- `assetCandidates` is a **required** field and must be an array. For FE it is `[]` on essentially every scene; a `{path, description}` entry appears only for a user-provided `public/<basename>` image or one the Source phase (Step 2a) resolved from `assetNeeds`.
+- `assetNeeds` (**optional**, omit by default) is a per-scene array of real-world asset requests the LLM can't invent: `{ "type": "icon"|"image", "entity": "<canonical name>", "intent": "<≤15 words>", "treatment"?: "cutout"|"recolor"|"vectorize" }`. The Source phase consumes it (resolve → freeze into `public/` → fill `assetCandidates`) then removes it; `validate-narrator.mjs` ignores it. Keep `assetCandidates: []` when you emit `assetNeeds`. Use sparingly — see the faceless-visuals section.
 - `narrativeArchetype` names one of the four explainer structures (or a `"<outer> with <inner>"` compound). At least one scene must be `type: feature_showcase` or `product_intro`.
 
 ### Captions (not owned by scriptwriting)

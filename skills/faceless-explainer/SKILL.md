@@ -17,6 +17,7 @@ All artifacts go to `PROJECT_DIR = videos/<project-name>/` (created in Step 0); 
 | init                     | Bash                                                                                                                                                                                             | `hyperframes.json`                                                   | Step 0                                    |
 | scaffold                 | Bash (no agent)                                                                                                                                                                                  | `capture/extracted/tokens.json` + `visible-text.txt`                 | Step 1                                    |
 | scriptwriting            | subagent                                                                                                                                                                                         | `narrator_scripts.json` (incl. chosen `stylePreset` + `orientation`) | Step 2 / `agents/scriptwriting.md`        |
+| source (optional)        | Bash (`phases/source/resolve-assets.mjs`) — conditional: only if a scene has `assetNeeds` + media-use installed; else a no-op                                                                     | real assets frozen into `public/`, `assetCandidates` filled          | Step 2a / `phases/source/guide.md`        |
 | design-system            | Bash (no agent, deterministic — style = `narrator_scripts.stylePreset`)                                                                                                                          | `design-system/design.html` + `chunks/`                              | Step 2b                                   |
 | audio                    | `audio.mjs` in Bash                                                                                                                                                                              | `audio_meta.json`                                                    | `phases/audio/guide.md`                   |
 | visual-design            | subagent                                                                                                                                                                                         | `section_plan.md`                                                    | `agents/visual-design.md`                 |
@@ -35,6 +36,7 @@ macOS Apple Silicon or Linux x64. System tools: `brew install python@3.11 node f
 | `ELEVENLABS_API_KEY`                           | TTS (cloud; needs `pip install elevenlabs`) | voice `21m00Tcm4TlvDq8ikWAM` (Rachel)                          |
 | neither, and not logged in                     | TTS                                         | local Kokoro, voice `am_michael` (non-English: pass `--voice`) |
 | `GEMINI_API_KEY` / `GOOGLE_API_KEY` (aliases)  | Lyria BGM                                   | unset -> local MusicGen (first run downloads ~300 MB)          |
+| media-use skill + `MEDIA_USE_SEARCH_CMD`       | Source phase (Step 2a): real-entity images/icons (logos, people, products) the LLM can't invent | unset / not installed -> Source phase is skipped, video stays fully faceless |
 
 ## Flow
 
@@ -103,7 +105,25 @@ Script style: Keep each scene's script concise — 1-2 sentences, no more than 2
 
 > Fill the `Orientation:` line from the aspect confirmed in Step 0.0 (default `landscape`). prep reads `narrator_scripts.orientation` → stamps `group_spec.width/height`; without it the video stays 16:9.
 
-The agent picks an explainer **structure** for `narrativeArchetype` (`concept-explainer` / `how-to-process` / `listicle` / `story-explainer`, or `"<outer> with <inner>"`), picks a top-level **`stylePreset`** from the 5 shipped presets (consumed by Step 2b), echoes the dispatched **`orientation`** as a top-level field (consumed by Step 5 prep → canvas size), and emits `narrator_scripts.json` (it runs the validator before returning). `continuity` drives worker grouping: `continue` = same worker as the previous scene (a run of **up to 3** scenes, cap=3); `break` = new worker; scene 1 is always `break`. `intent` / `sharedMotif` are soft hints. `assetCandidates` is `[]` on essentially every scene (faceless).
+The agent picks an explainer **structure** for `narrativeArchetype` (`concept-explainer` / `how-to-process` / `listicle` / `story-explainer`, or `"<outer> with <inner>"`), picks a top-level **`stylePreset`** from the 5 shipped presets (consumed by Step 2b), echoes the dispatched **`orientation`** as a top-level field (consumed by Step 5 prep → canvas size), and emits `narrator_scripts.json` (it runs the validator before returning). `continuity` drives worker grouping: `continue` = same worker as the previous scene (a run of **up to 3** scenes, cap=3); `break` = new worker; scene 1 is always `break`. `intent` / `sharedMotif` are soft hints. `assetCandidates` is `[]` on essentially every scene (faceless); a scene may additionally carry an optional `assetNeeds` entry for a real entity it can't invent (resolved next, in Step 2a).
+
+### Step 2a - Source (optional, conditional — real-world assets the LLM can't invent)
+
+Run immediately after Step 2 returns, **before** Step 2b / Step 3. **Skip entirely** (FE stays fully faceless) when no scene has `assetNeeds`, or media-use / a search backend isn't configured — the script self-detects all three and no-ops, so it is always safe to call.
+
+When `narrator_scripts.json` has any scene with `assetNeeds` (a real company/brand logo, a real person, a named product the scriptwriter flagged), resolve each via the media-use skill → freeze into `public/` → fill that scene's `assetCandidates`:
+
+```bash
+(cd "$PROJECT_DIR" && node <SKILL_DIR>/phases/source/resolve-assets.mjs \
+  --project . \
+  --media-use <SKILL_DIR>/../media-use \
+  --search-cmd "$MEDIA_USE_SEARCH_CMD" \
+  --validator <SKILL_DIR>/scripts/validate-narrator.mjs)
+```
+
+- It edits `narrator_scripts.json` in place: each resolved need becomes `assetCandidates: [{ "path": "public/<file>", "description": … }]` (the exact shape Step 6 scene workers already place — see `agents/hyperframes-scene.md` Scope: a provided candidate is treated as the scene's primary asset), and the `assetNeeds` marker is removed. media-use's provenance (source URL, entity) is kept in `.source-assets/assets/manifest.jsonl`.
+- Output JSON reports `resolved` / `failed` / `degraded`. An unresolved need leaves that scene faceless (`[]`) — it **never blocks** the pipeline. `validated: "pass"` confirms the rewritten file is still schema-valid.
+- Must finish before Step 5 prep (which threads `assetCandidates` into `group_spec.json`); running it here (before 2b/3) also lets visual-design (Step 4) plan around the real asset. Selection quality (which candidate) is owned by media-use — for logos prefer its vision rerank over blind top-1.
 
 ### Step 2b - Design system (Bash, NO agent, deterministic — style chosen by Step 2)
 
@@ -369,6 +389,7 @@ Read `$PROJECT_DIR/context.log` and resume from:
 | log missing or empty                                                                             | Full pipeline                                                                                                                                                                                           |
 | `capture/extracted/tokens.json` **or** `visible-text.txt` missing                                | Step 1 (scaffold)                                                                                                                                                                                       |
 | scaffold done, `narrator_scripts.json` missing                                                   | Step 2 (scriptwriting). If the user supplied a final `narrator_scripts.json`, place it in `$PROJECT_DIR/` to skip this state (add a top-level `stylePreset`, or Step 2b defaults to `pin-and-paper`)    |
+| `narrator_scripts.json` exists with unresolved `assetNeeds` (search backend configured)          | Step 2a (source) — resolve them into `public/` + `assetCandidates`, then continue. Safe to re-run; a no-op when there are none.                                                                          |
 | `narrator_scripts.json` exists, `design-system/chunks/index.json` missing                        | Step 2b (design-system; `--style` = `narrator_scripts.stylePreset`, default `pin-and-paper`)                                                                                                            |
 | `narrator_scripts.json` exists, `audio_meta.json` missing                                        | Step 3 (audio)                                                                                                                                                                                          |
 | `audio_meta.json` exists, `section_plan.md` missing                                              | Step 4 (visual-design)                                                                                                                                                                                  |
