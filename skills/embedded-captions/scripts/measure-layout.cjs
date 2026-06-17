@@ -183,7 +183,7 @@ async function main() {
     // fonts here while the real render uses the true (often wider) face → wrapped line
     // counts differ → slot layout / occlusion verdicts are measured on the wrong text.
     try {
-      const fontsCss = path.join(__dirname, "..", "modes", "standard", "fonts", "fonts.css");
+      const fontsCss = path.join(__dirname, "..", "modes", "shared", "fonts", "fonts.css");
       if (fs.existsSync(fontsCss))
         await page.addStyleTag({ content: fs.readFileSync(fontsCss, "utf8") });
     } catch {

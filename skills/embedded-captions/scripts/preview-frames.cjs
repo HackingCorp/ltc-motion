@@ -101,7 +101,7 @@ async function shotAt(browser, file, W, H, t) {
     if (!tlReady) throw new Error(`timeline never registered in ${path.basename(file)}`);
     // bundled @font-face → previews show the REAL faces (same set the renderer embeds)
     try {
-      const fontsCss = path.join(__dirname, "..", "modes", "standard", "fonts", "fonts.css");
+      const fontsCss = path.join(__dirname, "..", "modes", "shared", "fonts", "fonts.css");
       if (fs.existsSync(fontsCss))
         await page.addStyleTag({ content: fs.readFileSync(fontsCss, "utf8") });
     } catch {}

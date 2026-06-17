@@ -741,7 +741,7 @@ const MULBERRY = `function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)
 const FONT_FACES = (() => {
   let css = "";
   try {
-    css = fs.readFileSync(path.join(SKILL, "modes/standard/fonts/fonts.css"), "utf8");
+    css = fs.readFileSync(path.join(SKILL, "modes/shared/fonts/fonts.css"), "utf8");
   } catch {
     return null;
   }

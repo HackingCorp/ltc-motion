@@ -78,7 +78,7 @@ fi
 # Press Start 2P, …) silently falls back to a generic font on a clean/offline/CI
 # machine — it only "looks right" locally when that font happens to be installed
 # as a system font. inject-fonts inlines the @font-face (base64 woff2, from
-# modes/standard/fonts/fonts.css) for whatever non-canonical families each HTML
+# modes/shared/fonts/fonts.css) for whatever non-canonical families each HTML
 # actually uses, so measure-layout AND the capture see the true glyph metrics.
 # Idempotent; a no-op when every font is canonical/system or already declared.
 node "$(dirname "$0")/inject-fonts.cjs" "$PROJECT" \

@@ -11,7 +11,7 @@
  * On a clean/offline/CI machine it silently degrades. (hyperframes' own font
  * linter flags exactly this: font_family_without_font_face.)
  *
- * This step reads the bundled font library (modes/standard/fonts/fonts.css —
+ * This step reads the bundled font library (modes/shared/fonts/fonts.css —
  * base64 woff2, no sub-resources), finds which of those families the HTML uses,
  * and inlines just those @font-face blocks into a <style id="hf-embedded-fonts">.
  * Idempotent (re-running replaces the block). Families already declared in the
@@ -24,7 +24,7 @@ const fs = require("fs");
 const path = require("path");
 
 const SKILL_ROOT = path.resolve(__dirname, "..");
-const FONTS_CSS = path.join(SKILL_ROOT, "modes", "standard", "fonts", "fonts.css");
+const FONTS_CSS = path.join(SKILL_ROOT, "modes", "shared", "fonts", "fonts.css");
 const MARKER = "hf-embedded-fonts";
 
 const GENERIC = new Set([
@@ -55,7 +55,7 @@ function loadFontLibrary() {
     css = fs.readFileSync(FONTS_CSS, "utf8");
   } catch {
     console.error(
-      `[inject-fonts] missing ${FONTS_CSS} — run modes/standard/fonts/build-fonts-css.cjs`,
+      `[inject-fonts] missing ${FONTS_CSS} — run modes/shared/fonts/build-fonts-css.cjs`,
     );
     process.exit(2);
   }

@@ -1,5 +1,5 @@
 {
-  "_meta": "Measured per-char advance widths (em @100px) + fontBoundingBox ascent/descent for the bundled families in modes/standard/fonts/fonts.css. Generated once via headless-Chrome canvas measureText over the SAME woff2 faces the renderer embeds (kerning ignored, ~<=3px/word). Used by make-theme.cjs to BAKE pixel-exact word geometry at compile time so font-load timing in the render browser can never skew aim. Regenerate if fonts.css changes.",
+  "_meta": "Measured per-char advance widths (em @100px) + fontBoundingBox ascent/descent for the bundled families in modes/shared/fonts/fonts.css. Generated once via headless-Chrome canvas measureText over the SAME woff2 faces the renderer embeds (kerning ignored, ~<=3px/word). Used by make-theme.cjs to BAKE pixel-exact word geometry at compile time so font-load timing in the render browser can never skew aim. Regenerate if fonts.css changes.",
   "Anton": {
     "ascent": 1.18,
     "descent": 0.33,
