@@ -264,12 +264,24 @@ describe("SlideshowController Fix 8b — back() restores parent fragmentIndex", 
   it("back() when parent fragmentIndex=-1 seeks to slide start", () => {
     const p = fakePlayer();
     const c = new SlideshowController(p, SHOW);
-    // Enter branch immediately (fragmentIndex is still -1)
+    // Enter branch immediately (slide a HAS fragments; fragmentIndex is still -1,
+    // i.e. before the first reveal → resume to slide.start).
     c.enterBranch("deep");
     c.back();
     expect(c.position.fragmentIndex).toBe(-1);
-    // seek should have been called with slide.start=0 (no fragment yet)
     expect(p.seek).toHaveBeenLastCalledWith(0);
+  });
+
+  it("back() to a NO-fragment parent slide resumes at its midpoint, not frame 0", () => {
+    const p = fakePlayer();
+    const c = new SlideshowController(p, SHOW);
+    c.goToSlide(1); // slide b: [5,10], no fragments
+    c.enterBranch("deep");
+    c.back();
+    expect(c.position.slideIndex).toBe(1);
+    // Mirrors enterSlide's no-fragment rest frame (midpoint) so the slide is
+    // visible at rest instead of frozen at its pre-entrance frame-0.
+    expect(p.seek).toHaveBeenLastCalledWith(7.5); // slide b midpoint (5 + 5*0.5)
   });
 });
 
@@ -601,10 +613,10 @@ describe("SlideshowController syncTo", () => {
     c.syncTo("deep", 0, -1);
     expect(c.position.sequenceId).toBe("deep");
     expect(c.position.slideIndex).toBe(0);
-    // resumeSlide seeks to slide start, then plays one frame so the composition
-    // repaints (a bare paused seek doesn't re-render some compositions); onTime
-    // pauses again as soon as the player reports it has reached the hold.
-    expect(p.seek).toHaveBeenLastCalledWith(10); // slide start
+    // Slide c has no fragments, so resumeSlide lands at its midpoint (restFrame) —
+    // the same visible-at-rest position enterSlide uses — not slide start. It then
+    // plays a render-nudge so the composition repaints; onTime pauses at the hold.
+    expect(p.seek).toHaveBeenLastCalledWith(11.5); // slide c midpoint (10 + 3*0.5)
     expect(p.play).toHaveBeenCalled();
     p.emit(50); // player passes the render-nudge hold
     expect(p.pause).toHaveBeenCalled();

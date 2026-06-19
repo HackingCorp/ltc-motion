@@ -133,11 +133,18 @@ export class SlideshowController {
     this.frame.fragmentIndex = fragmentIndex;
     const slide = this.currentSlide;
     if (!slide) return;
-    // Seek to the fragment's hold time (or slide start if before any fragment).
+    // Resume position, mirroring enterSlide so going back to a slide lands where
+    // entering it forward does:
+    //   - at a saved fragment   → that fragment's hold time
+    //   - fragmented, pre-first → slide.start (before the first reveal)
+    //   - no fragments          → restFrame (midpoint), NOT slide.start, so the
+    //     slide is visible at rest instead of frozen at its frame-0 (pre-entrance).
     const seekTime =
       fragmentIndex >= 0 && fragmentIndex < slide.fragments.length
         ? (slide.fragments[fragmentIndex] ?? slide.start)
-        : slide.start;
+        : slide.fragments.length > 0
+          ? slide.start
+          : this.restFrame(slide);
     this.holdAt = null;
     this.playTo(seekTime);
     this.emitChange();

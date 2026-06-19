@@ -77,6 +77,11 @@ function injectKeyframesOnce(): void {
   document.head.appendChild(style);
 }
 
+// Fullscreen glyphs (enter = expand corners, exit = collapse corners). Module-level
+// so onFsChange can swap just this glyph without re-rendering the whole chrome.
+const ENTER_FS_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>`;
+const EXIT_FS_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></svg>`;
+
 export class HyperframesSlideshow extends HTMLElement {
   private controller: ControllerLike | null = null;
   private offChange: (() => void) | null = null;
@@ -476,14 +481,12 @@ export class HyperframesSlideshow extends HTMLElement {
           style="${btnStyle}"        >&#8250;</button>`
       : "";
     const isFs = document.fullscreenElement === this;
-    const enterFsSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>`;
-    const exitFsSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></svg>`;
     const fsBtnHtml = `<button
           data-hf-fullscreen
           type="button"
           aria-label="${isFs ? "Exit full screen" : "Full screen"}"
           aria-pressed="${isFs ? "true" : "false"}"
-          style="${btnStyle}"        >${isFs ? exitFsSvg : enterFsSvg}</button>`;
+          style="${btnStyle}"        >${isFs ? EXIT_FS_SVG : ENTER_FS_SVG}</button>`;
     // Audience/viewer: only the fullscreen control (no navigation).
     if (variant === "fs-only") {
       return `
@@ -531,8 +534,14 @@ export class HyperframesSlideshow extends HTMLElement {
   }
 
   private onFsChange = (): void => {
-    // re-render to swap the enter/exit glyph when fullscreen state changes
-    this.render();
+    // Swap only the fullscreen glyph + label — re-rendering the whole chrome here
+    // would rebuild every nav button on each fullscreen toggle.
+    const btn = this.chrome?.querySelector("[data-hf-fullscreen]");
+    if (!btn) return;
+    const isFs = document.fullscreenElement === this;
+    btn.innerHTML = isFs ? EXIT_FS_SVG : ENTER_FS_SVG;
+    btn.setAttribute("aria-label", isFs ? "Exit full screen" : "Full screen");
+    btn.setAttribute("aria-pressed", isFs ? "true" : "false");
   };
 
   private toggleFullscreen(): void {
