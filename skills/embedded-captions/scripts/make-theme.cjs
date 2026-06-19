@@ -1489,10 +1489,10 @@ function setpieceDrawon() {
     I = heroIn;
   // generate the stroke path at COMPILE time — any word, zero tuning
   const fontPath = path.join(SKILL, "assets/strokefonts", dna.fonts.strokeFont);
-  const gen = path.join(SKILL, "scripts/gen-stroke-path.py");
+  const gen = path.join(SKILL, "scripts/gen-stroke-path.cjs");
   const tw = Math.min(p.targetWidth || 640, W - 200);
   const D = execFileSync(
-    "python3",
+    process.execPath,
     [gen, fontPath, heroDisplay.toLowerCase(), String(tw), "185", String(Math.round(380 - tw / 2))],
     { encoding: "utf8" },
   ).trim();
@@ -9572,12 +9572,12 @@ function setpieceSilkribbon() {
     I = heroIn;
   // stroke path baked at COMPILE time — any word, zero tuning (drawon pattern)
   const fontPath = path.join(SKILL, "assets/strokefonts", dna.fonts.strokeFont);
-  const gen = path.join(SKILL, "scripts/gen-stroke-path.py");
+  const gen = path.join(SKILL, "scripts/gen-stroke-path.cjs");
   const tw = HG.ribbonW || Math.min(p.targetWidth || 880, W - 240);
   const svgW = tw + 130,
     svgH = 280;
   const D = execFileSync(
-    "python3",
+    process.execPath,
     [
       gen,
       fontPath,
@@ -9738,7 +9738,7 @@ function setpieceScopetrace() {
     p = h.params,
     I = heroIn;
   const fontPath = path.join(SKILL, "assets/strokefonts", dna.fonts.strokeFont);
-  const gen = path.join(SKILL, "scripts/gen-stroke-path.py");
+  const gen = path.join(SKILL, "scripts/gen-stroke-path.cjs");
   const tw = HG.traceW;
   // strip punctuation for the pen (the demo wrote "pixel size", period dropped)
   const traceText = heroDisplay.toLowerCase().replace(/[^\p{L}\p{N} ']/gu, "");
@@ -9747,7 +9747,7 @@ function setpieceScopetrace() {
     BY = 215, // local baseline; ink center ≈ BY − 28 (demo registration)
     CY = BY - 28;
   const D = execFileSync(
-    "python3",
+    process.execPath,
     [gen, fontPath, traceText, String(tw), String(BY), String(70)],
     { encoding: "utf8" },
   ).trim();
@@ -10422,11 +10422,11 @@ function setpieceChalkwrite() {
     p = h.params,
     I = heroIn;
   const fontPath = path.join(SKILL, "assets/strokefonts", dna.fonts.strokeFont);
-  const gen = path.join(SKILL, "scripts/gen-stroke-path.py");
+  const gen = path.join(SKILL, "scripts/gen-stroke-path.cjs");
   const tw = HG.chalkW;
   const x0 = Math.round(HG.x - tw / 2);
   let D = execFileSync(
-    "python3",
+    process.execPath,
     [gen, fontPath, heroDisplay.toLowerCase(), String(tw), "450", String(x0)],
     { encoding: "utf8" },
   ).trim();
@@ -10649,11 +10649,11 @@ function setpieceSpraytag() {
     p = h.params,
     I = heroIn;
   const fontPath = path.join(SKILL, "assets/strokefonts", dna.fonts.strokeFont);
-  const gen = path.join(SKILL, "scripts/gen-stroke-path.py");
+  const gen = path.join(SKILL, "scripts/gen-stroke-path.cjs");
   const tw = HG.sprayW;
   const x0 = Math.round(HG.x - tw / 2);
   let D = execFileSync(
-    "python3",
+    process.execPath,
     [gen, fontPath, heroDisplay.toLowerCase(), String(tw), "450", String(x0)],
     { encoding: "utf8" },
   ).trim();
@@ -10858,11 +10858,11 @@ function setpieceBrushwrite() {
     p = h.params,
     I = heroIn;
   const fontPath = path.join(SKILL, "assets/strokefonts", dna.fonts.strokeFont);
-  const gen = path.join(SKILL, "scripts/gen-stroke-path.py");
+  const gen = path.join(SKILL, "scripts/gen-stroke-path.cjs");
   const tw = HG.brushW;
   const x0 = Math.round(HG.x - tw / 2);
   let D = execFileSync(
-    "python3",
+    process.execPath,
     [gen, fontPath, heroDisplay.toLowerCase(), String(tw), "450", String(x0)],
     { encoding: "utf8" },
   ).trim();
@@ -11109,11 +11109,11 @@ function setpiecePlotterdraw() {
     p = h.params,
     I = heroIn;
   const fontPath = path.join(SKILL, "assets/strokefonts", dna.fonts.strokeFont);
-  const gen = path.join(SKILL, "scripts/gen-stroke-path.py");
+  const gen = path.join(SKILL, "scripts/gen-stroke-path.cjs");
   const tw = HG.plotW;
   const x0 = Math.round(HG.x - tw / 2);
   let D = execFileSync(
-    "python3",
+    process.execPath,
     [gen, fontPath, heroDisplay.toLowerCase(), String(tw), "450", String(x0)],
     { encoding: "utf8" },
   ).trim();

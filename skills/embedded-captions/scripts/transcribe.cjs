@@ -25,8 +25,9 @@ function hfRoot() {
 }
 // WhisperX runs through `uvx` (Astral's uv). uv is NOT bundled with hyperframes and most
 // installs lack it -> resolve it; OPT-IN auto-install with EC_INSTALL_UV=1 via the official
-// standalone installer (single binary, no Python/npm). Returns a uvx path, or null -> caller
-// falls back to the bundled whisper.cpp (looser, segment-interpolated word timings).
+// standalone installer (single binary, no Python/npm). Returns a uvx path, or null AFTER
+// printing a choice-nudge (install uv, or opt into whisper.cpp) — the caller then STOPS
+// rather than silently downgrading to whisper.cpp.
 function resolveUvx() {
   const localBin = path.join(os.homedir(), ".local", "bin", "uvx");
   const probe = (bin) => {
@@ -41,9 +42,13 @@ function resolveUvx() {
   if (found) return found;
   if (process.env.EC_INSTALL_UV !== "1") {
     console.error(
-      "[transcribe] uv/uvx not found -> using whisper.cpp fallback (looser word timings).\n" +
-        "             For tighter WhisperX timings: re-run with EC_INSTALL_UV=1 to auto-install uv,\n" +
-        "             or install it manually: curl -LsSf https://astral.sh/uv/install.sh | sh",
+      "\n[transcribe] WhisperX needs `uv` (Astral) and it is not installed.\n" +
+        "  WhisperX gives the tight word timings this skill's caption gates are tuned for.\n" +
+        "  Pick one, then re-run:\n" +
+        "    1) RECOMMENDED -- install uv (one-time, no Python/npm):\n" +
+        "         re-run with  EC_INSTALL_UV=1   (auto-installs), or:\n" +
+        "         curl -LsSf https://astral.sh/uv/install.sh | sh\n" +
+        "    2) Skip uv, accept looser timings:  re-run with  TRANSCRIBE_ENGINE=whisper",
     );
     return null;
   }
@@ -52,9 +57,10 @@ function resolveUvx() {
     cp.execSync("curl -LsSf https://astral.sh/uv/install.sh | sh", { stdio: "inherit" });
   } catch (e) {
     console.error(
-      "[transcribe] uv auto-install failed (" +
+      "\n[transcribe] uv auto-install failed (" +
         String(e.message || e).slice(0, 120) +
-        ") -> whisper.cpp fallback",
+        ").\n  Install it manually, then re-run:  curl -LsSf https://astral.sh/uv/install.sh | sh\n" +
+        "  Or skip uv (looser whisper.cpp timings):  re-run with  TRANSCRIBE_ENGINE=whisper",
     );
     return null;
   }
@@ -64,7 +70,8 @@ function resolveUvx() {
     return after;
   }
   console.error(
-    "[transcribe] uv installed but uvx not on the expected PATH -> whisper.cpp fallback",
+    "\n[transcribe] uv installed but `uvx` is not on PATH or ~/.local/bin.\n" +
+      "  Add it to PATH and re-run, or skip uv:  re-run with  TRANSCRIBE_ENGINE=whisper",
   );
   return null;
 }
@@ -212,6 +219,11 @@ function main() {
     engine = null;
   const wantWx = (process.env.TRANSCRIBE_ENGINE || "whisperx") === "whisperx";
   const UVX = wantWx ? resolveUvx() : null;
+  if (wantWx && !UVX) {
+    // uv missing / not auto-installed — resolveUvx() printed the choice above. Do NOT silently
+    // downgrade to whisper.cpp; make the user pick (install uv, or TRANSCRIBE_ENGINE=whisper).
+    process.exit(7);
+  }
   if (UVX) {
     try {
       const wav = path.join(project, "_wx_audio.wav");
