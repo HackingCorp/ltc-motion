@@ -32,6 +32,7 @@ import {
 export {
   toggleMainLineSlide,
   reorderMainLineSlide,
+  reorderBranchSlide,
   setSlideNotes,
   addFragment,
   removeFragment,
@@ -56,6 +57,7 @@ export function safeParseManifest(html: string): SlideshowManifest {
 import {
   toggleMainLineSlide,
   reorderMainLineSlide,
+  reorderBranchSlide,
   setSlideNotes,
   addFragment,
   removeFragment,
@@ -291,6 +293,15 @@ export function SlideshowPanel({ scenes, onPersist, onPersistNotes }: SlideshowP
     [applyManifest],
   );
 
+  const handleReorderBranchSlide = useCallback(
+    (sequenceId: string, sceneId: string, dir: "up" | "down") => {
+      applyManifest(reorderBranchSlide(manifestRef.current, sequenceId, sceneId, dir)).catch(
+        () => {},
+      );
+    },
+    [applyManifest],
+  );
+
   const handleSetNotes = useCallback(
     (notes: string) => {
       if (!selectedSceneId) return;
@@ -448,6 +459,7 @@ export function SlideshowPanel({ scenes, onPersist, onPersistNotes }: SlideshowP
           selectedSceneId={selectedSceneId}
           selectedSequenceId={selectedSequenceId}
           onSelectBranchSlide={handleSelectBranchSlide}
+          onReorderBranchSlide={handleReorderBranchSlide}
         />
       )}
 

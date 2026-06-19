@@ -291,6 +291,19 @@ export class HyperframesSlideshow extends HTMLElement {
       };
 
       this.bindController(new SlideshowController(port, cleaned));
+
+      // Slow-iframe recovery: if the scene timeline hadn't posted yet (empty
+      // scenes → sceneId-based slides were dropped), re-init once when it finally
+      // arrives so those slides resolve instead of being permanently lost.
+      if (scenes.length === 0 && manifest.slides.length > 0) {
+        playerEl.addEventListener(
+          "scenes",
+          () => {
+            if (gen === this.initGeneration) void this.init();
+          },
+          { once: true },
+        );
+      }
     } finally {
       this.initInFlight = false;
     }
@@ -331,7 +344,10 @@ export class HyperframesSlideshow extends HTMLElement {
     // Arrows act even when nothing is focused (active === body/null) so a freshly
     // loaded deck responds without a click; Space/Backspace have strong page-level
     // defaults (scroll / history) so they only act when the deck actually has focus.
-    const ambient = focused || active === document.body || active === null;
+    // When several decks share a page, drop the unfocused-convenience so a key
+    // doesn't drive every instance at once — only the focused deck responds.
+    const multiInstance = document.querySelectorAll("hyperframes-slideshow").length > 1;
+    const ambient = focused || (!multiInstance && (active === document.body || active === null));
     if (e.key === "ArrowRight") {
       if (!ambient) return;
       this.controller.next();
