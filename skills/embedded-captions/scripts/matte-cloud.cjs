@@ -61,14 +61,16 @@ function probeCmd(bin, args) {
 
 // Is the cloud matte usable right now? → {ok:true} | {ok:false, reason}
 function available() {
-  if (!probeCmd("heygen", ["--version"])) return { ok: false, reason: "`heygen` CLI not on PATH" };
+  if (!probeCmd("heygen", ["--version"]))
+    return { ok: false, code: "no-cli", reason: "`heygen` CLI not on PATH" };
   if (!probeCmd("heygen", ["background-removal", "--help"]))
     return {
       ok: false,
+      code: "no-command",
       reason:
         "the `heygen` CLI has no `background-removal` command yet (pending OpenAPI codegen, experiment-framework PR #40076)",
     };
-  if (!hasHeyGenCredential()) return { ok: false, reason: CRED_NUDGE };
+  if (!hasHeyGenCredential()) return { ok: false, code: "no-cred", reason: CRED_NUDGE };
   return { ok: true };
 }
 

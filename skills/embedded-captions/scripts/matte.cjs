@@ -198,18 +198,16 @@ async function main() {
     matteSrc = cfr;
   }
   const t0 = Date.now();
-  // Cloud subject matte (HeyGen CLI `background-removal`, Bria; /v3/background-removals) —
-  // opt in with EC_MATTE=cloud. Produces the same RGBA frames_fg as the local path below,
-  // and falls back to local on any failure (command not shipped yet / no API key / API error).
+  // Subject matte engine. DEFAULT = cloud (HeyGen Bria via the heygen CLI) WHENEVER AVAILABLE:
+  // the `background-removal` command is installed AND a HeyGen credential is present. Otherwise
+  // local hyperframes remove-background. EC_MATTE=local forces local; EC_MATTE=cloud forces a
+  // cloud attempt and surfaces why if it can't. Any cloud failure falls back to local.
   let cloudOk = false;
-  if ((process.env.EC_MATTE || "").toLowerCase() === "cloud") {
+  const matteMode = (process.env.EC_MATTE || "").toLowerCase();
+  if (matteMode !== "local") {
     const cloud = require("./matte-cloud.cjs");
     const avail = cloud.available();
-    if (!avail.ok) {
-      console.error(
-        `[matte] cloud matte unavailable — ${avail.reason}\n[matte] → falling back to local hyperframes remove-background`,
-      );
-    } else {
+    if (avail.ok) {
       try {
         cloud.toFramesFg({ matteSrc, fps, framesFg });
         cloudOk = countPngs(framesFg) > 0;
@@ -217,7 +215,17 @@ async function main() {
       } catch (e) {
         console.error(`[matte] cloud matte failed (${e.message}) → falling back to local`);
       }
+    } else if (matteMode === "cloud") {
+      console.error(
+        `[matte] cloud matte requested but unavailable — ${avail.reason}\n[matte] → falling back to local hyperframes remove-background`,
+      );
+    } else if (avail.code === "no-cred") {
+      // auto/default: cloud matte is installed but unauthenticated — nudge once, use local.
+      console.error(
+        `[matte] a higher-quality cloud matte (HeyGen Bria) is available — ${avail.reason}\n[matte] using local this run; add the key above (or set EC_MATTE=local to silence).`,
+      );
     }
+    // else (auto + no CLI / no command): silently use local.
   }
   if (!cloudOk) {
     const mov = path.join(project, "_matte_tmp.mov");
