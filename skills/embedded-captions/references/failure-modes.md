@@ -102,9 +102,9 @@ On landscape 1920×1080, a centered crown at 140px is only ~500px wide. If the s
 
 ### Wider caption column + default font size → underweight
 
-Template defaults (66/78/92/140) assume a ~560px column. Expanding the plane to 700+ px without bumping fonts makes the text feel too small relative to the column.
+Template defaults assume a ~560px column. Expanding the plane to 700px+ without bumping fonts makes the text feel underweight — small text swimming in negative space.
 
-**Fix**: Column width 600-760 → phrase ~108px, emph ~128px, crown ~220px centered. See table in [typography-presets.md](typography-presets.md).
+**Fix**: Scale fonts to the new column width using the matrix in [typography-presets.md § Font-size scales with column width](typography-presets.md).
 
 ## Scene admission
 
