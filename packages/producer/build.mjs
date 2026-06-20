@@ -21,14 +21,12 @@ const scriptDir = dirname(fileURLToPath(import.meta.url));
 // require("fs") throw "Dynamic require of 'fs' is not supported"; without the
 // dirname shims, deps like wawoff2 throw "__dirname is not defined in ES module".
 const cjsBanner = {
-  js: [
-    "import { createRequire as __cjsRequire } from 'module';",
-    "import { fileURLToPath as __cjsFileURLToPath } from 'url';",
-    "import { dirname as __cjsDirname } from 'path';",
-    "const require = __cjsRequire(import.meta.url);",
-    "const __filename = __cjsFileURLToPath(import.meta.url);",
-    "const __dirname = __cjsDirname(__filename);",
-  ].join(" "),
+  js: `import { createRequire as __cjsRequire } from 'module';
+import { fileURLToPath as __cjsFileURLToPath } from 'url';
+import { dirname as __cjsDirname } from 'path';
+const require = __cjsRequire(import.meta.url);
+const __filename = __cjsFileURLToPath(import.meta.url);
+const __dirname = __cjsDirname(__filename);`,
 };
 
 const workspaceAliasPlugin = {
