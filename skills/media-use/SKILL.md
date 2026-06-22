@@ -23,22 +23,23 @@ node <SKILL_DIR>/scripts/resolve.mjs --adopt --project .
 
 ## Supported types
 
-| Type    | What it finds       | Search provider      | Fallback                    |
-| ------- | ------------------- | -------------------- | --------------------------- |
-| `bgm`   | Background music    | HeyGen audio catalog | hyperframes bgm (local gen) |
-| `sfx`   | Sound effects       | HeyGen audio catalog | Bundled SFX library         |
-| `voice` | TTS voiceover       | HeyGen voice         | hyperframes tts (Kokoro)    |
-| `image` | Photos, backgrounds | HeyGen asset search  | Agent-selected URL          |
-| `icon`  | Icons, logos        | HeyGen asset search  | Agent-selected URL          |
-| `brand` | Brand kit assets    | HeyGen brand kits    | —                           |
+| Type    | What it finds       | Search provider              | Generate fallback              |
+| ------- | ------------------- | ---------------------------- | ------------------------------ |
+| `bgm`   | Background music    | HeyGen audio catalog         | hyperframes bgm (local gen)    |
+| `sfx`   | Sound effects       | HeyGen audio catalog         | Bundled SFX library            |
+| `voice` | TTS voiceover       | ElevenLabs                   | hyperframes tts (Kokoro local) |
+| `image` | Photos, backgrounds | Asset Scout + HeyGen library | fal.ai image gen (Flux)        |
+| `icon`  | Icons, logos        | Asset Scout + HeyGen library | —                              |
+| `brand` | Brand kit assets    | HeyGen brand kits            | —                              |
+| `video` | B-roll clips        | HeyGen video search          | fal.ai video gen (v1.1)        |
 
 ## How it works
 
 1. Check project `.media/manifest.jsonl` for exact-prompt match
 2. Scan existing `assets/` directory for unregistered files matching the need
 3. Check global cache `~/.media/` for reusable asset
-4. Search via provider (HeyGen catalog, asset search, brand kits)
-5. Fall back to generation (local BGM/TTS) or agent-selected URL
+4. Search via provider (HeyGen catalog, Asset Scout, ElevenLabs, brand kits)
+5. Fall back to generation (fal.ai image/video gen, hyperframes bgm, Kokoro TTS)
 6. Freeze file to `.media/<type>/`, register in manifest, regenerate `index.md`
 
 The agent gets back **one line**. Candidates, scores, provenance stay on disk.
