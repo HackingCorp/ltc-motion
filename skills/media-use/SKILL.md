@@ -58,6 +58,21 @@ Most HyperFrames projects already have assets in `assets/` (audio in `assets/bgm
 - `.media/index.md` — agent-readable table (id, type, dur, dims, path, description)
 - `~/.media/` — global cross-project reuse cache (content-addressed, SHA-256)
 
+## CLI tools used
+
+media-use orchestrates these tools (all installed locally):
+
+| Tool          | Purpose                                                  | Required?             |
+| ------------- | -------------------------------------------------------- | --------------------- |
+| `ffprobe`     | Probe duration, dimensions, codec on adopt/resolve       | Yes                   |
+| `ffmpeg`      | Format conversion, audio normalization                   | For processing        |
+| `fal`         | Image generation (Flux), video generation                | For generate fallback |
+| `yt-dlp`      | Download video/audio from URLs (1000+ platforms)         | For resolve:video     |
+| `elevenlabs`  | High-quality TTS (via audio engine)                      | For resolve:voice     |
+| `hyperframes` | Local BGM gen (Lyria/MusicGen), TTS (Kokoro), transcribe | Fallback              |
+| `heygen`      | Audio catalog search, asset search, brand kits           | For search providers  |
+| `ImageMagick` | Resize, convert, composite images                        | For processing        |
+
 ## References
 
 - `references/resolve-types.md` — per-type provider chains and manifest fields

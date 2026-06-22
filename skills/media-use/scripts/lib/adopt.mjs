@@ -2,6 +2,7 @@ import { readdirSync, statSync, existsSync } from "node:fs";
 import { join, extname, basename } from "node:path";
 import { readManifest, appendRecord, nextId } from "./manifest.mjs";
 import { regenerateIndex } from "./index-gen.mjs";
+import { probe } from "./probe.mjs";
 
 const AUDIO_EXT = new Set([".mp3", ".wav", ".ogg", ".m4a", ".aac"]);
 const IMAGE_EXT = new Set([".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".ico"]);
@@ -49,11 +50,13 @@ export function scanExistingAssets(projectDir) {
     if (!type) continue;
     const fullPath = join(assetsDir, rel);
     const stat = statSync(fullPath);
+    const meta = probe(fullPath);
     found.push({
       relativePath: `assets/${rel}`,
       type,
       size: stat.size,
       name: basename(rel, extname(rel)),
+      ...meta,
     });
   }
   return found;
@@ -77,6 +80,9 @@ export function adoptExistingAssets(projectDir) {
       path: asset.relativePath,
       source: "existing",
       description: asset.name.replace(/[-_]/g, " "),
+      ...(asset.duration != null && { duration: asset.duration }),
+      ...(asset.width != null && { width: asset.width }),
+      ...(asset.height != null && { height: asset.height }),
       provenance: { provider: "local", adopted: true },
     };
     appendRecord(projectDir, record);
