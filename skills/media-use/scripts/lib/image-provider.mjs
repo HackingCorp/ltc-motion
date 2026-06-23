@@ -1,26 +1,8 @@
-import { execSync } from "node:child_process";
-
-function searchAssets(query, type = "image", { limit = 5, minScore = 0.3 } = {}) {
-  try {
-    const q = query.replace(/'/g, "'\\''");
-    const cmd = `heygen --x-source media-use asset search list --query '${q}' --type ${type} --limit ${limit} --min-score ${minScore}`;
-    const out = execSync(cmd, {
-      encoding: "utf8",
-      timeout: 15000,
-      stdio: ["pipe", "pipe", "pipe"],
-    });
-    const payload = JSON.parse(out);
-    const data = payload?.data;
-    if (!Array.isArray(data) || data.length === 0) return null;
-    return data;
-  } catch {
-    return null;
-  }
-}
+import { heygenSearch } from "./heygen-search.mjs";
 
 export const imageProvider = {
   async search(intent) {
-    const results = searchAssets(intent, "image");
+    const results = heygenSearch("asset search list", intent, { type: "image" });
     if (!results) return null;
     const best = results[0];
     return {
@@ -41,7 +23,7 @@ export const imageProvider = {
 
 export const iconProvider = {
   async search(intent) {
-    const results = searchAssets(intent, "icon", { minScore: 0.2 });
+    const results = heygenSearch("asset search list", intent, { type: "icon", minScore: 0.2 });
     if (!results) return null;
     const best = results[0];
     return {

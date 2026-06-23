@@ -2,35 +2,21 @@ import { sfxProvider } from "./sfx-provider.mjs";
 import { imageProvider, iconProvider } from "./image-provider.mjs";
 import { bgmProvider } from "./bgm-provider.mjs";
 
-function stubProvider(type) {
-  return {
-    async search() {
-      return null;
-    },
-    async generate() {
-      return null;
-    },
-    type,
-  };
-}
+const STUB = { async search() { return null; } };
 
 const registry = {
   bgm: { ...bgmProvider, type: "bgm" },
   sfx: { ...sfxProvider, type: "sfx" },
-  voice: stubProvider("voice"),
+  voice: { ...STUB, type: "voice" },
   image: { ...imageProvider, type: "image" },
   icon: { ...iconProvider, type: "icon" },
-  brand: stubProvider("brand"),
+  brand: { ...STUB, type: "brand" },
 };
 
 export function getProvider(type) {
   const p = registry[type];
   if (!p) throw new Error(`unknown media type: ${type}`);
   return p;
-}
-
-export function registerProvider(type, provider) {
-  registry[type] = { ...provider, type };
 }
 
 export function listTypes() {

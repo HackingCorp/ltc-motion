@@ -1,22 +1,8 @@
-import { execSync } from "node:child_process";
-
-function searchHeygenSfx(query, { limit = 5, minScore = 0.4 } = {}) {
-  try {
-    const q = query.replace(/'/g, "'\\''");
-    const cmd = `heygen --x-source media-use audio sounds list --query '${q}' --type sound_effects --limit ${limit} --min-score ${minScore}`;
-    const out = execSync(cmd, { encoding: "utf8", timeout: 15000, stdio: ["pipe", "pipe", "pipe"] });
-    const payload = JSON.parse(out);
-    const data = payload?.data;
-    if (!Array.isArray(data) || data.length === 0) return null;
-    return data;
-  } catch {
-    return null;
-  }
-}
+import { heygenSearch } from "./heygen-search.mjs";
 
 export const sfxProvider = {
   async search(intent) {
-    const results = searchHeygenSfx(intent);
+    const results = heygenSearch("audio sounds list", intent, { type: "sound_effects", minScore: 0.4 });
     if (!results) return null;
     const best = results[0];
     return {

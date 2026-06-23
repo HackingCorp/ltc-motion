@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { execSync } from "node:child_process";
 import { appendRecord, readManifest } from "./lib/manifest.mjs";
 import { regenerateIndex } from "./lib/index-gen.mjs";
-import { registerProvider, getProvider } from "./lib/providers.mjs";
+import { getProvider } from "./lib/providers.mjs";
 import { freezeLocalFile } from "./lib/freeze.mjs";
 import { cachePut, cacheGet, importFromCache } from "./lib/cache.mjs";
 
@@ -92,19 +92,10 @@ test("global cache hit copies to project and registers", () => {
 
 // --- provider interface ---
 
-test("registerProvider replaces stub", async () => {
-  registerProvider("bgm", {
-    async search(intent) {
-      return { url: "https://example.com/t.wav", metadata: { description: intent } };
-    },
-  });
+test("getProvider returns provider with type", () => {
   const p = getProvider("bgm");
   assert.equal(p.type, "bgm");
-  const r = await p.search("test");
-  assert.ok(r.url);
-
-  // restore stub
-  registerProvider("bgm", { async search() { return null; }, async generate() { return null; } });
+  assert.ok(typeof p.search === "function");
 });
 
 test("getProvider throws for unknown type", () => {

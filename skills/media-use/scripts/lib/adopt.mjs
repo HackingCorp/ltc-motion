@@ -94,13 +94,16 @@ export function adoptExistingAssets(projectDir) {
 }
 
 export function findExistingAsset(projectDir, intent, type) {
-  const existing = scanExistingAssets(projectDir);
+  const assetsDir = join(projectDir, "assets");
+  if (!existsSync(assetsDir)) return null;
   const lower = intent.toLowerCase();
-  return (
-    existing.find((a) => {
-      if (type && a.type !== type) return false;
-      const name = a.name.toLowerCase().replace(/[-_]/g, " ");
-      return name.includes(lower) || lower.includes(name);
-    }) || null
-  );
+  for (const rel of walkDir(assetsDir)) {
+    const t = inferType(rel);
+    if (!t || (type && t !== type)) continue;
+    const name = basename(rel, extname(rel)).toLowerCase().replace(/[-_]/g, " ");
+    if (name.includes(lower) || lower.includes(name)) {
+      return { relativePath: `assets/${rel}`, type: t, name: basename(rel, extname(rel)) };
+    }
+  }
+  return null;
 }
