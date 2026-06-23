@@ -1,5 +1,6 @@
 import { sfxProvider } from "./sfx-provider.mjs";
 import { imageProvider, iconProvider } from "./image-provider.mjs";
+import { bgmProvider } from "./bgm-provider.mjs";
 
 function stubProvider(type) {
   return {
@@ -14,7 +15,7 @@ function stubProvider(type) {
 }
 
 const registry = {
-  bgm: stubProvider("bgm"),
+  bgm: { ...bgmProvider, type: "bgm" },
   sfx: { ...sfxProvider, type: "sfx" },
   voice: stubProvider("voice"),
   image: { ...imageProvider, type: "image" },
