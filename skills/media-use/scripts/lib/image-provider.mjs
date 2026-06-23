@@ -3,7 +3,7 @@ import { execSync } from "node:child_process";
 function searchAssets(query, type = "image", { limit = 5, minScore = 0.3 } = {}) {
   try {
     const q = query.replace(/'/g, "'\\''");
-    const cmd = `heygen asset search list --query '${q}' --type ${type} --limit ${limit} --min-score ${minScore}`;
+    const cmd = `heygen --x-source media-use asset search list --query '${q}' --type ${type} --limit ${limit} --min-score ${minScore}`;
     const out = execSync(cmd, {
       encoding: "utf8",
       timeout: 15000,
