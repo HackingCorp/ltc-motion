@@ -122,6 +122,57 @@ const typographyPrimitives = [
   "typewriter",
 ] as const;
 
+const remainingRemocnComponents = [
+  "ai-generation-canvas",
+  "animated-bar-chart",
+  "animated-line-chart",
+  "backdrop",
+  "browser-flow",
+  "chat-gpt",
+  "chat-to-preview-layout",
+  "chromatic-aberration-wipe",
+  "claude-chat",
+  "claude-code",
+  "code-accordion",
+  "code-diff-wipe",
+  "command-menu-item",
+  "confetti",
+  "dashboard-populate",
+  "data-flow-pipes",
+  "device-mockup-zoom",
+  "directional-wipe",
+  "drag-and-drop-flow",
+  "dropdown-menu-item",
+  "ecosystem-constellation",
+  "frosted-glass-wipe",
+  "github-stars",
+  "glass-code-block",
+  "hero-device-assemble",
+  "image-expand-to-fullscreen",
+  "infinite-bento-pan",
+  "infinite-marquee",
+  "landing-code-showcase",
+  "live-code-compilation",
+  "mesh-gradient-bg",
+  "micro-scale-fade",
+  "opencode",
+  "pricing-tier-focus",
+  "progress-steps",
+  "registry",
+  "remocn-ui",
+  "select-item",
+  "skeleton-block",
+  "spatial-push",
+  "spotlight-card",
+  "terminal-simulator",
+  "terminal-to-browser-deploy",
+  "tool-menu-slide-in",
+  "v0",
+  "x-follow-card",
+  "x-followers-overview",
+  "zoom-through-transition",
+] as const;
+
 function readJson<T>(path: string): T {
   return JSON.parse(readFileSync(path, "utf-8")) as T;
 }
@@ -184,5 +235,9 @@ describe("remocn UI primitives catalog slice", () => {
       "remocn-port",
       "typography",
     ]);
+  });
+
+  it("ports the remaining remocn showcase, effect, transition, and social entries", () => {
+    expectRegisteredComponents(remainingRemocnComponents, ["remocn-port"]);
   });
 });

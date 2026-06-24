@@ -966,6 +966,198 @@
     {
       "name": "typewriter",
       "type": "hyperframes:component"
+    },
+    {
+      "name": "ai-generation-canvas",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "animated-bar-chart",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "animated-line-chart",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "backdrop",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "browser-flow",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "chat-gpt",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "chat-to-preview-layout",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "chromatic-aberration-wipe",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "claude-chat",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "claude-code",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "code-accordion",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "code-diff-wipe",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "command-menu-item",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "confetti",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "dashboard-populate",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "data-flow-pipes",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "device-mockup-zoom",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "directional-wipe",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "drag-and-drop-flow",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "dropdown-menu-item",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "ecosystem-constellation",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "frosted-glass-wipe",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "github-stars",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "glass-code-block",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "hero-device-assemble",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "image-expand-to-fullscreen",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "infinite-bento-pan",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "infinite-marquee",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "landing-code-showcase",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "live-code-compilation",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "mesh-gradient-bg",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "micro-scale-fade",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "opencode",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "pricing-tier-focus",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "progress-steps",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "registry",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "remocn-ui",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "select-item",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "skeleton-block",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "spatial-push",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "spotlight-card",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "terminal-simulator",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "terminal-to-browser-deploy",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "tool-menu-slide-in",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "v0",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "x-follow-card",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "x-followers-overview",
+      "type": "hyperframes:component"
+    },
+    {
+      "name": "zoom-through-transition",
+      "type": "hyperframes:component"
     }
   ]
 }
