@@ -106,6 +106,7 @@
         "@chenglou/pretext": "^0.0.5",
         "@hyperframes/lint": "workspace:*",
         "@hyperframes/parsers": "workspace:*",
+        "@hyperframes/studio-server": "workspace:*",
         "bpm-detective": "^2.0.5",
         "postcss": "^8.5.8",
         "postcss-selector-parser": "^7.1.2",
@@ -122,12 +123,6 @@
       "optionalDependencies": {
         "esbuild": "^0.25.12",
       },
-      "peerDependencies": {
-        "hono": "^4.0.0",
-      },
-      "optionalPeers": [
-        "hono",
-      ],
     },
     "packages/engine": {
       "name": "@hyperframes/engine",
@@ -339,6 +334,26 @@
         "react": "19",
         "react-dom": "19",
         "zustand": "^4.0.0 || ^5.0.0",
+      },
+    },
+    "packages/studio-server": {
+      "name": "@hyperframes/studio-server",
+      "version": "0.7.11",
+      "dependencies": {
+        "@hyperframes/core": "workspace:*",
+        "@hyperframes/lint": "workspace:*",
+        "@hyperframes/parsers": "workspace:*",
+        "hono": "^4.0.0",
+        "linkedom": "^0.18.12",
+        "postcss": "^8.5.8",
+        "postcss-selector-parser": "^7.1.2",
+      },
+      "devDependencies": {
+        "@types/node": "^25.0.10",
+        "tsup": "^8.0.0",
+        "tsx": "^4.21.0",
+        "typescript": "^5.0.0",
+        "vitest": "^3.2.4",
       },
     },
   },
@@ -714,6 +729,8 @@
     "@hyperframes/shader-transitions": ["@hyperframes/shader-transitions@workspace:packages/shader-transitions"],
 
     "@hyperframes/studio": ["@hyperframes/studio@workspace:packages/studio"],
+
+    "@hyperframes/studio-server": ["@hyperframes/studio-server@workspace:packages/studio-server"],
 
     "@img/colour": ["@img/colour@1.1.0", "", {}, "sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ=="],
 

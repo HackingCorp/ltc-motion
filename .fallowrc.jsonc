@@ -267,6 +267,25 @@
       "packages/parsers/src/gsapWriterParity.acorn.test.ts",
       "packages/parsers/src/htmlParser.roundtrip.test.ts",
       "packages/parsers/src/htmlParser.test.ts",
+      // @hyperframes/studio-server test files: parallel arrange/act/assert test cases
+      // (pre-existing structure from when studio-api lived in packages/core/src/studio-api/).
+      "packages/studio-server/src/routes/files.test.ts",
+      "packages/studio-server/src/routes/render.test.ts",
+      "packages/studio-server/src/routes/lint.test.ts",
+      "packages/studio-server/src/routes/preview.test.ts",
+      "packages/studio-server/src/routes/projects.test.ts",
+      "packages/studio-server/src/routes/storyboard.test.ts",
+      "packages/studio-server/src/routes/thumbnail.test.ts",
+      "packages/studio-server/src/helpers/backupJournal.test.ts",
+      "packages/studio-server/src/helpers/finiteMutation.test.ts",
+      "packages/studio-server/src/helpers/hfIdPersist.test.ts",
+      "packages/studio-server/src/helpers/manualEditsRenderScript.test.ts",
+      "packages/studio-server/src/helpers/mediaValidation.test.ts",
+      "packages/studio-server/src/helpers/previewAdapter.test.ts",
+      "packages/studio-server/src/helpers/safePath.test.ts",
+      "packages/studio-server/src/helpers/sourceMutation.test.ts",
+      "packages/studio-server/src/helpers/studioMotionRenderScript.test.ts",
+      "packages/studio-server/src/helpers/subComposition.test.ts",
       // @hyperframes/lint rule test files: parallel arrange/act/assert test cases
       // (pre-existing structure from when lint lived in packages/core/src/lint/).
       "packages/lint/src/rules/adapters.test.ts",
@@ -301,17 +320,10 @@
     ],
   },
   "health": {
-    // executeGsapMutation (introduced by Phase 3b / acorn-parser stack, already
-    // merged to origin/main via #1338) has CRITICAL cyclomatic complexity (58)
-    // that pre-dates this PR's scope. Excluding files.ts from health analysis
-    // avoids the inherited-fingerprint line-shift problem that suppression
-    // comments would cause (any inserted line shifts subsequent function line
-    // numbers, breaking fallow's inherited-detection fingerprint).
-    //
     // useGsapTweenCache.ts: pre-existing large React-effect hooks (the populate
     // and runtime-scan effects, the per-element animations memo) whose
     // complexity pre-dates the computed-timeline work. Exempted at file level
-    // for the same reason as files.ts rather than refactored as scope creep.
+    // for the same reason as gsapParser.ts rather than refactored as scope creep.
     //
     // gsapParser.ts: the recast/babel GSAP writer is a 2500-line legacy parser
     // restored as the default server writer by WS-3.F rework (acorn is now
@@ -319,7 +331,6 @@
     // this PR and was present on all ancestor branches; the file-level exemption
     // avoids the line-shift fingerprint problem for inherited findings.
     "ignore": [
-      "packages/core/src/studio-api/routes/files.ts",
       "packages/core/src/parsers/gsapParser.ts",
       // gsapParser.ts moved to packages/parsers — same complexity rationale.
       "packages/parsers/src/gsapParser.ts",
@@ -330,6 +341,15 @@
       // exemption avoids the line-shift fingerprint problem for inherited findings.
       "packages/lint/src/rules/media.ts",
       "packages/lint/src/rules/textures.ts",
+      // studio-server files: pre-existing complexity (moved from packages/core/src/studio-api/).
+      // files.ts: executeGsapMutationRecast/Acorn are CRITICAL; excluded as files.ts
+      // was already in health.ignore at the old path (packages/core/src/studio-api/routes/files.ts).
+      "packages/studio-server/src/routes/files.ts",
+      "packages/studio-server/src/routes/thumbnail.ts",
+      "packages/studio-server/src/routes/render.ts",
+      "packages/studio-server/src/helpers/manualEditsRenderScript.ts",
+      "packages/studio-server/src/helpers/studioMotionRenderScript.ts",
+      "packages/studio-server/src/helpers/subComposition.ts",
       // SlideshowPanel.tsx: top-level editor panel that wires several independent
       // sections (slides/inspector/branches/hotspot). Its cyclomatic count comes
       // from that fan-out; splitting it would scatter shared state without

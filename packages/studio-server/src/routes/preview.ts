@@ -1,7 +1,7 @@
 import type { Hono } from "hono";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { injectScriptsIntoHtml, stripEmbeddedRuntimeScripts } from "../../compiler/htmlDocument.js";
+import { injectScriptsIntoHtml, stripEmbeddedRuntimeScripts } from "@hyperframes/core/compiler";
 import type { StudioApiAdapter } from "../types.js";
 import { resolveWithinProject } from "../helpers/safePath.js";
 import { getMimeType } from "../helpers/mime.js";
@@ -11,7 +11,7 @@ import {
   createStudioMotionRenderBodyScript,
   STUDIO_MOTION_PATH,
 } from "../helpers/studioMotionRenderScript.js";
-import { ensureHfIds } from "../../parsers/hfIds.js";
+import { ensureHfIds } from "@hyperframes/parsers/hf-ids";
 import { persistHfIdsIfNeeded } from "../helpers/hfIdPersist.js";
 
 const PROJECT_SIGNATURE_META = "hyperframes-project-signature";
