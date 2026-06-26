@@ -135,7 +135,7 @@ export interface PatchOperation {
 }
 
 // fallow-ignore-next-line complexity
-function patchStyleAttrString(style: string, property: string, value: string | null): string {
+function parseStyleDecls(style: string): { props: Map<string, string>; order: string[] } {
   const props = new Map<string, string>();
   const order: string[] = [];
   // Tokenize declarations robustly: values can contain ';' inside quoted strings
@@ -171,6 +171,18 @@ function patchStyleAttrString(style: string, property: string, value: string | n
     if (!props.has(key)) order.push(key);
     props.set(key, val);
   }
+  return { props, order };
+}
+
+function serializeStyleDecls(props: Map<string, string>, order: string[]): string {
+  return order
+    .map((k) => `${k}: ${props.get(k) ?? ""}`)
+    .filter((d) => d.trim())
+    .join("; ");
+}
+
+function patchStyleAttrString(style: string, property: string, value: string | null): string {
+  const { props, order } = parseStyleDecls(style);
   if (value === null) {
     props.delete(property);
     const idx = order.indexOf(property);
@@ -179,10 +191,7 @@ function patchStyleAttrString(style: string, property: string, value: string | n
     if (!props.has(property)) order.push(property);
     props.set(property, value);
   }
-  return order
-    .map((k) => `${k}: ${props.get(k) ?? ""}`)
-    .filter((d) => d.trim())
-    .join("; ");
+  return serializeStyleDecls(props, order);
 }
 
 // fallow-ignore-next-line complexity
@@ -374,5 +383,151 @@ export function splitElementInHtml(
     html: wrappedFragment ? document.body.innerHTML || "" : document.toString(),
     matched: true,
     newId,
+  };
+}
+
+// --- Element grouping -------------------------------------------------------
+// A group is a real `<div data-hf-group="…">` wrapping its members in the DOM.
+// Wrapping rebases each member's left/top so its absolute position is unchanged:
+// the wrapper sits at the selection bbox top-left, and each child's new left/top
+// is its old left/top minus the wrapper origin (computed client-side, where live
+// layout is available, and passed in via `rebases`). GSAP x/y, CSS translate and
+// --hf-studio-offset vars are deltas relative to flow position and stay untouched.
+
+export interface WrapElementsResult {
+  html: string;
+  matched: boolean;
+  groupId: string | null;
+  error?: string;
+}
+
+export interface UnwrapElementsResult {
+  html: string;
+  unwrapped: boolean;
+}
+
+export interface ElementRebase {
+  target: SourceMutationTarget;
+  left: number;
+  top: number;
+}
+
+function getInlineStylePx(el: Element, property: string): number {
+  const style = (isHTMLElement(el) ? el.getAttribute("style") : null) ?? "";
+  const { props } = parseStyleDecls(style);
+  const raw = props.get(property);
+  if (!raw) return 0;
+  const n = parseFloat(raw);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function setInlineLeftTop(el: HTMLElement, left: number, top: number): void {
+  let style = el.getAttribute("style") ?? "";
+  style = patchStyleAttrString(style, "left", `${left}px`);
+  style = patchStyleAttrString(style, "top", `${top}px`);
+  el.setAttribute("style", style);
+}
+
+// fallow-ignore-next-line complexity
+export function wrapElementsInHtml(
+  source: string,
+  targets: SourceMutationTarget[],
+  groupId: string,
+  bbox: { left: number; top: number; width: number; height: number },
+  rebases: ElementRebase[],
+): WrapElementsResult {
+  const { document, wrappedFragment } = parseSourceDocument(source);
+  if (targets.length === 0) {
+    return { html: source, matched: false, groupId: null, error: "no targets" };
+  }
+
+  // Resolve + dedupe by element ref (two targets may point at the same node).
+  const els: HTMLElement[] = [];
+  const seen = new Set<Element>();
+  for (const target of targets) {
+    const el = findTargetElement(document, target);
+    if (!el || !isHTMLElement(el) || seen.has(el)) continue;
+    seen.add(el);
+    els.push(el);
+  }
+  if (els.length === 0) {
+    return { html: source, matched: false, groupId: null, error: "no targets matched" };
+  }
+
+  // P1: require a single common parent (LCA multi-parent wrapping is P2).
+  const parent = els[0]?.parentElement;
+  if (!parent || els.some((el) => el.parentElement !== parent)) {
+    return {
+      html: source,
+      matched: false,
+      groupId: null,
+      error: "grouped elements must share a single parent",
+    };
+  }
+
+  // Order members by their position in the parent (= z-order / stacking order).
+  const memberSet = new Set<Element>(els);
+  const ordered = Array.from(parent.children).filter((c): c is HTMLElement => memberSet.has(c));
+
+  // Map each member to its rebased left/top (resolved against the same document).
+  const rebaseByEl = new Map<Element, { left: number; top: number }>();
+  for (const rebase of rebases) {
+    const el = findTargetElement(document, rebase.target);
+    if (el) rebaseByEl.set(el, { left: rebase.left, top: rebase.top });
+  }
+
+  const wrapper = document.createElement("div");
+  wrapper.setAttribute("data-hf-group", groupId);
+  wrapper.setAttribute(
+    "style",
+    `position: absolute; left: ${bbox.left}px; top: ${bbox.top}px; width: ${bbox.width}px; height: ${bbox.height}px`,
+  );
+
+  // Insert the wrapper at the first member's slot, then move members into it.
+  parent.insertBefore(wrapper, ordered[0] ?? null);
+  for (const el of ordered) {
+    const rebase = rebaseByEl.get(el);
+    if (rebase) setInlineLeftTop(el, rebase.left, rebase.top);
+    wrapper.appendChild(el); // appendChild moves the node, preserving order
+  }
+
+  return {
+    html: wrappedFragment ? document.body.innerHTML || "" : document.toString(),
+    matched: true,
+    groupId,
+  };
+}
+
+export function unwrapElementsFromHtml(
+  source: string,
+  groupTarget: SourceMutationTarget,
+): UnwrapElementsResult {
+  const { document, wrappedFragment } = parseSourceDocument(source);
+  const group = findTargetElement(document, groupTarget);
+  if (!group || !isHTMLElement(group)) return { html: source, unwrapped: false };
+
+  const parent = group.parentElement;
+  if (!parent) return { html: source, unwrapped: false };
+
+  // Undo the rebase: child absolute position = child (rebased) + wrapper origin.
+  const wLeft = getInlineStylePx(group, "left");
+  const wTop = getInlineStylePx(group, "top");
+
+  // Move children back to the wrapper's slot, preserving order.
+  for (const child of Array.from(group.children)) {
+    if (isHTMLElement(child)) {
+      setInlineLeftTop(
+        child,
+        getInlineStylePx(child, "left") + wLeft,
+        getInlineStylePx(child, "top") + wTop,
+      );
+    }
+    parent.insertBefore(child, group);
+  }
+  group.remove();
+
+  return {
+    html: wrappedFragment ? document.body.innerHTML || "" : document.toString(),
+    unwrapped: true,
   };
 }
