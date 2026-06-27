@@ -1,0 +1,11 @@
+{
+  "name": "studio-test",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes hyperframes@0.7.13 preview",
+    "check": "npx --yes hyperframes@0.7.13 lint && npx --yes hyperframes@0.7.13 validate && npx --yes hyperframes@0.7.13 inspect",
+    "render": "npx --yes hyperframes@0.7.13 render",
+    "publish": "npx --yes hyperframes@0.7.13 publish"
+  }
+}
