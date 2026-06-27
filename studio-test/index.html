@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=1920, height=1080">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <style>
       * {
@@ -102,34 +102,85 @@
     </style>
   </head>
   <body>
-    <div data-hf-id="hf-gxr6" id="root" data-composition-id="main" data-start="0" data-duration="8" data-width="1920" data-height="1080">
+    <div
+      data-hf-id="hf-gxr6"
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="8"
+      data-width="1920"
+      data-height="1080"
+    >
       <!-- Background — always visible -->
       <div data-hf-id="hf-2xc0" id="bg"></div>
 
       <!-- Badge (right side) -->
-      <div data-hf-id="hf-w4kq" id="badge" class="clip" data-start="0" data-duration="8" data-track-index="1">
+      <div
+        data-hf-id="hf-w4kq"
+        id="badge"
+        class="clip"
+        data-start="0"
+        data-duration="8"
+        data-track-index="1"
+      >
         <div data-hf-id="hf-aspg" id="badge-inner">🚀</div>
       </div>
 
       <!-- Eyebrow + headline block -->
-      <div data-hf-id="hf-ld7j" id="eyebrow" class="clip" data-start="0.3" data-duration="7.7" data-track-index="2">
+      <div
+        data-hf-id="hf-ld7j"
+        id="eyebrow"
+        class="clip"
+        data-start="0.3"
+        data-duration="7.7"
+        data-track-index="2"
+      >
         New Release
       </div>
 
-      <div data-hf-id="hf-meo2" id="headline" class="clip" data-start="0.5" data-duration="7.5" data-track-index="3">
-        Build videos with<br data-hf-id="hf-x5px"><span data-hf-id="hf-j4xb">HyperFrames</span>
+      <div
+        data-hf-id="hf-meo2"
+        id="headline"
+        class="clip"
+        data-start="0.5"
+        data-duration="7.5"
+        data-track-index="3"
+      >
+        Build videos with<br data-hf-id="hf-x5px" /><span data-hf-id="hf-j4xb">HyperFrames</span>
       </div>
 
-      <div data-hf-id="hf-yd4a" id="divider" class="clip" data-start="1.2" data-duration="6.8" data-track-index="4"></div>
+      <div
+        data-hf-id="hf-yd4a"
+        id="divider"
+        class="clip"
+        data-start="1.2"
+        data-duration="6.8"
+        data-track-index="4"
+      ></div>
 
-      <div data-hf-id="hf-gzqk" id="sub" class="clip" data-start="1.4" data-duration="6.6" data-track-index="5">
-        Write HTML, render video. Now with standalone<br data-hf-id="hf-rsrt">
-        <strong data-hf-id="hf-3g3d" style="color: rgba(255,255,255,0.75)">parsers</strong>,
-        <strong data-hf-id="hf-8joa" style="color: rgba(255,255,255,0.75)">lint</strong>, and
-        <strong data-hf-id="hf-jolv" style="color: rgba(255,255,255,0.75)">studio-server</strong> packages.
+      <div
+        data-hf-id="hf-gzqk"
+        id="sub"
+        class="clip"
+        data-start="1.4"
+        data-duration="6.6"
+        data-track-index="5"
+      >
+        Write HTML, render video. Now with standalone<br data-hf-id="hf-rsrt" />
+        <strong data-hf-id="hf-3g3d" style="color: rgba(255, 255, 255, 0.75)">parsers</strong>,
+        <strong data-hf-id="hf-8joa" style="color: rgba(255, 255, 255, 0.75)">lint</strong>, and
+        <strong data-hf-id="hf-jolv" style="color: rgba(255, 255, 255, 0.75)">studio-server</strong>
+        packages.
       </div>
 
-      <div data-hf-id="hf-4ucn" id="tag" class="clip" data-start="2" data-duration="6" data-track-index="6">
+      <div
+        data-hf-id="hf-4ucn"
+        id="tag"
+        class="clip"
+        data-start="2"
+        data-duration="6"
+        data-track-index="6"
+      >
         v0.7.13
       </div>
     </div>
@@ -139,7 +190,11 @@
       const tl = gsap.timeline({ paused: true });
 
       // Badge spins in
-      tl.from("#badge", { scale: 0.4, opacity: 0, rotation: -45, duration: 0.9, ease: "back.out(1.4)" }, 0);
+      tl.from(
+        "#badge",
+        { scale: 0.4, opacity: 0, rotation: -45, duration: 0.9, ease: "back.out(1.4)" },
+        0,
+      );
 
       // Eyebrow slides up
       tl.from("#eyebrow", { y: 24, opacity: 0, duration: 0.5, ease: "power2.out" }, 0.3);
@@ -148,7 +203,11 @@
       tl.from("#headline", { y: 40, opacity: 0, duration: 0.7, ease: "power3.out" }, 0.5);
 
       // Divider grows from left
-      tl.from("#divider", { scaleX: 0, transformOrigin: "left center", duration: 0.4, ease: "power2.out" }, 1.2);
+      tl.from(
+        "#divider",
+        { scaleX: 0, transformOrigin: "left center", duration: 0.4, ease: "power2.out" },
+        1.2,
+      );
 
       // Sub fades up
       tl.from("#sub", { y: 20, opacity: 0, duration: 0.6, ease: "power2.out" }, 1.4);

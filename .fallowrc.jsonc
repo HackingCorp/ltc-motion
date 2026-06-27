@@ -323,16 +323,10 @@
     // useGsapTweenCache.ts: pre-existing large React-effect hooks (the populate
     // and runtime-scan effects, the per-element animations memo) whose
     // complexity pre-dates the computed-timeline work. Exempted at file level
-    // for the same reason as gsapParser.ts rather than refactored as scope creep.
-    //
-    // gsapParser.ts: the recast/babel GSAP writer is a 2500-line legacy parser
-    // restored as the default server writer by WS-3.F rework (acorn is now
-    // flag-gated behind STUDIO_SDK_CUTOVER_ENABLED). Its complexity pre-dates
-    // this PR and was present on all ancestor branches; the file-level exemption
-    // avoids the line-shift fingerprint problem for inherited findings.
+    // rather than refactored as scope creep.
     "ignore": [
-      "packages/core/src/parsers/gsapParser.ts",
-      // gsapParser.ts moved to packages/parsers — same complexity rationale.
+      // gsapParser.ts: the recast/babel GSAP writer is a 2500-line legacy parser;
+      // moved from packages/core/src/parsers/ — same complexity rationale.
       "packages/parsers/src/gsapParser.ts",
       // htmlParser.ts has pre-existing complexity (moved from packages/core).
       "packages/parsers/src/htmlParser.ts",
@@ -380,6 +374,13 @@
       "packages/studio/src/hooks/gsapDragPositionCommit.ts",
       "packages/studio/src/hooks/gsapKeyframeCacheHelpers.ts",
       "packages/studio/vite.config.ts",
+      // set-version.ts: compareSemver helper has pre-existing complexity from
+      // semver string parsing logic; line-shift fingerprint problem from new
+      // packages added to PACKAGES array makes fallow treat it as new.
+      "scripts/set-version.ts",
+      // gsapRuntimeReaders.ts: pre-existing complexity in readAllAnimatedProperties;
+      // line-shift fingerprint from import-path updates triggers the violation.
+      "packages/studio/src/hooks/gsapRuntimeReaders.ts",
     ],
   },
 }
