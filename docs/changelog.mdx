@@ -9,6 +9,22 @@ Recent HyperFrames releases, including user-facing features, fixes, and migratio
 {/* New release entries are prepended by `bun run changelog:draft <version> --write`. */}
 
 <Update
+  label="HyperFrames v0.7.14"
+  description="Released - 2026-06-27"
+  tags={["Release", "CLI"]}
+>
+This CLI release makes HyperFrames skills self-healing: installs now keep a
+freshness manifest, install once globally, and mirror only HyperFrames-owned
+skills into detected agent stores.
+
+## Features
+
+- **CLI:** Skills freshness — version check, manifest, global install + multi-agent mirror ([bf961d12](https://github.com/heygen-com/hyperframes/commit/bf961d1268427997a9e0a909d13198f50d1ab8c5), [#1753](https://github.com/heygen-com/hyperframes/pull/1753))
+
+[View the full commit range](https://github.com/heygen-com/hyperframes/compare/v0.7.13...v0.7.14).
+</Update>
+
+<Update
   label="HyperFrames v0.7.13"
   description="Released - 2026-06-26"
   tags={["Release", "Lint"]}
