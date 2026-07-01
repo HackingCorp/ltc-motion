@@ -273,6 +273,22 @@ describe("C. Resolver-parity detection", () => {
     expect(lastShadow()?.sourceHfIdCount).toBe(2);
   });
 
+  it("C8 sourceLooseMatchOnly: hfId matches source only as plain text, not a data-hf-id attribute", async () => {
+    mockFlags.STUDIO_SDK_RESOLVER_SHADOW_ENABLED = true;
+    const session = { getElement: () => null, getElements: () => [] } as unknown as Composition;
+    // "hf-widget" appears only inside a class name, never as data-hf-id="hf-widget".
+    const source = `<div class="hf-widget-container">no attribute match here</div>`;
+    runResolverShadow(
+      session,
+      "hf-widget",
+      [{ type: "inline-style", property: "color", value: "red" }],
+      source,
+    );
+    const ev = lastShadow();
+    expect(ev?.sourceHfIdCount).toBe(0);
+    expect(ev?.sourceLooseMatchOnly).toBe(true);
+  });
+
   it("C10: unmappable op type produces no mismatch (excluded, not flagged)", async () => {
     const session = await openComposition(BASE_HTML);
     // "unknown-op" is not in MAPPED_OP_TYPES, so it must be silently excluded.
@@ -422,6 +438,19 @@ describe("F. recordResolverParity", () => {
     const ev = lastShadow();
     expect(ev?.mismatchCount).toBe(1);
     expect(ev?.sourceHfIdCount).toBeUndefined();
+  });
+
+  it("tags sourceLooseMatchOnly when hfId matches source only as plain text, not a data-hf-id attribute", async () => {
+    mockFlags.STUDIO_SDK_RESOLVER_SHADOW_ENABLED = true;
+    const session = await openComposition(BASE_HTML);
+    // "hf-widget" appears only inside a class name, never as data-hf-id="hf-widget".
+    await recordResolverParity(session, "hf-widget", "setTiming", () =>
+      Promise.resolve('<div class="hf-widget-container"></div>'),
+    );
+    const ev = lastShadow();
+    expect(ev?.mismatchCount).toBe(1);
+    expect(ev?.sourceHfIdCount).toBe(0);
+    expect(ev?.sourceLooseMatchOnly).toBe(true);
   });
 });
 

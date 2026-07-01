@@ -272,6 +272,10 @@ export function runResolverShadow(
     // every style/text/attr edit (the editor's chattiest path) at default-ON.
     if (mismatches.length === 0) return;
     const isElementNotFound = mismatches.some((m) => m.kind === "element_not_found");
+    const strictCount =
+      isElementNotFound && sourceContent !== undefined
+        ? countHfIdInSource(sourceContent, hfId)
+        : undefined;
     trackStudioEvent("sdk_resolver_shadow", {
       hfId,
       // sessionElementCount > 0 + element_not_found = runtime-only element;
@@ -282,13 +286,11 @@ export function runResolverShadow(
       // instance; =1 = single static node the SDK parse dropped (foreign-content
       // exclusion / sub-comp inlining gap); =0 = the runtime-node filter above
       // uses a loose substring match (biased toward keeping signal) while this
-      // count uses a strict attribute match — an emitted event with count 0
-      // means hfId appeared in source as plain text (e.g. a class name, comment,
-      // or script string) but never as a data-hf-id attribute. Treat 0 as "not
-      // a genuine attribute occurrence," not as a contradiction.
-      ...(isElementNotFound && sourceContent !== undefined
-        ? { sourceHfIdCount: countHfIdInSource(sourceContent, hfId) }
-        : {}),
+      // count uses a strict attribute match — see sourceLooseMatchOnly below.
+      ...(strictCount !== undefined ? { sourceHfIdCount: strictCount } : {}),
+      // Loose suppression check matched (kept this event) but the strict
+      // attribute count came back 0 — see the sourceHfIdCount comment above.
+      ...(strictCount === 0 ? { sourceLooseMatchOnly: true } : {}),
       mismatchCount: mismatches.length,
       mismatches: JSON.stringify(redactMismatches(mismatches)),
     });
@@ -334,6 +336,7 @@ export async function recordResolverParity(
     }
     // Runtime-generated node the static parse can't model — suppress (mirrors the dom-edit path).
     if (source !== undefined && !source.includes(hfId)) return;
+    const strictCount = source !== undefined ? countHfIdInSource(source, hfId) : undefined;
     trackStudioEvent("sdk_resolver_shadow", {
       hfId,
       opLabel,
@@ -342,7 +345,13 @@ export async function recordResolverParity(
       // on an emitted (non-suppressed) event — the suppression check above is a
       // loose substring match (biased toward keeping signal); see the longer
       // comment on this field in runResolverShadow for the full explanation.
-      ...(source !== undefined ? { sourceHfIdCount: countHfIdInSource(source, hfId) } : {}),
+      ...(strictCount !== undefined ? { sourceHfIdCount: strictCount } : {}),
+      // Loose suppression check matched (kept this event) but the strict
+      // attribute count came back 0 — hfId appeared as plain text (class name,
+      // comment, script string) but never as a data-hf-id="..." attribute.
+      // Lets telemetry consumers filter this cohort without parsing the
+      // sourceHfIdCount comment above.
+      ...(strictCount === 0 ? { sourceLooseMatchOnly: true } : {}),
       mismatchCount: 1,
       mismatches: JSON.stringify([
         { kind: "element_not_found", hfId } satisfies SdkResolverMismatch,

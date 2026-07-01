@@ -221,12 +221,13 @@ export function sdkGsapTweenPersist(
       "addGsapTween",
       gsapSrc ? () => gsapSrc(targetPath) : undefined,
     );
-  } else
+  } else {
     recordAnimationResolverParity(
       sdkSession,
       op.animationId,
       op.kind === "set" ? "setGsapTween" : "removeGsapTween",
     );
+  }
   // Leading dark-launch gate so flag-off does no SDK touch (getElement) at all —
   // matches the other three chokepoints' discipline.
   if (!STUDIO_SDK_CUTOVER_ENABLED) return Promise.resolve(false);
