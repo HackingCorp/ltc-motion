@@ -121,12 +121,14 @@ function scopeSelector(
     const isRootBoxSelector = trimmed.replace(compositionIdPattern, "").trim() === "";
     if (isRootBoxSelector) {
       // A bare root selector styles the composition's own box (flex/grid/
-      // position). When flattenInnerRoot preserves the authored root as a
-      // wrapper below `scope` (see prepareFlattenedInnerRoot), that wrapper
-      // is the element real children are laid out in, not `scope` itself.
-      // Target both so the box styling still reaches whichever one holds
-      // the composition's actual content.
-      return `${scope}, ${scope} [${INNER_ROOT_ATTR}]`;
+      // position/padding). When flattenInnerRoot preserves the authored root
+      // as a wrapper below `scope` (see prepareFlattenedInnerRoot), that
+      // wrapper is the element real children are laid out in, not `scope`
+      // itself, so the box styling must land there instead. It must land on
+      // exactly one of the two: applying it to both compounds any additive
+      // property (padding, margin, non-zero transform) since the wrapper
+      // sits nested inside the host and would inherit the effect twice.
+      return `${scope}:not(:has([${INNER_ROOT_ATTR}])), ${scope} > [${INNER_ROOT_ATTR}]`;
     }
     return selectorWithoutRootTiming.replace(compositionIdPattern, scope);
   }
