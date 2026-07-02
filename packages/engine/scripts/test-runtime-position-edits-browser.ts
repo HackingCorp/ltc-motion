@@ -54,6 +54,8 @@ interface Sample {
   t: number;
   ax: { x: number; y: number };
   ay: { x: number; y: number };
+  axy: { x: number; y: number };
+  ts: { x: number; y: number };
   st: { x: number; y: number };
 }
 
@@ -101,6 +103,10 @@ async function main(): Promise<void> {
        data-x="50" data-y="-70" data-hf-edit-base-x="0" data-hf-edit-base-y="0"></div>
   <div id="ay" class="clip el" data-hf-id="hf-ay" data-start="0" data-duration="4"
        data-x="50" data-y="-70" data-hf-edit-base-x="0" data-hf-edit-base-y="0"></div>
+  <div id="axy" class="clip el" data-hf-id="hf-axy" data-start="0" data-duration="4"
+       data-x="50" data-y="-70" data-hf-edit-base-x="0" data-hf-edit-base-y="0"></div>
+  <div id="ts" class="clip el" data-hf-id="hf-ts" data-start="0" data-duration="4"
+       data-x="50" data-y="-70" data-hf-edit-base-x="0" data-hf-edit-base-y="0"></div>
   <div id="st" class="clip el" data-hf-id="hf-st" data-start="0" data-duration="4"
        data-x="50" data-y="-70" data-hf-edit-base-x="0" data-hf-edit-base-y="0"></div>
 </div>
@@ -110,6 +116,8 @@ async function main(): Promise<void> {
   var tl = gsap.timeline({ paused: true });
   tl.fromTo("#ax", { x: 0 }, { x: 400, duration: 4, ease: "none" }, 0);
   tl.fromTo("#ay", { y: 0 }, { y: 300, duration: 4, ease: "none" }, 0);
+  tl.fromTo("#axy", { x: 0, y: 0 }, { x: 400, y: 300, duration: 4, ease: "none" }, 0);
+  tl.set("#ts", { x: 200, y: 100 }, 1.0);
   // #st is never targeted by GSAP.
   window.__timelines.main = tl;
 </script>
@@ -154,7 +162,14 @@ async function main(): Promise<void> {
         var ty = parts.length > 1 ? parseFloat(parts[1]) : 0;
         return { x: m.m41 + tx, y: m.m42 + ty };
       }
-      return { t: time, ax: read("ax"), ay: read("ay"), st: read("st") };
+      return {
+        t: time,
+        ax: read("ax"),
+        ay: read("ay"),
+        axy: read("axy"),
+        ts: read("ts"),
+        st: read("st"),
+      };
     })`;
 
     const samples: Sample[] = [];
@@ -177,6 +192,27 @@ async function main(): Promise<void> {
       assert(
         close(s.ay.y, 75 * s.t - 70),
         `t=${s.t}: Y-animated element y should be ${75 * s.t - 70}, got ${s.ay.y}`,
+      );
+      // Both-axis-animated: both axes = animation + edit (the shape that
+      // originated the per-axis loss bug).
+      assert(
+        close(s.axy.x, 100 * s.t + 50),
+        `t=${s.t}: XY-animated element x should be ${100 * s.t + 50}, got ${s.axy.x}`,
+      );
+      assert(
+        close(s.axy.y, 75 * s.t - 70),
+        `t=${s.t}: XY-animated element y should be ${75 * s.t - 70}, got ${s.axy.y}`,
+      );
+      // tl.set at t=1.0: before it fires, position = edit only; after, set + edit.
+      const setX = s.t >= 1.0 ? 200 : 0;
+      const setY = s.t >= 1.0 ? 100 : 0;
+      assert(
+        close(s.ts.x, setX + 50),
+        `t=${s.t}: tl.set element x should be ${setX + 50}, got ${s.ts.x}`,
+      );
+      assert(
+        close(s.ts.y, setY - 70),
+        `t=${s.t}: tl.set element y should be ${setY - 70}, got ${s.ts.y}`,
       );
       // Static: both axes hold the edit.
       assert(close(s.st.x, 50), `t=${s.t}: static element x should be 50, got ${s.st.x}`);

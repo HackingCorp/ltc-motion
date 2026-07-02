@@ -16,16 +16,22 @@
  * an absolute tween then discards it on the animated axis — the per-axis loss
  * bug). A `translate` set AFTER that parse is never read, cleared, or baked
  * by GSAP 3.x on subsequent seeks, so a single application at bind time holds
- * for the whole timeline. Known limitation: a tween created lazily at runtime
- * that first-parses a marked element after this ran will fold the edit.
+ * for the whole timeline. Before the first apply, the element's transform
+ * parse is primed (gsap.getProperty) so tweens and positioned set()s that
+ * first RENDER later reuse the cache instead of folding the edit. Known
+ * limitation: if GSAP itself loads only after the apply ran, a later tween's
+ * first parse still folds the edit (the fold guard then skips re-apply and
+ * emits position_edit_fold_skipped instead of double-applying).
  */
+
+import { emitAnalyticsEvent } from "./analytics";
 
 export const EDIT_BASE_X_ATTR = "data-hf-edit-base-x";
 export const EDIT_BASE_Y_ATTR = "data-hf-edit-base-y";
 export const EDIT_ORIGINAL_TRANSLATE_ATTR = "data-hf-edit-original-translate";
 
 const num = (value: string | null): number => {
-  const n = value === null ? Number.NaN : parseFloat(value);
+  const n = parseFloat(value ?? "");
   return Number.isFinite(n) ? n : 0;
 };
 
@@ -64,6 +70,25 @@ export const composeTranslate = (original: string, x: string, y: string): string
   if (oy === undefined) return `${addLengths(ox, x)} ${y}`;
   const z = oz === undefined ? "" : ` ${oz}`;
   return `${addLengths(ox, x)} ${addLengths(oy, y)}${z}`;
+};
+
+/**
+ * Force GSAP (when present) to parse and cache the element's transform BEFORE
+ * the edit translate is written. GSAP folds a CSS `translate` it sees at an
+ * element's first parse into its cached transform (losing it per-axis on
+ * absolute tweens); once the cache exists, later tweens and positioned set()s
+ * reuse it and never read the translate again. gsap.getProperty parses
+ * without mutating the element. Best-effort — absent or failing GSAP is fine.
+ */
+const primeGsapTransformCache = (el: HTMLElement): void => {
+  try {
+    const view = el.ownerDocument.defaultView as
+      | (Window & { gsap?: { getProperty?: (t: Element, p: string) => unknown } })
+      | null;
+    view?.gsap?.getProperty?.(el, "x");
+  } catch {
+    // parse priming is an optimization, never a requirement
+  }
 };
 
 /** The element's effective translate: inline if set, computed otherwise ("" = none). */
@@ -106,6 +131,11 @@ export function applyPositionEditToElement(el: HTMLElement, opts?: { force?: boo
     previous !== undefined &&
     el.style.getPropertyValue("translate") !== previous
   ) {
+    // Observable signal for the documented degradation — without it, a
+    // fold-loss surfaces to users only as "my edit didn't stick".
+    emitAnalyticsEvent("position_edit_fold_skipped", {
+      hfId: el.getAttribute("data-hf-id"),
+    });
     return;
   }
   const dx = num(el.getAttribute("data-x")) - num(el.getAttribute(EDIT_BASE_X_ATTR));
@@ -113,6 +143,7 @@ export function applyPositionEditToElement(el: HTMLElement, opts?: { force?: boo
   if (!el.hasAttribute(EDIT_ORIGINAL_TRANSLATE_ATTR)) {
     el.setAttribute(EDIT_ORIGINAL_TRANSLATE_ATTR, readCurrentTranslate(el));
   }
+  if (previous === undefined) primeGsapTransformCache(el);
   const original = el.getAttribute(EDIT_ORIGINAL_TRANSLATE_ATTR) ?? "";
   const value = composeTranslate(original, `${dx}px`, `${dy}px`);
   el.style.setProperty("translate", value);
