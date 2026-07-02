@@ -43,9 +43,18 @@ export async function commitWholePropertyOffset(
     typeof props[key] === "number" ? (props[key] as number) : (PROPERTY_DEFAULTS[key] ?? 0);
 
   const kfs =
-    effectiveAnim.keyframes?.keyframes ??
-    synthesizeFlatTweenKeyframes(effectiveAnim)?.keyframes ??
-    [];
+    effectiveAnim.keyframes?.keyframes ?? synthesizeFlatTweenKeyframes(effectiveAnim)?.keyframes;
+  if (!kfs || kfs.length === 0) {
+    // A `to()`/`from()` collapsed to a zero-duration immediateRender hold (what
+    // removeAllKeyframesFromScript leaves behind) has no shape to preserve —
+    // just persist the flat value instead of replacing with an empty keyframe list.
+    await callbacks.commitMutation(
+      selection,
+      { type: "update-properties", animationId: effectiveAnim.id, properties: newValues },
+      { label, softReload: true },
+    );
+    return;
+  }
   const nearest = kfs.reduce((best, kf) =>
     Math.abs(kf.percentage - currentPct) < Math.abs(best.percentage - currentPct) ? kf : best,
   );

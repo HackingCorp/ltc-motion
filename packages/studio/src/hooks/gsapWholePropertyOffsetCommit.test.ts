@@ -133,4 +133,30 @@ describe("commitWholePropertyOffset", () => {
     });
     expect(keyframes[1]).toEqual({ percentage: 100, properties: { x: 120, opacity: 0.5 } });
   });
+
+  it("persists a flat update instead of crashing when the tween has no synthesizable shape", async () => {
+    // Regression: removeAllKeyframesFromScript collapses a keyframed tween into a
+    // zero-duration immediateRender hold — synthesizeFlatTweenKeyframes treats that
+    // as a static hold (returns null), so `kfs` is empty. Resizing this element with
+    // auto-keyframe off used to call `kfs.reduce(...)` with no initial value, which
+    // throws "Reduce of empty array with no initial value".
+    const anim = {
+      id: "#box-hold",
+      targetSelector: "#box",
+      method: "to",
+      resolvedStart: 0,
+      duration: 0,
+      properties: { width: 200 },
+      extras: { immediateRender: "__raw:true" },
+    } as unknown as GsapAnimation;
+
+    const { mutations, callbacks } = recordingCallbacks();
+    await expect(
+      commitWholePropertyOffset(selection(), anim, { width: 300 }, 0, null, callbacks, "Resize"),
+    ).resolves.toBeUndefined();
+
+    expect(mutations).toEqual([
+      { type: "update-properties", animationId: "#box-hold", properties: { width: 300 } },
+    ]);
+  });
 });
