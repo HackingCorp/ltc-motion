@@ -79,6 +79,8 @@ export function TimelineToolbar({
 }: TimelineToolbarProps) {
   const activeTool = usePlayerStore((s) => s.activeTool);
   const setActiveTool = usePlayerStore((s) => s.setActiveTool);
+  const autoKeyframeEnabled = usePlayerStore((s) => s.autoKeyframeEnabled);
+  const setAutoKeyframeEnabled = usePlayerStore((s) => s.setAutoKeyframeEnabled);
   // Subscribe so the add-beat button reacts to playhead movement and analysis load.
   const currentTime = usePlayerStore((s) => s.currentTime);
   const beatAnalysisReady = usePlayerStore((s) => s.beatAnalysis !== null);
@@ -137,44 +139,84 @@ export function TimelineToolbar({
             </div>
           )}
           {STUDIO_KEYFRAMES_ENABLED && onToggleKeyframe && (
-            <>
-              <Tooltip
-                label={
+            <Tooltip
+              label={
+                keyframeState === "active"
+                  ? "Remove keyframe at playhead (K)"
+                  : keyframeState === "inactive"
+                    ? keyframeWillExtend
+                      ? "Add keyframe at playhead, extends animation (K)"
+                      : "Add keyframe at playhead (K)"
+                    : "Add keyframe (K)"
+              }
+            >
+              <button
+                type="button"
+                onClick={onToggleKeyframe}
+                className={`flex h-7 w-7 items-center justify-center rounded transition-colors ${
                   keyframeState === "active"
-                    ? "Remove keyframe at playhead (K)"
+                    ? "text-studio-accent"
                     : keyframeState === "inactive"
-                      ? keyframeWillExtend
-                        ? "Add keyframe at playhead — extends animation (K)"
-                        : "Add keyframe at playhead (K)"
-                      : "Add keyframe (K)"
-                }
+                      ? "text-neutral-400 hover:text-studio-accent"
+                      : "text-neutral-600 hover:text-neutral-400"
+                }`}
               >
-                <button
-                  type="button"
-                  onClick={onToggleKeyframe}
-                  className={`flex h-7 w-7 items-center justify-center rounded transition-colors ${
-                    keyframeState === "active"
-                      ? "text-studio-accent"
-                      : keyframeState === "inactive"
-                        ? "text-neutral-400 hover:text-studio-accent"
-                        : "text-neutral-600 hover:text-neutral-400"
-                  }`}
-                >
-                  <svg width="18" height="18" viewBox="0 0 10 10" fill="currentColor">
-                    {keyframeState === "active" ? (
-                      <path d="M5 0.5L9.5 5L5 9.5L0.5 5Z" />
-                    ) : (
-                      <path
-                        d="M5 1.2L8.8 5L5 8.8L1.2 5Z"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.2"
-                      />
-                    )}
-                  </svg>
-                </button>
-              </Tooltip>
-            </>
+                <svg width="18" height="18" viewBox="0 0 10 10" fill="currentColor">
+                  {keyframeState === "active" ? (
+                    <path d="M5 0.5L9.5 5L5 9.5L0.5 5Z" />
+                  ) : (
+                    <path
+                      d="M5 1.2L8.8 5L5 8.8L1.2 5Z"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                    />
+                  )}
+                </svg>
+              </button>
+            </Tooltip>
+          )}
+          {STUDIO_KEYFRAMES_ENABLED && (
+            <Tooltip
+              label={
+                autoKeyframeEnabled
+                  ? "Auto-record manual edits as keyframes (click to turn off)"
+                  : "Manual edits will not be recorded as keyframes (click to turn on)"
+              }
+            >
+              <button
+                type="button"
+                onClick={() => setAutoKeyframeEnabled(!autoKeyframeEnabled)}
+                aria-pressed={autoKeyframeEnabled}
+                className={`flex h-7 w-7 items-center justify-center rounded transition-colors ${
+                  autoKeyframeEnabled
+                    ? "text-red-400 hover:text-red-300"
+                    : "text-neutral-600 hover:text-neutral-400"
+                }`}
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <circle
+                    cx="7"
+                    cy="7"
+                    r="5"
+                    fill={autoKeyframeEnabled ? "currentColor" : "none"}
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                  />
+                  {!autoKeyframeEnabled && (
+                    <line
+                      x1="2.2"
+                      y1="11.8"
+                      x2="11.8"
+                      y2="2.2"
+                      stroke="currentColor"
+                      strokeWidth="1.4"
+                      strokeLinecap="round"
+                    />
+                  )}
+                </svg>
+              </button>
+            </Tooltip>
           )}
           {onSplitElement &&
             (() => {
