@@ -198,7 +198,7 @@ function buildPresentPage(projectName: string, islandJson: string): string {
       // Retitle the audience tab so the two tabs are distinguishable in the
       // browser tab strip and in Meet's "Share a tab" picker.
       if (new URLSearchParams(location.search).get("mode") === "audience") {
-        document.title = ${JSON.stringify(projectName).replace(/</g, "\\u003c")} + " — Presentation";
+        document.title = ${JSON.stringify(projectName).replace(/</g, "\\u003c")} + " — Audience";
       }
     </script>
     <style>
