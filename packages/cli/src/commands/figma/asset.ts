@@ -21,6 +21,7 @@ import {
   type FigmaManifestRecord,
 } from "@hyperframes/core/figma";
 import { join, relative } from "node:path";
+import { downloadRender } from "./download.js";
 
 export interface AssetImportOptions {
   format: FigmaAssetFormat;
@@ -38,12 +39,6 @@ export interface AssetImportResult {
   record: FigmaManifestRecord;
   snippet: AssetSnippet;
   reused: boolean;
-}
-
-async function defaultDownload(url: string): Promise<Uint8Array> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`figma render download failed: HTTP ${res.status}`);
-  return new Uint8Array(await res.arrayBuffer());
 }
 
 export async function runAssetImport(
@@ -126,7 +121,7 @@ export default defineCommand({
         format: parseFormat(args.format),
         scale: args.scale !== undefined ? Number(args.scale) : undefined,
       },
-      { projectDir: args.dir, client, download: defaultDownload },
+      { projectDir: args.dir, client, download: downloadRender },
     );
     const verb = result.reused ? "reused" : "imported";
     console.log(`${verb} ${result.record.id} → ${result.record.path}`);
