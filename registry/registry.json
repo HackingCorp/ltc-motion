@@ -564,6 +564,14 @@
       "type": "hyperframes:block"
     },
     {
+      "name": "product-promo-vertical",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "whatsapp-cta",
+      "type": "hyperframes:block"
+    },
+    {
       "name": "parallax-zoom",
       "type": "hyperframes:component"
     },
