@@ -40,4 +40,21 @@ describe("ffmpeg binary env resolution", () => {
 
     expect(() => assertConfiguredFfmpegBinariesExist()).not.toThrow();
   });
+
+  // Regression: a path containing U+FFFD (the Unicode replacement character)
+  // means a non-ASCII character was mangled somewhere before this process
+  // read it (e.g. an accented character in a Windows WinGet Links path) —
+  // the error should say so instead of just "not found", since the path
+  // itself gives no hint that the real fix is an ASCII/short-path override.
+  it("calls out a mangled replacement character in a missing FFmpeg path", () => {
+    process.env.HYPERFRAMES_FFMPEG_PATH = "/tools/f�mpeg/ffmpeg.exe";
+
+    expect(() => assertConfiguredFfmpegBinariesExist()).toThrow(/replacement character/);
+  });
+
+  it("does not mention a replacement character for an ordinary missing path", () => {
+    process.env.HYPERFRAMES_FFMPEG_PATH = "/missing/ffmpeg.exe";
+
+    expect(() => assertConfiguredFfmpegBinariesExist()).not.toThrow(/replacement character/);
+  });
 });
