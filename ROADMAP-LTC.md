@@ -15,20 +15,20 @@ Fork de [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apa
 
 ### Phase 2 — Contributions ciblées (semaines)
 
-| #   | Amélioration                                                                                              | Réf upstream | Effort  | Statut                                                                      |
-| --- | --------------------------------------------------------------------------------------------------------- | ------------ | ------- | --------------------------------------------------------------------------- |
-| 3   | **TTS pluggable** — interface provider + ElevenLabs, OpenAI TTS, Piper (voix locales). Voix FR/africaines | #337         | Moyen   | ✅ `hyperframes tts --provider heygen\|elevenlabs\|openai\|piper\|kokoro`   |
-| 4   | **Fix rendu 60 fps** — le seek re-quantize à 30 fps (`canonicalFps` codé en dur)                          | #1737        | Moyen   | ✅ déjà corrigé upstream (PR #1739, hérité via fork)                        |
-| 5   | **Fix inlining producer** — styles racine perdus dans les sous-compositions                               | #1847        | Moyen   | ⬆️ PR upstream [#1896](https://github.com/heygen-com/hyperframes/pull/1896) |
-| 6   | **Stabilisation Studio** — triage et fixes des bugs Studio au fil de l'eau                                | (multiples)  | Continu | 🔜                                                                          |
+| #   | Amélioration                                                                                              | Réf upstream | Effort  | Statut                                                                                                                                                         |
+| --- | --------------------------------------------------------------------------------------------------------- | ------------ | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3   | **TTS pluggable** — interface provider + ElevenLabs, OpenAI TTS, Piper (voix locales). Voix FR/africaines | #337         | Moyen   | ✅ `hyperframes tts --provider heygen\|elevenlabs\|openai\|piper\|kokoro`                                                                                      |
+| 4   | **Fix rendu 60 fps** — le seek re-quantize à 30 fps (`canonicalFps` codé en dur)                          | #1737        | Moyen   | ✅ déjà corrigé upstream (PR #1739, hérité via fork)                                                                                                           |
+| 5   | **Fix inlining producer** — styles racine perdus dans les sous-compositions                               | #1847        | Moyen   | ✅ corrigé upstream via [#1886](https://github.com/heygen-com/hyperframes/pull/1886) (notre PR #1896 superseded — retirer notre fix local à la prochaine sync) |
+| 6   | **Stabilisation Studio** — triage et fixes des bugs Studio au fil de l'eau                                | (multiples)  | Continu | 🔜                                                                                                                                                             |
 
 ### Phase 3 — Chantiers lourds (mois)
 
-| #   | Amélioration                                                                                    | Réf upstream | Effort | Statut                                                                                                                                        |
-| --- | ----------------------------------------------------------------------------------------------- | ------------ | ------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| 7   | **`@hyperframes/validator`** — package de validation léger côté navigateur pour pipelines tiers | #1749 (RFC)  | Élevé  | ✅ déjà livré upstream (`@hyperframes/lint` v0.7.15 + entrée `/browser` v0.7.17, hérité via fork)                                             |
-| 8   | **Export vidéo côté navigateur** — rendu sans serveur ni FFmpeg via Mediabunny                  | #1661        | Élevé  | ✅ package `@hyperframes/browser-export` + bouton « Export in browser » dans le Studio                                                        |
-| 9   | **Parité GCP Cloud Run** — amener le rendu GCP au niveau du stack AWS Lambda                    | —            | Élevé  | ✅ progression mid-flight (step-entries), `cloudrun policies`, harnais `--mode=cloudrun-local` (split CLI volontairement laissé à l'upstream) |
+| #   | Amélioration                                                                                    | Réf upstream | Effort | Statut                                                                                                                                                                                 |
+| --- | ----------------------------------------------------------------------------------------------- | ------------ | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 7   | **`@hyperframes/validator`** — package de validation léger côté navigateur pour pipelines tiers | #1749 (RFC)  | Élevé  | ✅ déjà livré upstream (`@hyperframes/lint` v0.7.15 + entrée `/browser` v0.7.17, hérité via fork)                                                                                      |
+| 8   | **Export vidéo côté navigateur** — rendu sans serveur ni FFmpeg via Mediabunny                  | #1661        | Élevé  | ⬆️ package `@hyperframes/browser-export` proposé upstream ([#1905](https://github.com/heygen-com/hyperframes/pull/1905)) + bouton « Export in browser » dans le Studio                 |
+| 9   | **Parité GCP Cloud Run** — amener le rendu GCP au niveau du stack AWS Lambda                    | —            | Élevé  | ⬆️ progression mid-flight proposée upstream ([#1904](https://github.com/heygen-com/hyperframes/pull/1904)) ; `cloudrun policies` + harnais `--mode=cloudrun-local` livrés dans le fork |
 
 Légende : 🔜 planifié · 🚧 en cours · ✅ livré · ⬆️ contribué upstream · 📋 backlog
 
