@@ -8,10 +8,10 @@ Fork de [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apa
 
 ### Phase 1 — Quick wins (jours)
 
-| #   | Amélioration                                                                                                            | Réf upstream              | Effort       | Statut                                      |
-| --- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------- | ------------ | ------------------------------------------- |
-| 1   | **Templates catalogue 9:16** — blocs verticaux e-commerce (visuel produit, prix, CTA WhatsApp) pour Status/Reels/TikTok | label `component-request` | Faible       | ✅ `product-promo-vertical`, `whatsapp-cta` |
-| 2   | **i18n Studio + locale FR** — infrastructure de localisation du Studio et traduction française                          | #1766                     | Faible-moyen | 🔜                                          |
+| #   | Amélioration                                                                                                            | Réf upstream              | Effort       | Statut                                             |
+| --- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------- | ------------ | -------------------------------------------------- |
+| 1   | **Templates catalogue 9:16** — blocs verticaux e-commerce (visuel produit, prix, CTA WhatsApp) pour Status/Reels/TikTok | label `component-request` | Faible       | ✅ `product-promo-vertical`, `whatsapp-cta`        |
+| 2   | **i18n Studio + locale FR** — infrastructure de localisation du Studio et traduction française                          | #1766                     | Faible-moyen | 🚧 infra + FR sur le chrome principal (`?lang=fr`) |
 
 ### Phase 2 — Contributions ciblées (semaines)
 

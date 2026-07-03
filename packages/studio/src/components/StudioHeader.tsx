@@ -9,6 +9,7 @@ import { useStudioShellContext } from "../contexts/StudioContext";
 import { usePanelLayoutContext } from "../contexts/PanelLayoutContext";
 import { useViewMode, type StudioViewMode } from "../contexts/ViewModeContext";
 import { trackStudioEvent } from "../utils/studioTelemetry";
+import { t } from "../i18n/index.js";
 
 export interface StudioHeaderProps {
   captureFrameHref: string;
@@ -142,8 +143,8 @@ function HyperframesLogo() {
 }
 
 const VIEW_MODE_OPTIONS: Array<{ mode: StudioViewMode; label: string }> = [
-  { mode: "storyboard", label: "Storyboard" },
-  { mode: "timeline", label: "Preview" },
+  { mode: "storyboard", label: t("header.storyboard") },
+  { mode: "timeline", label: t("header.preview") },
 ];
 
 /** Segmented control switching the main stage between storyboard and preview. */
@@ -153,7 +154,7 @@ function ViewModeToggle() {
     <div
       className="flex items-center gap-0.5 rounded-md bg-neutral-800 p-0.5"
       role="tablist"
-      aria-label="Studio view"
+      aria-label={t("header.studioView")}
     >
       {VIEW_MODE_OPTIONS.map(({ mode, label }) => {
         const active = viewMode === mode;
@@ -221,10 +222,10 @@ export function StudioHeader({
           }`}
           title={
             editHistory.undoLabel
-              ? `Undo ${editHistory.undoLabel} (${getHistoryShortcutLabel("undo")})`
-              : `Undo (${getHistoryShortcutLabel("undo")})`
+              ? `${t("header.undo")} ${editHistory.undoLabel} (${getHistoryShortcutLabel("undo")})`
+              : `${t("header.undo")} (${getHistoryShortcutLabel("undo")})`
           }
-          aria-label="Undo"
+          aria-label={t("header.undo")}
         >
           <RotateCcw size={14} />
         </button>
@@ -242,10 +243,10 @@ export function StudioHeader({
           }`}
           title={
             editHistory.redoLabel
-              ? `Redo ${editHistory.redoLabel} (${getHistoryShortcutLabel("redo")})`
-              : `Redo (${getHistoryShortcutLabel("redo")})`
+              ? `${t("header.redo")} ${editHistory.redoLabel} (${getHistoryShortcutLabel("redo")})`
+              : `${t("header.redo")} (${getHistoryShortcutLabel("redo")})`
           }
-          aria-label="Redo"
+          aria-label={t("header.redo")}
         >
           <RotateCw size={14} />
         </button>
@@ -259,11 +260,11 @@ export function StudioHeader({
           onFocus={refreshCaptureFrameTime}
           onPointerDown={refreshCaptureFrameTime}
           className="h-7 flex items-center gap-1.5 px-2.5 rounded-md text-[11px] font-medium text-neutral-400 transition-colors hover:text-neutral-200 hover:bg-neutral-800"
-          title="Capture current frame"
-          aria-label="Capture current frame"
+          title={t("header.captureCurrentFrame")}
+          aria-label={t("header.captureCurrentFrame")}
         >
           <Camera size={14} />
-          <span>Capture</span>
+          <span>{t("header.capture")}</span>
         </a>
         <button
           type="button"
@@ -289,10 +290,14 @@ export function StudioHeader({
                 : "cursor-not-allowed border-transparent text-neutral-700"
           }`}
           title={
-            STUDIO_INSPECTOR_PANELS_ENABLED ? "Inspector" : STUDIO_MANUAL_EDITING_DISABLED_TITLE
+            STUDIO_INSPECTOR_PANELS_ENABLED
+              ? t("header.inspector")
+              : STUDIO_MANUAL_EDITING_DISABLED_TITLE
           }
           aria-label={
-            STUDIO_INSPECTOR_PANELS_ENABLED ? "Inspector" : STUDIO_MANUAL_EDITING_DISABLED_TITLE
+            STUDIO_INSPECTOR_PANELS_ENABLED
+              ? t("header.inspector")
+              : STUDIO_MANUAL_EDITING_DISABLED_TITLE
           }
         >
           <svg

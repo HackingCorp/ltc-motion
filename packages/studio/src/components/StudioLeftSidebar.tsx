@@ -8,6 +8,7 @@ import { useStudioShellContext } from "../contexts/StudioContext";
 import { useFileManagerContext } from "../contexts/FileManagerContext";
 import { getPersistedRenderSettings } from "./renders/renderSettings";
 import type { BlockPreviewInfo } from "./sidebar/BlocksTab";
+import { t } from "../i18n/index.js";
 
 export interface StudioLeftSidebarProps {
   leftSidebarRef: RefObject<LeftSidebarHandle | null>;
@@ -73,8 +74,8 @@ export function StudioLeftSidebar({
           type="button"
           onClick={toggleLeftSidebar}
           className="flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-neutral-500 transition-colors hover:border-neutral-800 hover:bg-neutral-900 hover:text-neutral-300"
-          title="Show sidebar"
-          aria-label="Show sidebar"
+          title={t("sidebar.show")}
+          aria-label={t("sidebar.show")}
         >
           <svg
             width="14"
