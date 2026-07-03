@@ -38,7 +38,7 @@ import { assemble, plan, renderChunk } from "./distributed.js";
 import type { DistributedFormat } from "./services/distributed/shared.js";
 
 /**
- * Three-mode contract that backs `--mode=<value>` on the regression
+ * Mode contract that backs `--mode=<value>` on the regression
  * harness CLI:
  *
  *   - `in-process` — `executeRenderJob`, the same path the CLI takes.
@@ -49,8 +49,15 @@ import type { DistributedFormat } from "./services/distributed/shared.js";
  *     shape SFN sends in production also lands here. Catches regressions
  *     in event JSON / S3 path conventions without paying for a real AWS
  *     round-trip.
+ *   - `cloudrun-local` — same idea for `@hyperframes/gcp-cloud-run`:
+ *     drives `dispatch()` through a filesystem-backed fake GCS with the
+ *     event shapes Cloud Workflows POSTs in production.
  */
-export type HarnessMode = "in-process" | "distributed-simulated" | "lambda-local";
+export type HarnessMode =
+  | "in-process"
+  | "distributed-simulated"
+  | "lambda-local"
+  | "cloudrun-local";
 
 /**
  * Absolute pathology floor for `--mode=distributed-simulated` — catches
@@ -217,8 +224,9 @@ export async function runDistributedSimulatedRender(
  */
 export function resolveMinPsnrForMode(mode: HarnessMode, fixtureMinPsnr: number): number {
   if (mode === "in-process") return fixtureMinPsnr;
-  // `lambda-local` shares the distributed-simulated pathology floor —
-  // both modes go through the same plan/renderChunk/assemble primitives.
+  // `lambda-local` / `cloudrun-local` share the distributed-simulated
+  // pathology floor — all these modes go through the same
+  // plan/renderChunk/assemble primitives.
   return Math.max(fixtureMinPsnr, DISTRIBUTED_SIMULATED_MIN_PSNR_DB);
 }
 
@@ -229,14 +237,16 @@ export function resolveMinPsnrForMode(mode: HarnessMode, fixtureMinPsnr: number)
  * known prefix with a bad value (`--mode=foo`) — surfacing a typo at
  * parse time is cheaper than discovering at render time.
  */
+// fallow-ignore-next-line complexity
 export function parseHarnessModeFlag(token: string): HarnessMode | null {
   if (token === "--mode=in-process") return "in-process";
   if (token === "--mode=distributed-simulated") return "distributed-simulated";
   if (token === "--mode=lambda-local") return "lambda-local";
+  if (token === "--mode=cloudrun-local") return "cloudrun-local";
   if (token.startsWith("--mode=")) {
     const value = token.slice("--mode=".length);
     throw new Error(
-      `regression-harness: --mode must be 'in-process', 'distributed-simulated', or 'lambda-local' (got ${JSON.stringify(value)})`,
+      `regression-harness: --mode must be 'in-process', 'distributed-simulated', 'lambda-local', or 'cloudrun-local' (got ${JSON.stringify(value)})`,
     );
   }
   return null;

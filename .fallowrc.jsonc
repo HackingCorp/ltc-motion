@@ -7,6 +7,7 @@
     "packages/producer/src/regression-harness.ts",
     "packages/producer/src/regression-harness-distributed.test.ts",
     "packages/producer/src/regression-harness-lambda-local.ts",
+    "packages/producer/src/regression-harness-cloudrun-local.ts",
     "packages/producer/src/transparency-test.ts",
     "packages/producer/src/parity-harness.ts",
     "packages/producer/src/parity-fixtures.ts",
@@ -251,6 +252,16 @@
     // require intrusive middleware changes beyond this PR's scope.
     "minLines": 6,
     "ignore": [
+      // cloudrun-local harness deliberately mirrors lambda-local line-for-line
+      // (same input contract, same plan/chunk/assemble sequencing) so the two
+      // adapter paths stay reviewable side-by-side. Extracting the shared
+      // config-assembly block would couple producer to a third shared module
+      // that both dynamically-imported adapter harnesses must load.
+      "packages/producer/src/regression-harness-cloudrun-local.ts",
+      // Pre-existing 10-line clone with chunkBoundary.test.ts; the
+      // cloudrun-local mode additions shifted lines and re-fingerprinted it
+      // as fresh (same line-shift problem as the health.ignore entries).
+      "packages/producer/src/regression-harness-distributed.ts",
       // gsapParser.ts: recast/babel GSAP writer — intentional duplication between
       // recast and acorn parallel implementations (pre-existing, moved from core).
       "packages/parsers/src/gsapParser.ts",

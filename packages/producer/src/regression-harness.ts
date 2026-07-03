@@ -51,15 +51,26 @@ import {
 // imports) into the program even though the tsconfig `exclude` list
 // nominally hides it. `tsx` resolves the path normally at runtime.
 import type { RunLambdaLocalRender } from "./regression-harness-lambda-local-types.js";
+import type { RunCloudRunLocalRender } from "./regression-harness-cloudrun-local-types.js";
 import type { DistributedFormat } from "./services/distributed/shared.js";
 
 const LAMBDA_LOCAL_MODULE = "./regression-harness-lambda-local.js";
+const CLOUDRUN_LOCAL_MODULE = "./regression-harness-cloudrun-local.js";
 
 async function loadLambdaLocalRender(): Promise<RunLambdaLocalRender> {
   const mod = (await import(LAMBDA_LOCAL_MODULE)) as {
     runLambdaLocalRender: RunLambdaLocalRender;
   };
   return mod.runLambdaLocalRender;
+}
+
+// Same dynamic-import indirection as lambda-local, for the same reason:
+// `@hyperframes/gcp-cloud-run`'s types only exist after its own build.
+async function loadCloudRunLocalRender(): Promise<RunCloudRunLocalRender> {
+  const mod = (await import(CLOUDRUN_LOCAL_MODULE)) as {
+    runCloudRunLocalRender: RunCloudRunLocalRender;
+  };
+  return mod.runCloudRunLocalRender;
 }
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -264,9 +275,9 @@ function parseArgs(argv: string[]): CliOptions {
     }
   }
 
-  if (update && (mode === "distributed-simulated" || mode === "lambda-local")) {
+  if (update && mode !== "in-process") {
     // The in-process renderer is the source of truth for golden baselines —
-    // the other two modes verify the contract against the same baseline,
+    // the other modes verify the contract against the same baseline,
     // not author their own. Surfacing this at parse time saves a multi-
     // minute render before the user notices.
     throw new Error(
@@ -968,7 +979,7 @@ async function runTestSuite(
     copyFixtureSupportFiles(suite, tempRoot);
     cpSync(suite.srcDir, tempSrcDir, { recursive: true });
 
-    if (options.mode === "distributed-simulated" || options.mode === "lambda-local") {
+    if (options.mode !== "in-process") {
       const support = checkDistributedSupport(suite.meta.renderConfig);
       if (!support.supported) {
         // Skipping is a clean outcome — the distributed pipeline (which
@@ -1013,6 +1024,10 @@ async function runTestSuite(
         // `runDistributedSimulatedRender` uses internally. The
         // composition attrs override at plan time.
         await runLambdaLocalRender({ ...distributedInput, width: 1920, height: 1080 });
+      } else if (options.mode === "cloudrun-local") {
+        const runCloudRunLocalRender = await loadCloudRunLocalRender();
+        // Same 1920×1080 placeholder rationale as lambda-local above.
+        await runCloudRunLocalRender({ ...distributedInput, width: 1920, height: 1080 });
       } else {
         await runDistributedSimulatedRender(distributedInput);
       }
