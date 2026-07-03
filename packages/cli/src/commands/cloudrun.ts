@@ -55,6 +55,11 @@ export const examples: Example[] = [
     "Pre-upload a project so renders share the upload",
     "hyperframes cloudrun sites create ./my-project",
   ],
+  ["Print the IAM roles the CLI needs", "hyperframes cloudrun policies user"],
+  [
+    "Prove a CI identity can deploy",
+    "hyperframes cloudrun policies validate ./iam-policy.json --member serviceAccount:ci@p.iam.gserviceaccount.com",
+  ],
   ["Tear the stack down", "hyperframes cloudrun destroy --project my-gcp-project"],
 ];
 
@@ -69,6 +74,7 @@ ${c.bold("SUBCOMMANDS:")}
   ${c.accent("render")}        ${c.dim("Start a distributed render (returns an execution name)")}
   ${c.accent("render-batch")}  ${c.dim("Fan out N personalised renders from a JSONL batch file")}
   ${c.accent("progress")}      ${c.dim("Print progress + cost for an in-flight or finished render")}
+  ${c.accent("policies")}      ${c.dim("Print or validate the IAM roles the CLI needs")}
   ${c.accent("destroy")}       ${c.dim("Tear the stack down")}
 
 ${c.bold("FIRST RUN:")}
@@ -94,17 +100,18 @@ export default defineCommand({
     subcommand: {
       type: "positional",
       required: false,
-      description: "deploy | sites | render | render-batch | progress | destroy",
+      description: "deploy | sites | render | render-batch | progress | destroy | policies",
     },
     target: {
       type: "positional",
       required: false,
-      description: "Subcommand positional (project dir, execution name, sites verb)",
+      description: "Subcommand positional (project dir, execution name, sites/policies verb)",
     },
     extra: {
       type: "positional",
       required: false,
-      description: "Extra positional (e.g. `sites create <projectDir>`)",
+      description:
+        "Extra positional (e.g. `sites create <projectDir>`, `policies validate <policy.json>`)",
     },
 
     // Stack identity
@@ -195,6 +202,17 @@ export default defineCommand({
       type: "string",
       description: "Poll cadence in ms when --wait is set (default: 5000)",
     },
+    // policies
+    member: {
+      type: "string",
+      description:
+        "IAM member to check/grant (policies), e.g. user:alice@example.com or serviceAccount:ci@p.iam.gserviceaccount.com",
+    },
+    "role-set": {
+      type: "string",
+      description: "Role set for policies validate: deploy | render (default: deploy)",
+    },
+
     json: { type: "boolean", description: "Emit machine-readable JSON" },
   },
   // fallow-ignore-next-line complexity
@@ -215,6 +233,8 @@ export default defineCommand({
         return runRenderBatch(args);
       case "progress":
         return runProgress(args);
+      case "policies":
+        return dispatchPolicies(args);
       case "destroy":
         return runDestroy(args);
       default:
@@ -560,6 +580,32 @@ async function runRender(args: Record<string, unknown>): Promise<void> {
     for (const e of progress.errors) console.error(`  ${e.state}: ${e.cause}`);
     process.exit(1);
   }
+}
+
+// ── policies ────────────────────────────────────────────────────────────────
+
+// fallow-ignore-next-line complexity
+async function dispatchPolicies(args: Record<string, unknown>): Promise<void> {
+  const verb = args.target as string | undefined;
+  if (verb !== "user" && verb !== "runtime" && verb !== "validate") {
+    console.error(
+      "[cloudrun policies] usage: hyperframes cloudrun policies <user|runtime|validate> [args]",
+    );
+    process.exit(1);
+  }
+  const roleSetRaw = (args["role-set"] as string | undefined) ?? "deploy";
+  if (roleSetRaw !== "deploy" && roleSetRaw !== "render") {
+    console.error(`[cloudrun policies] --role-set must be deploy or render, got: ${roleSetRaw}`);
+    process.exit(1);
+  }
+  const { runPolicies } = await import("./cloudrun/policies.js");
+  return runPolicies({
+    verb,
+    inputPath: args.extra as string | undefined,
+    member: args.member as string | undefined,
+    roleSet: roleSetRaw,
+    json: Boolean(args.json),
+  });
 }
 
 // ── progress ──────────────────────────────────────────────────────────────

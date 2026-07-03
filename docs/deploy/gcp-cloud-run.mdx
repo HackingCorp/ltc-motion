@@ -58,6 +58,19 @@ Terraform outputs `render_bucket_name`, `service_url`, `workflow_name`, and `reg
 The target GCP project must have **billing enabled** — Cloud Run, Cloud Workflows, Artifact Registry, and Cloud Build are all billed services.
 </Note>
 
+### IAM
+
+`hyperframes cloudrun policies` prints the roles the CLI needs — the GCP mirror of `hyperframes lambda policies`:
+
+```bash
+hyperframes cloudrun policies user      # project-level roles to deploy the stack
+hyperframes cloudrun policies runtime   # narrower set for render-only callers + the stack's internal SA bindings
+hyperframes cloudrun policies validate ./iam-policy.json \
+  --member serviceAccount:ci@PROJECT.iam.gserviceaccount.com   # diff a get-iam-policy dump; exits 1 on missing roles
+```
+
+`validate` reads a `gcloud projects get-iam-policy PROJECT --format=json` dump, so CI can prove its identity still covers the CLI's needs before a deploy. `roles/owner` counts as full coverage; `roles/editor` deliberately does not (it lacks the IAM-admin permissions the deploy path needs).
+
 ## Render
 
 ```ts
