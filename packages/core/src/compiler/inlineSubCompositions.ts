@@ -233,6 +233,11 @@ export function inlineSubCompositions(
       : contentDoc.querySelector("[data-composition-id]");
     const inferredCompId = innerRoot?.getAttribute("data-composition-id")?.trim() || "";
     const authoredRootId = innerRoot?.getAttribute("id")?.trim() || null;
+    // The authored root's classes: CSS rules anchored on them must keep
+    // working after the producer path merges the root onto the host (#1847).
+    const authoredRootClasses = (innerRoot?.getAttribute("class") || "")
+      .split(/\s+/)
+      .filter(Boolean);
     const scopeCompId = compId || inferredCompId;
     const runtimeScope = runtimeCompId ? buildScopeSelector(runtimeCompId) : "";
 
@@ -258,6 +263,7 @@ export function inlineSubCompositions(
           scopeCompId
             ? scopeCssToComposition(css, scopeCompId, runtimeScope || undefined, authoredRootId, {
                 compoundAuthoredRoot: compoundAuthoredRoot === true,
+                authoredRootClasses,
               })
             : css,
         );
@@ -293,6 +299,7 @@ export function inlineSubCompositions(
         scopeCompId
           ? scopeCssToComposition(css, scopeCompId, runtimeScope || undefined, authoredRootId, {
               compoundAuthoredRoot: compoundAuthoredRoot === true,
+              authoredRootClasses,
             })
           : css,
       );
@@ -380,6 +387,14 @@ export function inlineSubCompositions(
         // rewritten #ID selectors ([data-hf-authored-id="X"]) still resolve.
         if (compId && authoredRootId) {
           hostEl.setAttribute("data-hf-authored-id", authoredRootId);
+        }
+        // Same for the authored root's classes: merge them onto the host so
+        // class-anchored rules (rewritten to :is(scope.cls, scope .cls))
+        // still match after the wrapper is stripped (#1847).
+        if (compId && authoredRootClasses.length > 0) {
+          const merged = new Set((hostEl.getAttribute("class") || "").split(/\s+/).filter(Boolean));
+          for (const cls of authoredRootClasses) merged.add(cls);
+          hostEl.setAttribute("class", [...merged].join(" "));
         }
       }
     } else {

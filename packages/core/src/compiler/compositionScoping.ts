@@ -102,6 +102,7 @@ function scopeSelector(
   compositionId: string,
   authoredRootId?: string | null,
   compoundAuthoredRoot?: boolean,
+  authoredRootClasses?: readonly string[],
 ): string {
   const selectorWithoutAuthoredRootId = normalizeAuthoredRootIdSelector(selector, authoredRootId);
   const selectorWithoutRootTiming = normalizeCompositionRootSelector(
@@ -129,8 +130,43 @@ function scopeSelector(
       const rest = trimmed.slice(authoredRootAttr.length);
       return `${leading}${scope}${authoredRootAttr}${rest}${trailing}`;
     }
+    // Selectors anchored on one of the authored root's classes. After
+    // producer inlining the root element merges onto the host, so its
+    // classes live on the scope element itself. Rewrite to an :is() dual so
+    // the rule matches both the merged host (compound) and any descendant
+    // that legitimately carries the same class (issue #1847).
+    const rootClassRewrite = rewriteAuthoredRootClassSelector(trimmed, scope, authoredRootClasses);
+    if (rootClassRewrite) {
+      return `${leading}${rootClassRewrite}${trailing}`;
+    }
   }
   return `${leading}${scope} ${trimmed}${trailing}`;
+}
+
+/**
+ * When `selector` starts with a class-anchored compound containing one of the
+ * authored root's classes (e.g. `.scene-wrapper .title` where the root is
+ * `<div class="scene-wrapper">`), return the :is() dual form; otherwise null.
+ */
+function rewriteAuthoredRootClassSelector(
+  trimmed: string,
+  scope: string,
+  authoredRootClasses?: readonly string[],
+): string | null {
+  if (!authoredRootClasses || authoredRootClasses.length === 0) return null;
+  if (!trimmed.startsWith(".")) return null;
+
+  const match = trimmed.match(/^([^\s>+~]+)([\s\S]*)$/);
+  if (!match) return null;
+  const firstCompound = match[1] ?? "";
+  const rest = match[2] ?? "";
+
+  const anchoredOnRootClass = authoredRootClasses.some((cls) =>
+    new RegExp(`\\.${escapeRegExp(cls)}(?![\\w-])`).test(firstCompound),
+  );
+  if (!anchoredOnRootClass) return null;
+
+  return `:is(${scope}${firstCompound}, ${scope} ${firstCompound})${rest}`;
 }
 
 function normalizeCompositionRootSelector(
@@ -168,7 +204,7 @@ export function scopeCssToComposition(
   compositionId: string,
   scopeSelectorOverride?: string,
   authoredRootId?: string | null,
-  options?: { compoundAuthoredRoot?: boolean },
+  options?: { compoundAuthoredRoot?: boolean; authoredRootClasses?: readonly string[] },
 ): string {
   const trimmedCompositionId = compositionId.trim();
   if (!css || !trimmedCompositionId) return css;
@@ -186,6 +222,7 @@ export function scopeCssToComposition(
         trimmedCompositionId,
         authoredRootId,
         options?.compoundAuthoredRoot,
+        options?.authoredRootClasses,
       ),
     );
   });
