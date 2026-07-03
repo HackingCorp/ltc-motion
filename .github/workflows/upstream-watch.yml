@@ -1,0 +1,84 @@
+name: Upstream watch & sync
+
+# Veille quotidienne sur heygen-com/hyperframes :
+# 1. Miroir de upstream/main poussé sur la branche `upstream-mirror`
+# 2. PR automatique upstream-mirror -> main quand l'upstream a avancé
+#    (les conflits avec nos modifications apparaissent dans la PR)
+# 3. Issue automatique quand l'upstream publie une nouvelle release
+#    (= changement majeur à examiner)
+
+on:
+  schedule:
+    - cron: "17 6 * * *" # tous les jours à 06:17 UTC
+  workflow_dispatch: {} # déclenchable à la main
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      UPSTREAM: heygen-com/hyperframes
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch upstream
+        run: |
+          git remote add upstream "https://github.com/${UPSTREAM}.git"
+          git fetch upstream main --no-tags
+
+      - name: Push mirror branch
+        id: mirror
+        run: |
+          UPSTREAM_SHA=$(git rev-parse upstream/main)
+          LOCAL_BASE=$(git merge-base origin/main upstream/main)
+          echo "upstream_sha=$UPSTREAM_SHA" >> "$GITHUB_OUTPUT"
+          if [ "$UPSTREAM_SHA" = "$LOCAL_BASE" ]; then
+            echo "behind=false" >> "$GITHUB_OUTPUT"
+            echo "Upstream n'a pas avancé — rien à faire."
+          else
+            echo "behind=true" >> "$GITHUB_OUTPUT"
+            AHEAD=$(git rev-list --count "$LOCAL_BASE..upstream/main")
+            echo "ahead_count=$AHEAD" >> "$GITHUB_OUTPUT"
+            git push --force origin upstream/main:refs/heads/upstream-mirror
+          fi
+
+      - name: Open or update sync PR
+        if: steps.mirror.outputs.behind == 'true'
+        run: |
+          EXISTING=$(gh pr list --repo "$GITHUB_REPOSITORY" --head upstream-mirror --base main --state open --json number --jq '.[0].number // empty')
+          TITLE="⬆️ Sync upstream: ${{ steps.mirror.outputs.ahead_count }} nouveaux commits de hyperframes"
+          BODY="L'upstream [\`${UPSTREAM}\`](https://github.com/${UPSTREAM}) a avancé de **${{ steps.mirror.outputs.ahead_count }} commits** (HEAD: \`${{ steps.mirror.outputs.upstream_sha }}\`).
+
+          Cette PR fusionne \`upstream-mirror\` dans \`main\`. En cas de conflit avec nos modifications LTC, résoudre ici avant de merger.
+
+          _PR générée automatiquement par le workflow upstream-watch._"
+          if [ -n "$EXISTING" ]; then
+            gh pr edit "$EXISTING" --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "$BODY"
+          else
+            gh pr create --repo "$GITHUB_REPOSITORY" --head upstream-mirror --base main --title "$TITLE" --body "$BODY"
+          fi
+
+      - name: Check upstream releases (last 25h)
+        run: |
+          gh api "repos/${UPSTREAM}/releases?per_page=5" \
+            --jq '.[] | select((now - (.published_at | fromdateiso8601)) < 90000) | "\(.tag_name)\t\(.html_url)\t\(.name)"' \
+          | while IFS=$'\t' read -r TAG URL NAME; do
+              ISSUE_TITLE="📦 Upstream release: $TAG"
+              EXISTS=$(gh issue list --repo "$GITHUB_REPOSITORY" --search "\"$ISSUE_TITLE\" in:title" --state all --json number --jq 'length')
+              if [ "$EXISTS" = "0" ]; then
+                gh issue create --repo "$GITHUB_REPOSITORY" \
+                  --title "$ISSUE_TITLE" \
+                  --body "Nouvelle release upstream **$NAME** (\`$TAG\`) : $URL
+
+          À examiner : changements majeurs à intégrer dans ltc-motion ?
+
+          _Issue générée automatiquement par le workflow upstream-watch._"
+              fi
+            done
