@@ -18,8 +18,8 @@ Fork de [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apa
 | #   | Amélioration                                                                                              | Réf upstream | Effort  | Statut                                                                    |
 | --- | --------------------------------------------------------------------------------------------------------- | ------------ | ------- | ------------------------------------------------------------------------- |
 | 3   | **TTS pluggable** — interface provider + ElevenLabs, OpenAI TTS, Piper (voix locales). Voix FR/africaines | #337         | Moyen   | ✅ `hyperframes tts --provider heygen\|elevenlabs\|openai\|piper\|kokoro` |
-| 4   | **Fix rendu 60 fps** — le seek re-quantize à 30 fps (`canonicalFps` codé en dur)                          | #1737        | Moyen   | 🔜                                                                        |
-| 5   | **Fix inlining producer** — styles racine perdus dans les sous-compositions                               | #1847        | Moyen   | 🔜                                                                        |
+| 4   | **Fix rendu 60 fps** — le seek re-quantize à 30 fps (`canonicalFps` codé en dur)                          | #1737        | Moyen   | ✅ déjà corrigé upstream (PR #1739, hérité via fork)                      |
+| 5   | **Fix inlining producer** — styles racine perdus dans les sous-compositions                               | #1847        | Moyen   | ✅ classes racine préservées (`:is()` + merge sur l'hôte)                 |
 | 6   | **Stabilisation Studio** — triage et fixes des bugs Studio au fil de l'eau                                | (multiples)  | Continu | 🔜                                                                        |
 
 ### Phase 3 — Chantiers lourds (mois)
