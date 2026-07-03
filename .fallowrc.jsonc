@@ -223,6 +223,7 @@
     "@hyperframes/core",
     "@hyperframes/studio",
     "@hyperframes/producer",
+    "@hyperframes/browser-export",
     "@fontsource/archivo-black",
     "@fontsource/eb-garamond",
     "@fontsource/ibm-plex-mono",

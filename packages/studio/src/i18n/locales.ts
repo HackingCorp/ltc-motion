@@ -23,6 +23,12 @@ export const en = {
   "timeline.dropToImport": "Drop media files to import",
   "timeline.dropOrDescribe": "Drop media here or describe your video to start",
   "timeline.describeToStart": "Describe your video to start creating",
+
+  // Render queue
+  "render.browserExport": "Export in browser (beta)",
+  "render.browserExporting": "Exporting in browser…",
+  "render.browserCancel": "Click to cancel",
+  "render.browserNoPreview": "Preview not ready — open a composition first.",
 } as const;
 
 export type I18nKey = keyof typeof en;
@@ -45,6 +51,12 @@ export const fr: Record<I18nKey, string> = {
   "timeline.dropToImport": "Déposez des fichiers média pour les importer",
   "timeline.dropOrDescribe": "Déposez un média ici ou décrivez votre vidéo pour commencer",
   "timeline.describeToStart": "Décrivez votre vidéo pour commencer à créer",
+
+  // Render queue
+  "render.browserExport": "Exporter dans le navigateur (bêta)",
+  "render.browserExporting": "Export dans le navigateur…",
+  "render.browserCancel": "Cliquer pour annuler",
+  "render.browserNoPreview": "Aperçu non prêt — ouvrez d'abord une composition.",
 };
 
 export const LOCALES: Record<string, Record<I18nKey, string>> = { en, fr };

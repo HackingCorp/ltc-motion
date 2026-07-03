@@ -1,8 +1,10 @@
 import { memo, useState, useRef, useEffect } from "react";
 import { RenderQueueItem } from "./RenderQueueItem";
 import type { RenderJob, ResolutionPreset } from "./useRenderQueue";
+import { useBrowserExport } from "./useBrowserExport";
 import { getPersistedRenderSettings, persistRenderSettings } from "./renderSettings";
 import { trackStudioEvent } from "../../utils/studioTelemetry";
+import { t } from "../../i18n";
 
 export interface CompositionDimensions {
   width: number;
@@ -303,6 +305,69 @@ function FormatExportButton({
       >
         {isRendering ? "Rendering..." : "Export"}
       </button>
+      {/* MOV/ProRes has no WebCodecs encoder — the browser path is mp4/webm only. */}
+      {format !== "mov" && (
+        <BrowserExportButton
+          format={format}
+          quality={quality}
+          fps={fps}
+          pixelRatio={browserPixelRatio(resolution, compositionDimensions)}
+          isRendering={isRendering}
+        />
+      )}
+    </div>
+  );
+}
+
+// Integer upscale factor for the client-side rasterizer, derived from the
+// selected preset the same way the producer derives deviceScaleFactor.
+function browserPixelRatio(
+  resolution: ResolutionPreset | "auto",
+  dims: CompositionDimensions | null | undefined,
+): number | undefined {
+  if (resolution === "auto" || dims == null || dims.width <= 0) return undefined;
+  const target = CANVAS_DIMENSIONS[resolution];
+  const ratio = target.width / dims.width;
+  return Number.isInteger(ratio) && ratio >= 1 ? ratio : undefined;
+}
+
+function BrowserExportButton({
+  format,
+  quality,
+  fps,
+  pixelRatio,
+  isRendering,
+}: {
+  format: "mp4" | "webm";
+  quality: "draft" | "standard" | "high";
+  fps: 24 | 30 | 60;
+  pixelRatio?: number;
+  isRendering: boolean;
+}) {
+  const { browserExport, startBrowserExport, cancelBrowserExport } = useBrowserExport();
+  const exporting = browserExport.status === "exporting";
+
+  return (
+    <div className="flex flex-col gap-1">
+      <button
+        onClick={() => {
+          if (exporting) {
+            cancelBrowserExport();
+          } else {
+            void startBrowserExport({ format, quality, fps, pixelRatio });
+          }
+        }}
+        disabled={isRendering}
+        title={exporting ? t("render.browserCancel") : t("render.browserExport")}
+        className="w-full flex items-center justify-center h-7 text-[10px] font-medium rounded-md bg-panel-input text-panel-text-2 hover:bg-panel-hover transition-colors disabled:opacity-50"
+      >
+        {exporting
+          ? `${t("render.browserExporting")} ${browserExport.progress}%`
+          : t("render.browserExport")}
+      </button>
+      {browserExport.status === "failed" && browserExport.error && (
+        <p className="text-[9px] text-red-400 leading-tight">{browserExport.error}</p>
+      )}
     </div>
   );
 }
