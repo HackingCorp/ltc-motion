@@ -24,11 +24,11 @@ Fork de [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apa
 
 ### Phase 3 — Chantiers lourds (mois)
 
-| #   | Amélioration                                                                                    | Réf upstream | Effort | Statut                                                                                                  |
-| --- | ----------------------------------------------------------------------------------------------- | ------------ | ------ | ------------------------------------------------------------------------------------------------------- |
-| 7   | **`@hyperframes/validator`** — package de validation léger côté navigateur pour pipelines tiers | #1749 (RFC)  | Élevé  | ✅ déjà livré upstream (`@hyperframes/lint` v0.7.15 + entrée `/browser` v0.7.17, hérité via fork)       |
-| 8   | **Export vidéo côté navigateur** — rendu sans serveur ni FFmpeg via Mediabunny                  | #1661        | Élevé  | ✅ package `@hyperframes/browser-export` + bouton « Export in browser » dans le Studio                  |
-| 9   | **Parité GCP Cloud Run** — amener le rendu GCP au niveau du stack AWS Lambda                    | —            | Élevé  | 🚧 progression mid-flight (step-entries) + `cloudrun policies` livrés ; reste harnais local + split CLI |
+| #   | Amélioration                                                                                    | Réf upstream | Effort | Statut                                                                                                                                        |
+| --- | ----------------------------------------------------------------------------------------------- | ------------ | ------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 7   | **`@hyperframes/validator`** — package de validation léger côté navigateur pour pipelines tiers | #1749 (RFC)  | Élevé  | ✅ déjà livré upstream (`@hyperframes/lint` v0.7.15 + entrée `/browser` v0.7.17, hérité via fork)                                             |
+| 8   | **Export vidéo côté navigateur** — rendu sans serveur ni FFmpeg via Mediabunny                  | #1661        | Élevé  | ✅ package `@hyperframes/browser-export` + bouton « Export in browser » dans le Studio                                                        |
+| 9   | **Parité GCP Cloud Run** — amener le rendu GCP au niveau du stack AWS Lambda                    | —            | Élevé  | ✅ progression mid-flight (step-entries), `cloudrun policies`, harnais `--mode=cloudrun-local` (split CLI volontairement laissé à l'upstream) |
 
 Légende : 🔜 planifié · 🚧 en cours · ✅ livré · ⬆️ contribué upstream · 📋 backlog
 
