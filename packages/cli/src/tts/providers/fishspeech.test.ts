@@ -10,7 +10,7 @@ let savedEnv: Record<string, string | undefined>;
 beforeEach(() => {
   workdir = mkdtempSync(join(tmpdir(), "hf-fishspeech-test-"));
   savedEnv = {};
-  for (const key of ["FISH_SPEECH_URL", "FISH_SPEECH_VOICE"]) {
+  for (const key of ["FISH_SPEECH_URL", "FISH_SPEECH_VOICE", "FISH_SPEECH_API_KEY"]) {
     savedEnv[key] = process.env[key];
     delete process.env[key];
   }
@@ -124,6 +124,22 @@ describe("fishspeech synthesize", () => {
         voice: join(workdir, "absent.wav"),
       }),
     ).rejects.toThrow(/reference sample not found/);
+  });
+
+  it("forwards FISH_SPEECH_API_KEY as a bearer token for hosted servers", async () => {
+    process.env["FISH_SPEECH_URL"] = "https://tts.example.com";
+    process.env["FISH_SPEECH_API_KEY"] = "secret-token";
+    const headers: Array<Record<string, string>> = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_url: string, init: { headers?: Record<string, string> }) => {
+        headers.push(init.headers ?? {});
+        return new Response(new Uint8Array(makeWav()), { status: 200 });
+      }),
+    );
+
+    await fishspeechProvider.synthesize("x", join(workdir, "out.wav"), {});
+    expect(headers[0]!["authorization"]).toBe("Bearer secret-token");
   });
 
   it("surfaces server errors with the Fish Speech label", async () => {

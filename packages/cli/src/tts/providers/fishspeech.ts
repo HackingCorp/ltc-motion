@@ -23,6 +23,17 @@ function serverUrl(): string {
   return (process.env["FISH_SPEECH_URL"] ?? DEFAULT_URL).replace(/\/+$/, "");
 }
 
+/**
+ * Auth headers for a hosted server. The Fish Speech api server has no auth
+ * of its own, so remote deployments sit behind a reverse proxy that expects
+ * a bearer token — $FISH_SPEECH_API_KEY is forwarded when set (harmless for
+ * a bare localhost server, which just ignores it).
+ */
+function authHeaders(): Record<string, string> {
+  const key = process.env["FISH_SPEECH_API_KEY"];
+  return key ? { authorization: `Bearer ${key}` } : {};
+}
+
 interface ReferenceSample {
   audio: string; // base64
   text: string;
@@ -74,7 +85,7 @@ async function synthesize(
   const bytes = await fetchAudioBytes(
     `${serverUrl()}/v1/tts`,
     {
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "application/json", ...authHeaders() },
       body: JSON.stringify(body),
     },
     "Fish Speech",
@@ -87,6 +98,7 @@ async function synthesize(
 async function availability(): Promise<{ ok: boolean; reason?: string }> {
   try {
     const res = await fetch(`${serverUrl()}/v1/health`, {
+      headers: authHeaders(),
       signal: AbortSignal.timeout(3_000),
     });
     if (res.ok) return { ok: true };
