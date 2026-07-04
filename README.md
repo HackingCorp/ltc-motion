@@ -1,3 +1,25 @@
+# ltc-motion
+
+> **This is [ltc-motion](https://github.com/HackingCorp/ltc-motion)** — a maintained fork of [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apache 2.0) by HackingCorp / LTC Group, kept in sync with upstream daily. Everything below applies here; for anything repo-specific, substitute `HackingCorp/ltc-motion` for `heygen-com/hyperframes`.
+>
+> **🤖 AI agents (Claude Code, Codex, Cursor, Gemini CLI…) — start here.** One command teaches your agent the whole framework (20 skills):
+>
+> ```bash
+> npx skills add HackingCorp/ltc-motion --all -y
+> ```
+>
+> Then read [`AGENTS.md`](AGENTS.md) for the production loop (compose → lint → render), and `/hyperframes` — the entry skill that routes any "make me a video" request. Working _on_ this repo? [`CLAUDE.md`](CLAUDE.md) has the contribution rules.
+>
+> **Fork additions on top of upstream** (details in [`ROADMAP-LTC.md`](ROADMAP-LTC.md)):
+>
+> - `hyperframes tts` — pluggable text-to-speech: `--provider heygen|elevenlabs|openai|fishspeech|piper|kokoro`, incl. local zero-shot **voice cloning** (fishspeech) and offline French voices (piper/kokoro).
+> - [`@hyperframes/browser-export`](docs/packages/browser-export.mdx) — render a composition to MP4/WebM **entirely in the browser** (WebCodecs via mediabunny, no server/FFmpeg) + an "Export in browser" button in Studio.
+> - Studio i18n with a full **French locale** (`?lang=fr`).
+> - GCP Cloud Run parity: **live chunk-level progress** during renders, `hyperframes cloudrun policies` (IAM bootstrap + CI validation), `--mode=cloudrun-local` regression harness.
+> - Vertical 9:16 e-commerce blocks: `registry/blocks/product-promo-vertical`, `registry/blocks/whatsapp-cta` (WhatsApp Status / Reels / TikTok).
+
+---
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/logo/dark.svg">
@@ -38,7 +60,7 @@ HyperFrames is an open-source framework for turning HTML, CSS, media, and seekab
 Install the HyperFrames skills, then describe the video you want:
 
 ```bash
-npx skills add heygen-com/hyperframes
+npx skills add HackingCorp/ltc-motion
 ```
 
 Try a prompt like:
@@ -51,7 +73,7 @@ The skills teach agents the HyperFrames production loop: plan the video, write v
 
 HyperFrames ships 20 skills agents load on demand. Read `/hyperframes` first — it's the router and capability map; it picks a workflow for any "make me a video" request and points to the domain skills below.
 
-Run `npx skills add heygen-com/hyperframes` for the interactive picker, `npx skills add heygen-com/hyperframes --all` to install all 20 at once (skips the picker), or `npx skills add heygen-com/hyperframes --skill <name>` for just one (bare name, no leading `/`).
+Run `npx skills add HackingCorp/ltc-motion` for the interactive picker, `npx skills add HackingCorp/ltc-motion --all` to install all 20 at once (skips the picker), or `npx skills add HackingCorp/ltc-motion --skill <name>` for just one (bare name, no leading `/`).
 
 ### Router
 

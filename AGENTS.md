@@ -2,12 +2,14 @@
 
 Open-source video rendering framework: write HTML, render video.
 
+> **Fork note (ltc-motion).** You are in [HackingCorp/ltc-motion](https://github.com/HackingCorp/ltc-motion), a synced fork of heygen-com/hyperframes. Install skills **from this repo** so fork additions are included: `npx skills add HackingCorp/ltc-motion --all -y`. Fork-specific features (voice-cloning TTS, browser export, French Studio locale, GCP parity tooling, 9:16 blocks) are indexed in [`ROADMAP-LTC.md`](ROADMAP-LTC.md) and summarized at the top of [`README.md`](README.md). Everything else in this file applies unchanged.
+
 ## Skills
 
 This repo ships AI agent skills via [vercel-labs/skills](https://github.com/vercel-labs/skills). Install them before writing compositions — they encode framework-specific patterns that generic docs don't cover.
 
 ```bash
-npx skills add heygen-com/hyperframes
+npx skills add HackingCorp/ltc-motion
 ```
 
 **Video-creation workflows** route through one entry skill — read `/hyperframes` first: it orients you to the whole surface and maps "make me a video" intent to a concrete workflow. Consult it before invoking a specific workflow:

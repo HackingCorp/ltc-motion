@@ -2,14 +2,16 @@
 
 Open-source video rendering framework: write HTML, render video.
 
+> **Fork note (ltc-motion).** You are in [HackingCorp/ltc-motion](https://github.com/HackingCorp/ltc-motion), a synced fork of heygen-com/hyperframes maintained by HackingCorp / LTC Group. Install skills **from this repo** (commands below use it). Fork additions — pluggable TTS with local voice cloning (`hyperframes tts`), `@hyperframes/browser-export`, French Studio locale (`?lang=fr`), GCP Cloud Run parity tooling, 9:16 e-commerce blocks — are indexed in [`ROADMAP-LTC.md`](ROADMAP-LTC.md). Generic improvements are contributed upstream (no CLA); LTC/WazeApp-specific work stays here. Conventional commits + lefthook gates (fallow/oxfmt/commitlint) apply as described below.
+
 ## Skills
 
 This repo ships 20 AI agent skills via [vercel-labs/skills](https://github.com/vercel-labs/skills). Install them before writing compositions — they encode framework-specific patterns that generic docs don't cover.
 
 ```bash
-npx skills add heygen-com/hyperframes                        # interactive picker
-npx skills add heygen-com/hyperframes --all                  # install all 20 (skips picker)
-npx skills add heygen-com/hyperframes --skill <name>         # just one (bare name, no leading slash)
+npx skills add HackingCorp/ltc-motion                        # interactive picker
+npx skills add HackingCorp/ltc-motion --all                  # install all 20 (skips picker)
+npx skills add HackingCorp/ltc-motion --skill <name>         # just one (bare name, no leading slash)
 ```
 
 **`/hyperframes` is the entry skill — read it first.** It's the capability map for the domain skills below AND the intent router for the creation workflows. The full README skills section mirrors this list; keep them in sync (see "Skill catalog maintenance" below).
