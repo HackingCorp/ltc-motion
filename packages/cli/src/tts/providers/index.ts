@@ -13,6 +13,7 @@
 import { heygenProvider } from "./heygen.js";
 import { elevenlabsProvider } from "./elevenlabs.js";
 import { openaiProvider } from "./openai.js";
+import { edgettsProvider } from "./edgetts.js";
 import { fishspeechProvider } from "./fishspeech.js";
 import { piperProvider } from "./piper.js";
 import { kokoroProvider } from "./kokoro.js";
@@ -25,6 +26,7 @@ export const TTS_PROVIDERS: readonly TtsProvider[] = [
   heygenProvider,
   elevenlabsProvider,
   openaiProvider,
+  edgettsProvider,
   fishspeechProvider,
   piperProvider,
   kokoroProvider,

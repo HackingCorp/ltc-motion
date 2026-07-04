@@ -12,7 +12,7 @@
 >
 > **Fork additions on top of upstream** (details in [`ROADMAP-LTC.md`](ROADMAP-LTC.md)):
 >
-> - `hyperframes tts` — pluggable text-to-speech: `--provider heygen|elevenlabs|openai|fishspeech|piper|kokoro`, incl. local zero-shot **voice cloning** (fishspeech) and offline French voices (piper/kokoro).
+> - `hyperframes tts` — pluggable text-to-speech: `--provider heygen|elevenlabs|openai|edgetts|fishspeech|piper|kokoro`, incl. free Microsoft neural voices (edgetts — best free French voices), zero-shot **voice cloning** (fishspeech, local or RunPod) and offline voices (piper/kokoro).
 > - [`@hyperframes/browser-export`](docs/packages/browser-export.mdx) — render a composition to MP4/WebM **entirely in the browser** (WebCodecs via mediabunny, no server/FFmpeg) + an "Export in browser" button in Studio.
 > - Studio i18n with a full **French locale** (`?lang=fr`).
 > - GCP Cloud Run parity: **live chunk-level progress** during renders, `hyperframes cloudrun policies` (IAM bootstrap + CI validation), `--mode=cloudrun-local` regression harness.

@@ -48,11 +48,12 @@ afterEach(() => {
 });
 
 describe("registry", () => {
-  it("registers the six providers in auto-resolution order", () => {
+  it("registers the seven providers in auto-resolution order", () => {
     expect(TTS_PROVIDER_IDS).toEqual([
       "heygen",
       "elevenlabs",
       "openai",
+      "edgetts",
       "fishspeech",
       "piper",
       "kokoro",
