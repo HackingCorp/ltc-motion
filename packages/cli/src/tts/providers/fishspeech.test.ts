@@ -10,7 +10,13 @@ let savedEnv: Record<string, string | undefined>;
 beforeEach(() => {
   workdir = mkdtempSync(join(tmpdir(), "hf-fishspeech-test-"));
   savedEnv = {};
-  for (const key of ["FISH_SPEECH_URL", "FISH_SPEECH_VOICE", "FISH_SPEECH_API_KEY"]) {
+  for (const key of [
+    "FISH_SPEECH_URL",
+    "FISH_SPEECH_VOICE",
+    "FISH_SPEECH_API_KEY",
+    "FISH_SPEECH_RUNPOD_ENDPOINT",
+    "RUNPOD_API_KEY",
+  ]) {
     savedEnv[key] = process.env[key];
     delete process.env[key];
   }
@@ -151,5 +157,100 @@ describe("fishspeech synthesize", () => {
     await expect(fishspeechProvider.synthesize("x", join(workdir, "out.wav"), {})).rejects.toThrow(
       /Fish Speech API error 500: CUDA out of memory/,
     );
+  });
+});
+
+describe("fishspeech via RunPod", () => {
+  function setRunpodEnv(): void {
+    process.env["FISH_SPEECH_RUNPOD_ENDPOINT"] = "ep123";
+    process.env["RUNPOD_API_KEY"] = "rpa_test";
+  }
+
+  function jsonResponse(payload: unknown): Response {
+    return new Response(JSON.stringify(payload), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  }
+
+  it("prefers the RunPod transport and decodes audio from a completed runsync", async () => {
+    setRunpodEnv();
+    const calls: Array<{ url: string; auth?: string; body?: unknown }> = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string, init: { headers?: Record<string, string>; body?: string }) => {
+        calls.push({
+          url: String(url),
+          auth: init.headers?.["authorization"],
+          body: init.body ? JSON.parse(init.body) : undefined,
+        });
+        return jsonResponse({
+          id: "job-1",
+          status: "COMPLETED",
+          output: { audio_b64: makeWav().toString("base64"), format: "wav" },
+        });
+      }),
+    );
+
+    const result = await fishspeechProvider.synthesize("Salut", join(workdir, "out.wav"), {});
+    expect(calls[0]!.url).toBe("https://api.runpod.ai/v2/ep123/runsync");
+    expect(calls[0]!.auth).toBe("Bearer rpa_test");
+    expect((calls[0]!.body as { input: { text: string } }).input.text).toBe("Salut");
+    expect(result.durationSeconds).toBeCloseTo(1, 5);
+    expect(readFileSync(join(workdir, "out.wav")).equals(makeWav())).toBe(true);
+  });
+
+  it("polls the status endpoint until the job completes", async () => {
+    setRunpodEnv();
+    let statusCalls = 0;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) => {
+        if (String(url).endsWith("/runsync")) {
+          return jsonResponse({ id: "job-2", status: "IN_QUEUE" });
+        }
+        statusCalls += 1;
+        return jsonResponse(
+          statusCalls < 2
+            ? { id: "job-2", status: "IN_PROGRESS" }
+            : {
+                id: "job-2",
+                status: "COMPLETED",
+                output: { audio_b64: makeWav().toString("base64") },
+              },
+        );
+      }),
+    );
+
+    const result = await fishspeechProvider.synthesize("x", join(workdir, "out.wav"), {});
+    expect(statusCalls).toBe(2);
+    expect(result.words).toBeNull();
+  }, 15_000);
+
+  it("surfaces worker-side errors", async () => {
+    setRunpodEnv();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        jsonResponse({ id: "j", status: "COMPLETED", output: { error: "input.text is required" } }),
+      ),
+    );
+    await expect(fishspeechProvider.synthesize("x", join(workdir, "o.wav"), {})).rejects.toThrow(
+      /worker error: input.text is required/,
+    );
+  });
+
+  it("reports availability through the RunPod health endpoint", async () => {
+    setRunpodEnv();
+    const urls: string[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) => {
+        urls.push(String(url));
+        return jsonResponse({ workers: { ready: 1 } });
+      }),
+    );
+    expect(await fishspeechProvider.availability()).toEqual({ ok: true });
+    expect(urls[0]).toBe("https://api.runpod.ai/v2/ep123/health");
   });
 });
