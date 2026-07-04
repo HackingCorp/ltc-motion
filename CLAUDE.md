@@ -2,7 +2,7 @@
 
 Open-source video rendering framework: write HTML, render video.
 
-> **Fork note (ltc-motion).** You are in [HackingCorp/ltc-motion](https://github.com/HackingCorp/ltc-motion), a synced fork of heygen-com/hyperframes maintained by HackingCorp / LTC Group. Install skills **from this repo** (commands below use it). Fork additions — pluggable TTS with local voice cloning (`hyperframes tts`), `@hyperframes/browser-export`, French Studio locale (`?lang=fr`), GCP Cloud Run parity tooling, 9:16 e-commerce blocks — are indexed in [`ROADMAP-LTC.md`](ROADMAP-LTC.md). Generic improvements are contributed upstream (no CLA); LTC/WazeApp-specific work stays here. Conventional commits + lefthook gates (fallow/oxfmt/commitlint) apply as described below.
+> **Fork note (ltc-motion).** You are in [HackingCorp/ltc-motion](https://github.com/HackingCorp/ltc-motion), a synced fork of heygen-com/hyperframes maintained by HackingCorp / LTC Group. Install skills **from this repo** (commands below use it). Fork additions — `hyperframes tts` (7 providers: free neural voices via `--provider edgetts`, voice cloning via `--provider fishspeech`), `hyperframes music` (original music: lyria/musicgen), `@hyperframes/browser-export`, French Studio locale (`?lang=fr`), GCP Cloud Run parity tooling, 9:16 e-commerce blocks — are indexed in [`ROADMAP-LTC.md`](ROADMAP-LTC.md). Generic improvements are contributed upstream (no CLA); LTC/WazeApp-specific work stays here. Conventional commits + lefthook gates (fallow/oxfmt/commitlint) apply as described below.
 
 ## Skills
 

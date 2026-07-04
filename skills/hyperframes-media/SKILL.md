@@ -7,6 +7,27 @@ description: Audio and media assets for HyperFrames compositions, produced by on
 
 Create the audio and media assets a composition needs — voiceover (TTS), background music + sound effects, transcription, captions, background removal — then consume and animate that data in HTML. For placing assets into compositions, see `hyperframes-core`.
 
+> **ltc-motion fork — preferred no-credential audio path.** This fork ships two
+> first-class CLI commands that beat the engine's Kokoro/MusicGen fallbacks and
+> need NO HeyGen sign-in. When the Preflight reports "not signed in" or local
+> engine "deps missing", use these instead of stopping:
+>
+> ```bash
+> # Voiceover — free Microsoft neural voices (French: Denise/Henri/Remy; 300+ locales).
+> # Only dep: pip install edge-tts
+> npx hyperframes tts "<text>" --provider edgetts --voice fr-FR-DeniseNeural -o assets/voice/seg-1.wav
+>
+> # Original background music — Lyria (needs GEMINI_API_KEY) or local MusicGen; auto picks.
+> npx hyperframes music "<mood prompt>" --duration <s> --bpm <n> -o assets/bgm/track.wav
+>
+> # Voice cloning — hosted Fish Speech worker (set FISH_SPEECH_RUNPOD_ENDPOINT + RUNPOD_API_KEY)
+> npx hyperframes tts "<text>" --provider fishspeech --voice <sample.wav> -o out.wav
+> ```
+>
+> `hyperframes tts --list` / `hyperframes music --list` show live availability
+> with the exact fix for anything missing. Wire the produced files into the
+> composition as usual (`<audio id data-start data-volume>`).
+
 ## The audio engine — one source for TTS · BGM · SFX
 
 Workflows do NOT hand-roll audio or vendor a copy. There is one engine — **`scripts/audio.mjs`** — that takes a neutral `audio_request.json` and writes `audio_meta.json` (plus assets under `assets/voice|bgm|sfx`):
