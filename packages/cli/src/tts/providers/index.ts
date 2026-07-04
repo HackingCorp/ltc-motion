@@ -2,15 +2,18 @@
  * TTS provider registry and auto-resolution.
  *
  * Order mirrors the hyperframes-media skill's engine (HeyGen → ElevenLabs →
- * local), extended with OpenAI between the cloud providers and Piper before
- * Kokoro when a $PIPER_VOICE is configured. `hyperframes tts --provider <id>`
- * pins one explicitly; without it the first available provider wins, so a
- * configured HeyGen or ElevenLabs credential is no longer silently ignored.
+ * local), extended with OpenAI between the cloud providers, Fish Speech when
+ * its local server is up (a running server is a strong signal of intent),
+ * then Piper before Kokoro when a $PIPER_VOICE is configured.
+ * `hyperframes tts --provider <id>` pins one explicitly; without it the
+ * first available provider wins, so a configured HeyGen or ElevenLabs
+ * credential is no longer silently ignored.
  */
 
 import { heygenProvider } from "./heygen.js";
 import { elevenlabsProvider } from "./elevenlabs.js";
 import { openaiProvider } from "./openai.js";
+import { fishspeechProvider } from "./fishspeech.js";
 import { piperProvider } from "./piper.js";
 import { kokoroProvider } from "./kokoro.js";
 import type { TtsProvider, TtsProviderId } from "./types.js";
@@ -22,6 +25,7 @@ export const TTS_PROVIDERS: readonly TtsProvider[] = [
   heygenProvider,
   elevenlabsProvider,
   openaiProvider,
+  fishspeechProvider,
   piperProvider,
   kokoroProvider,
 ];

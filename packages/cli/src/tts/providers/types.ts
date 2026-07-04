@@ -7,7 +7,7 @@
  * auto-resolution order used when the user does not pass `--provider`.
  */
 
-export type TtsProviderId = "heygen" | "elevenlabs" | "openai" | "piper" | "kokoro";
+export type TtsProviderId = "heygen" | "elevenlabs" | "openai" | "fishspeech" | "piper" | "kokoro";
 
 export interface TtsWord {
   text: string;

@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -15,6 +15,8 @@ const CLOUD_ENV_KEYS = [
   "HYPERFRAMES_API_KEY",
   "ELEVENLABS_API_KEY",
   "OPENAI_API_KEY",
+  "FISH_SPEECH_URL",
+  "FISH_SPEECH_VOICE",
   "PIPER_VOICE",
 ];
 
@@ -31,9 +33,13 @@ beforeEach(() => {
   // real ~/.heygen login cannot leak into the resolution assertions.
   emptyConfigDir = mkdtempSync(join(tmpdir(), "hyperframes-tts-test-"));
   process.env["HEYGEN_CONFIG_DIR"] = emptyConfigDir;
+  // Port 1 is never listening — keeps the fishspeech health probe from
+  // accidentally hitting a real local server during auto-resolution tests.
+  process.env["FISH_SPEECH_URL"] = "http://127.0.0.1:1";
 });
 
 afterEach(() => {
+  vi.unstubAllGlobals();
   for (const [key, value] of Object.entries(savedEnv)) {
     if (value === undefined) delete process.env[key];
     else process.env[key] = value;
@@ -42,8 +48,15 @@ afterEach(() => {
 });
 
 describe("registry", () => {
-  it("registers the five providers in auto-resolution order", () => {
-    expect(TTS_PROVIDER_IDS).toEqual(["heygen", "elevenlabs", "openai", "piper", "kokoro"]);
+  it("registers the six providers in auto-resolution order", () => {
+    expect(TTS_PROVIDER_IDS).toEqual([
+      "heygen",
+      "elevenlabs",
+      "openai",
+      "fishspeech",
+      "piper",
+      "kokoro",
+    ]);
   });
 
   it("every provider has a label and setup hint", () => {
@@ -114,5 +127,26 @@ describe("resolveProvider", () => {
   it("skips piper in auto mode when PIPER_VOICE is not set", async () => {
     const provider = await resolveProvider();
     expect(provider.id).not.toBe("piper");
+  });
+
+  it("picks fishspeech in auto mode when its local server responds", async () => {
+    process.env["FISH_SPEECH_URL"] = "http://fish.test:8080";
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("{}", { status: 200 })),
+    );
+    const provider = await resolveProvider();
+    expect(provider.id).toBe("fishspeech");
+  });
+
+  it("prefers cloud credentials over a running fishspeech server", async () => {
+    process.env["ELEVENLABS_API_KEY"] = "test-key";
+    process.env["FISH_SPEECH_URL"] = "http://fish.test:8080";
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("{}", { status: 200 })),
+    );
+    const provider = await resolveProvider();
+    expect(provider.id).toBe("elevenlabs");
   });
 });
