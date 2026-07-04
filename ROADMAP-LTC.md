@@ -22,6 +22,12 @@ Fork de [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apa
 | 5   | **Fix inlining producer** — styles racine perdus dans les sous-compositions                               | #1847        | Moyen   | ✅ corrigé upstream via [#1886](https://github.com/heygen-com/hyperframes/pull/1886), synchronisé dans le fork (notre fix local retiré, PR #1896 superseded)           |
 | 6   | **Stabilisation Studio** — triage et fixes des bugs Studio au fil de l'eau                                | (multiples)  | Continu | 🔜                                                                                                                                                                     |
 
+### Ajouts hors roadmap initiale
+
+| Amélioration                                                                                                                                                                                                       | Statut |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| **`hyperframes music`** — génération de musique originale par prompt d'ambiance : providers `lyria` (Google, temps réel, contrôle bpm/brightness/density/scale) et `musicgen` (Meta, 100 % local), résolution auto | ✅     |
+
 ### Phase 3 — Chantiers lourds (mois)
 
 | #   | Amélioration                                                                                    | Réf upstream | Effort | Statut                                                                                                                                                                                 |

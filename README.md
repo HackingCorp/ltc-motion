@@ -12,6 +12,7 @@
 >
 > **Fork additions on top of upstream** (details in [`ROADMAP-LTC.md`](ROADMAP-LTC.md)):
 >
+> - `hyperframes music` — **original music generation** from a mood prompt: `--provider lyria|musicgen|auto` (Google Lyria RealTime with bpm/brightness/density/scale control, or fully-local MusicGen with crossfade-looping).
 > - `hyperframes tts` — pluggable text-to-speech: `--provider heygen|elevenlabs|openai|edgetts|fishspeech|piper|kokoro`, incl. free Microsoft neural voices (edgetts — best free French voices), zero-shot **voice cloning** (fishspeech, local or RunPod) and offline voices (piper/kokoro).
 > - [`@hyperframes/browser-export`](docs/packages/browser-export.mdx) — render a composition to MP4/WebM **entirely in the browser** (WebCodecs via mediabunny, no server/FFmpeg) + an "Export in browser" button in Studio.
 > - Studio i18n with a full **French locale** (`?lang=fr`).

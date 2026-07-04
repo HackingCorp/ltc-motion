@@ -12,7 +12,7 @@ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { durationSeconds, writeAudio } from "./audio-util.js";
-import { findPython, hasPythonModules } from "../python.js";
+import { findPython, hasPythonModules, stderrDetail } from "../python.js";
 import type { TtsProvider, TtsProviderOptions, TtsProviderResult } from "./types.js";
 
 const DEFAULT_VOICE = "fr-FR-DeniseNeural";
@@ -61,11 +61,7 @@ async function synthesize(
     });
     writeAudio(readFileSync(mediaPath), outputPath, "mp3");
   } catch (err) {
-    const detail =
-      err && typeof err === "object" && "stderr" in err
-        ? String((err as { stderr: unknown }).stderr).slice(-300)
-        : String(err).slice(0, 300);
-    throw new Error(`Edge TTS synthesis failed. ${detail}`.trim());
+    throw new Error(`Edge TTS synthesis failed. ${stderrDetail(err)}`.trim());
   } finally {
     rmSync(workdir, { recursive: true, force: true });
   }

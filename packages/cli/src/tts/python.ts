@@ -72,3 +72,28 @@ export function hasPythonModules(modules: string[]): boolean {
     return false;
   }
 }
+
+/** Last stderr lines of a failed child process, for actionable errors. */
+export function stderrDetail(err: unknown): string {
+  return err && typeof err === "object" && "stderr" in err
+    ? String((err as { stderr: unknown }).stderr).slice(-300)
+    : String(err).slice(0, 300);
+}
+
+/** Run an embedded Python script with a JSON params argv, throwing a labeled error. */
+export function runEmbeddedPython(
+  python: string,
+  script: string,
+  params: unknown,
+  timeoutMs: number,
+  label: string,
+): void {
+  try {
+    execFileSync(python, ["-c", script, JSON.stringify(params)], {
+      stdio: ["ignore", "ignore", "pipe"],
+      timeout: timeoutMs,
+    });
+  } catch (err) {
+    throw new Error(`${label} generation failed. ${stderrDetail(err)}`.trim());
+  }
+}
