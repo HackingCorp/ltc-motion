@@ -14,8 +14,6 @@
  * (or set $FISH_SPEECH_VOICE). When a sidecar transcript `<sample>.txt`
  * exists next to the sample it is sent as the reference text, which
  * measurably improves cloning fidelity.
- *
- * ⚠ Model weights are licensed CC-BY-NC-SA — non-commercial use only.
  */
 
 import { existsSync, readFileSync } from "node:fs";
@@ -220,7 +218,7 @@ async function availability(): Promise<{ ok: boolean; reason?: string }> {
 
 export const fishspeechProvider: TtsProvider = {
   id: "fishspeech",
-  label: "Fish Speech / OpenAudio (local, voice cloning — non-commercial license)",
+  label: "Fish Speech / OpenAudio (voice cloning)",
   local: true,
   setupHint:
     "RunPod: set FISH_SPEECH_RUNPOD_ENDPOINT + RUNPOD_API_KEY (worker in ltc-tts-server/runpod). Local: run a fish-speech api_server and set FISH_SPEECH_URL. Clone with --voice sample.wav",
