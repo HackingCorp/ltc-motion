@@ -24,9 +24,11 @@ Fork de [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apa
 
 ### Ajouts hors roadmap initiale
 
-| Amélioration                                                                                                                                                                                                       | Statut |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| **`hyperframes music`** — génération de musique originale par prompt d'ambiance : providers `lyria` (Google, temps réel, contrôle bpm/brightness/density/scale) et `musicgen` (Meta, 100 % local), résolution auto | ✅     |
+| Amélioration                                                                                                                                                                                                                                                        | Statut |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| **`hyperframes music`** — génération de musique originale par prompt d'ambiance : providers `lyria` (Google, temps réel, contrôle bpm/brightness/density/scale) et `musicgen` (Meta, 100 % local), résolution auto                                                  | ✅     |
+| **`hyperframes image`** — génération d'images par prompt : providers `zimage` (Z-Image-Turbo) et `qwenimage` (Qwen-Image), workers RunPod serverless. Code livré ; endpoints en sommeil (préemption GPU RunPod) — assets image produits via Higgsfield en attendant | 💤     |
+| **`hyperframes video`** — clips vidéo AI par prompt : provider `wan` (Wan 2.2 TI2V-5B, 720p), worker RunPod serverless. Code livré ; endpoint en sommeil (même cause) — footage AI produit via Higgsfield en attendant                                              | 💤     |
 
 ### Phase 3 — Chantiers lourds (mois)
 
@@ -36,7 +38,7 @@ Fork de [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) (Apa
 | 8   | **Export vidéo côté navigateur** — rendu sans serveur ni FFmpeg via Mediabunny                  | #1661        | Élevé  | ⬆️ package `@hyperframes/browser-export` proposé upstream ([#1905](https://github.com/heygen-com/hyperframes/pull/1905)) + bouton « Export in browser » dans le Studio                 |
 | 9   | **Parité GCP Cloud Run** — amener le rendu GCP au niveau du stack AWS Lambda                    | —            | Élevé  | ⬆️ progression mid-flight proposée upstream ([#1904](https://github.com/heygen-com/hyperframes/pull/1904)) ; `cloudrun policies` + harnais `--mode=cloudrun-local` livrés dans le fork |
 
-Légende : 🔜 planifié · 🚧 en cours · ✅ livré · ⬆️ contribué upstream · 📋 backlog
+Légende : 🔜 planifié · 🚧 en cours · ✅ livré · ⬆️ contribué upstream · 📋 backlog · 💤 livré mais en sommeil
 
 ## Politique de contribution upstream
 
