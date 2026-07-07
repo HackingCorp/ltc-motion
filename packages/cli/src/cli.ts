@@ -132,6 +132,7 @@ const commandLoaders = {
   tts: () => import("./commands/tts.js").then((m) => m.default),
   music: () => import("./commands/music.js").then((m) => m.default),
   image: () => import("./commands/image.js").then((m) => m.default),
+  video: () => import("./commands/video.js").then((m) => m.default),
   docs: () => import("./commands/docs.js").then((m) => m.default),
   doctor: () => import("./commands/doctor.js").then((m) => m.default),
   upgrade: () => import("./commands/upgrade.js").then((m) => m.default),

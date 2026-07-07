@@ -12,6 +12,7 @@
 >
 > **Fork additions on top of upstream** (details in [`ROADMAP-LTC.md`](ROADMAP-LTC.md)):
 >
+> - `hyperframes video` — **AI video clips** from a text prompt (Wan 2.2 TI2V-5B, Apache 2.0, 720p, on your RunPod worker).
 > - `hyperframes image` — **image generation** on your own RunPod workers: `--provider zimage|qwenimage|auto` (Z-Image-Turbo fast/cheap, Qwen-Image best in-image text — both Apache 2.0).
 > - `hyperframes music` — **original music generation** from a mood prompt: `--provider lyria|musicgen|auto` (Google Lyria RealTime with bpm/brightness/density/scale control, or fully-local MusicGen with crossfade-looping).
 > - `hyperframes tts` — pluggable text-to-speech: `--provider heygen|elevenlabs|openai|edgetts|fishspeech|piper|kokoro`, incl. free Microsoft neural voices (edgetts — best free French voices), zero-shot **voice cloning** (fishspeech, local or RunPod) and offline voices (piper/kokoro).
