@@ -36,6 +36,9 @@ beforeEach(() => {
   // Port 1 is never listening — keeps the fishspeech health probe from
   // accidentally hitting a real local server during auto-resolution tests.
   process.env["FISH_SPEECH_URL"] = "http://127.0.0.1:1";
+  // edgetts availability depends on the machine's python3 — exclude it from
+  // auto-resolution so these assertions stay environment-independent.
+  process.env["HYPERFRAMES_TTS_SKIP"] = "edgetts";
 });
 
 afterEach(() => {

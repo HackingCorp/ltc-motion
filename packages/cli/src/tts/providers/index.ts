@@ -50,6 +50,16 @@ export function isProviderId(id: string): id is TtsProviderId {
  * the final fallback, matching the CLI's historical behavior.
  */
 export async function resolveProvider(explicit?: string): Promise<TtsProvider> {
+  // $HYPERFRAMES_TTS_SKIP: comma-separated provider ids excluded from AUTO
+  // resolution (explicit --provider still works). Lets tests and agents pin
+  // down auto behavior on machines where optional engines happen to be
+  // installed.
+  const skipped = new Set(
+    (process.env["HYPERFRAMES_TTS_SKIP"] ?? "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+  );
   if (explicit && explicit !== "auto") {
     const provider = getProvider(explicit);
     if (!provider) {
@@ -62,6 +72,7 @@ export async function resolveProvider(explicit?: string): Promise<TtsProvider> {
 
   for (const provider of TTS_PROVIDERS) {
     if (provider.id === "kokoro") break; // final fallback, checked below
+    if (skipped.has(provider.id)) continue;
     if (provider.id === "piper" && !process.env["PIPER_VOICE"]) continue;
     const status = await provider.availability();
     if (status.ok) return provider;

@@ -52,6 +52,9 @@
   ],
   "ignorePatterns": [
     "docs/**",
+    // Local skills-installer artifacts (npx skills add run inside the repo).
+    ".agents/**",
+    "agent/**",
     "packages/producer/tests/**",
     "packages/player/tests/**",
     "packages/engine/tests/**",
@@ -252,6 +255,12 @@
     // require intrusive middleware changes beyond this PR's scope.
     "minLines": 6,
     "ignore": [
+      // Provider test files share the same env-sandbox scaffold
+      // (save/delete/restore env vars around each case) — collapsing it
+      // into a shared fixture would couple unrelated provider suites.
+      "packages/cli/src/image/providers/index.test.ts",
+      "packages/cli/src/tts/providers/fishspeech.test.ts",
+      "packages/cli/src/music/providers/index.test.ts",
       // cloudrun-local harness deliberately mirrors lambda-local line-for-line
       // (same input contract, same plan/chunk/assemble sequencing) so the two
       // adapter paths stay reviewable side-by-side. Extracting the shared

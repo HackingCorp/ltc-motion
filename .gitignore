@@ -149,3 +149,7 @@ tmp/
 
 # Local editor settings
 .zed/
+
+# skills installer artifacts (npx skills add run inside the repo)
+.agents/
+agent/

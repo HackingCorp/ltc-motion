@@ -19,6 +19,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { durationSeconds, fetchAudioBytes, writeAudio } from "./audio-util.js";
+import { runpodHealth, runpodRun, type RunpodConfig } from "../../runpod.js";
 import type { TtsProvider, TtsProviderOptions, TtsProviderResult } from "./types.js";
 
 const DEFAULT_URL = "http://127.0.0.1:8080";
@@ -64,61 +65,11 @@ function loadReference(voice: string | undefined): ReferenceSample | null {
 
 // ── RunPod serverless transport ──────────────────────────────────────────────
 
-const RUNPOD_BASE = "https://api.runpod.ai/v2";
-
-interface RunpodConfig {
-  endpoint: string;
-  apiKey: string;
-}
-
 function runpodConfig(): RunpodConfig | null {
   const endpoint = process.env["FISH_SPEECH_RUNPOD_ENDPOINT"];
   const apiKey = process.env["RUNPOD_API_KEY"];
   if (!endpoint || !apiKey) return null;
   return { endpoint, apiKey };
-}
-
-async function runpodJson(
-  cfg: RunpodConfig,
-  path: string,
-  body?: Record<string, unknown>,
-): Promise<Record<string, unknown>> {
-  const res = await fetch(`${RUNPOD_BASE}/${cfg.endpoint}/${path}`, {
-    method: body ? "POST" : "GET",
-    headers: { authorization: `Bearer ${cfg.apiKey}`, "content-type": "application/json" },
-    ...(body ? { body: JSON.stringify(body) } : {}),
-  });
-  if (!res.ok) {
-    throw new Error(`RunPod API error ${res.status}: ${(await res.text()).slice(0, 300)}`);
-  }
-  return (await res.json()) as Record<string, unknown>;
-}
-
-const RUNPOD_POLL_MS = 2_000;
-const RUNPOD_DEADLINE_MS = 600_000;
-
-// fallow-ignore-next-line complexity
-async function waitForRunpodCompletion(
-  cfg: RunpodConfig,
-  first: Record<string, unknown>,
-): Promise<Record<string, unknown>> {
-  let current = first;
-  const deadline = Date.now() + RUNPOD_DEADLINE_MS;
-  while (Date.now() < deadline) {
-    const status = current["status"];
-    if (status === "COMPLETED") return current;
-    if (status === "FAILED" || status === "CANCELLED" || status === "TIMED_OUT") {
-      const detail = JSON.stringify(current["error"] ?? current["output"] ?? "");
-      throw new Error(`RunPod job ${status}: ${detail.slice(0, 300)}`);
-    }
-    const id = current["id"];
-    if (typeof id !== "string") {
-      throw new Error(`RunPod response has no job id: ${JSON.stringify(current).slice(0, 200)}`);
-    }
-    await new Promise((resolve) => setTimeout(resolve, RUNPOD_POLL_MS));
-    current = await runpodJson(cfg, `status/${id}`);
-  }
-  throw new Error("RunPod job did not complete within 10 minutes (cold start + synthesis)");
 }
 
 // fallow-ignore-next-line complexity
@@ -134,8 +85,7 @@ async function synthesizeViaRunpod(
   if (reference) input["references"] = [reference];
 
   options.onProgress?.(`Submitting to Fish Speech on RunPod (${cfg.endpoint})...`);
-  const first = await runpodJson(cfg, "runsync", { input });
-  const done = await waitForRunpodCompletion(cfg, first);
+  const done = await runpodRun(cfg, input);
 
   const output = done["output"] as { audio_b64?: string; error?: string } | undefined;
   if (output?.error) throw new Error(`Fish Speech worker error: ${output.error}`);
@@ -192,7 +142,7 @@ async function availability(): Promise<{ ok: boolean; reason?: string }> {
   const runpod = runpodConfig();
   if (runpod) {
     try {
-      await runpodJson(runpod, "health");
+      await runpodHealth(runpod);
       return { ok: true };
     } catch (err) {
       return {

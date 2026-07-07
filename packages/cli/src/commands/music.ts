@@ -5,6 +5,7 @@ import * as clack from "@clack/prompts";
 import type { Example } from "./_examples.js";
 import { c } from "../ui/colors.js";
 import { errorBox } from "../ui/format.js";
+import { renderProviderList } from "../ui/provider-list.js";
 import {
   MUSIC_PROVIDERS,
   MUSIC_PROVIDER_IDS,
@@ -28,17 +29,6 @@ export const examples: Example[] = [
 ];
 
 const providerList = `auto, ${MUSIC_PROVIDER_IDS.join(", ")}`;
-
-async function listProviders(): Promise<void> {
-  clack.intro(c.bold("Music providers"));
-  for (const provider of MUSIC_PROVIDERS) {
-    const status = await provider.availability();
-    const badge = status.ok ? c.success("ready") : c.dim(`unavailable — ${status.reason}`);
-    clack.log.info(`${c.accent(provider.id)}  ${provider.label}  [${badge}]`);
-    clack.log.message(c.dim(`  setup: ${provider.setupHint}`));
-  }
-  clack.outro("Use --provider <id> to pin one, or omit for auto-resolution.");
-}
 
 function parseUnitInterval(raw: unknown, flag: string): number | undefined {
   if (raw == null) return undefined;
@@ -88,7 +78,7 @@ export default defineCommand({
     list: { type: "boolean", description: "List providers and their availability" },
   },
   async run({ args }) {
-    if (args.list) return listProviders();
+    if (args.list) return renderProviderList("Music providers", MUSIC_PROVIDERS);
 
     const prompt = (args.prompt as string | undefined)?.trim();
     if (!prompt) {
