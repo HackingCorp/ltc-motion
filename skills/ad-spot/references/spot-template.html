@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700;900&display=block"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; }
+      html, body { background: transparent; overflow: hidden; }
+      body { width: 1080px; height: 1920px; font-family: "DM Sans", sans-serif; }
+      #root video.clip { width: 1080px; height: 1920px; object-fit: cover; }
+      #root .overlay { position: absolute; inset: 0; overflow: hidden; color: #fff; }
+
+      #root .watermark { position: absolute; top: 70px; left: 64px; display: flex; align-items: center; gap: 18px; opacity: 0.95; z-index: 30; }
+      #root .watermark .badge {
+        width: 76px; height: 76px; border-radius: 22px;
+        background: linear-gradient(135deg, #25d366 0%, #16a34a 100%);
+        display: flex; align-items: center; justify-content: center; font-size: 40px;
+        box-shadow: 0 14px 36px rgba(0,0,0,0.35);
+      }
+      #root .watermark .name { font-size: 46px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 4px 18px rgba(0,0,0,0.55); }
+
+      /* ── Panneaux plein écran (scènes HTML) ── */
+      #root .panel {
+        position: absolute; inset: 0; opacity: 0;
+        background: radial-gradient(140% 90% at 50% 0%, #10402b 0%, #0a2c1d 55%, #071f15 100%);
+        display: flex; flex-direction: column; align-items: center;
+      }
+
+      /* Scène 1 : pluie de conversations */
+      #root .p1-title { margin-top: 250px; font-size: 88px; font-weight: 900; text-align: center; line-height: 1.1; max-width: 920px; }
+      #root .p1-title .accent { color: #25d366; }
+      #root .bubbles { margin-top: 90px; width: 880px; display: flex; flex-direction: column; gap: 30px; }
+      #root .bubble {
+        max-width: 760px; background: #ffffff; color: #111b21;
+        border-radius: 30px 30px 30px 8px; padding: 30px 40px;
+        font-size: 42px; font-weight: 700; line-height: 1.35;
+        box-shadow: 0 14px 36px rgba(0,0,0,0.35);
+        display: flex; align-items: baseline; gap: 26px;
+      }
+      #root .bubble.right { align-self: flex-end; border-radius: 30px 30px 8px 30px; background: #d9fdd3; }
+      #root .bubble .time { font-size: 28px; font-weight: 400; color: #667781; white-space: nowrap; }
+
+      /* Scène 2 : tableau CRM */
+      #root .p2-title { margin-top: 230px; font-size: 84px; font-weight: 900; text-align: center; line-height: 1.1; max-width: 940px; }
+      #root .p2-title .accent { color: #25d366; }
+      #root .board { margin-top: 80px; display: flex; gap: 28px; }
+      #root .col { width: 310px; background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.12); border-radius: 28px; padding: 26px 20px; }
+      #root .col-head {
+        font-size: 36px; font-weight: 900; text-align: center; padding: 16px 0 22px;
+        display: flex; align-items: center; justify-content: center; gap: 12px;
+      }
+      #root .col.hot { border-color: rgba(37, 211, 102, 0.55); background: rgba(37, 211, 102, 0.10); }
+      #root .card {
+        background: #ffffff; color: #111b21; border-radius: 20px;
+        padding: 24px 24px; margin-bottom: 20px;
+        font-size: 30px; font-weight: 700; line-height: 1.3;
+        box-shadow: 0 10px 26px rgba(0,0,0,0.3);
+      }
+      #root .card small { display: block; font-size: 24px; font-weight: 400; color: #556; margin-top: 8px; }
+      #root .card.glow { outline: 5px solid #25d366; }
+
+      /* Légende sur la scène vidéo */
+      #root .shade {
+        position: absolute; left: 0; right: 0; bottom: 0; height: 720px; opacity: 0;
+        background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(4,24,15,0.82) 78%);
+      }
+      #root .caption { position: absolute; left: 72px; right: 72px; bottom: 150px; opacity: 0; }
+      #root .caption .kicker {
+        display: inline-block; background: rgba(37,211,102,0.92); color: #06281a;
+        font-size: 40px; font-weight: 900; padding: 14px 34px; border-radius: 999px; margin-bottom: 34px;
+      }
+      #root .caption .line { font-size: 84px; font-weight: 900; line-height: 1.08; text-shadow: 0 6px 30px rgba(0,0,0,0.6); max-width: 920px; }
+      #root .caption .line .accent { color: #25d366; }
+
+      /* Carton final */
+      #root .endcard {
+        position: absolute; inset: 0;
+        background: radial-gradient(140% 90% at 50% 0%, #10402b 0%, #0a2c1d 55%, #071f15 100%);
+        display: flex; flex-direction: column; align-items: center; opacity: 0;
+      }
+      #root .endcard .brand { margin-top: 430px; display: flex; align-items: center; gap: 26px; }
+      #root .endcard .brand .badge {
+        width: 120px; height: 120px; border-radius: 32px;
+        background: linear-gradient(135deg, #25d366 0%, #16a34a 100%);
+        display: flex; align-items: center; justify-content: center; font-size: 64px;
+        box-shadow: 0 24px 60px rgba(37,211,102,0.35);
+      }
+      #root .endcard .brand .name { font-size: 82px; font-weight: 900; letter-spacing: 2px; }
+      #root .endcard .claim { margin-top: 130px; font-size: 100px; font-weight: 900; line-height: 1.1; text-align: center; max-width: 940px; }
+      #root .endcard .claim .accent { color: #25d366; }
+      #root .endcard .cta {
+        margin-top: 120px; background: linear-gradient(135deg, #25d366 0%, #16a34a 100%);
+        color: #06281a; font-size: 54px; font-weight: 900; padding: 42px 86px; border-radius: 999px;
+        box-shadow: 0 28px 70px rgba(37,211,102,0.4);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div
+      id="root"
+      data-composition-id="wazeapp-leads-spot"
+      data-width="1080"
+      data-height="1920"
+      data-start="0"
+      data-duration="26"
+    >
+      <!-- Piste 0 : un seul plan vidéo (femme d'affaires sereine), scène 3 -->
+      <video id="clip-video" class="clip" src="assets/clipB.mp4" data-start="16.5" data-duration="4.9" data-track-index="0" muted></video>
+
+      <!-- Piste 1 : habillage + scènes HTML + bande-son -->
+      <div id="scene" class="clip overlay" data-start="0" data-duration="26" data-track-index="1">
+        <div id="watermark" class="watermark">
+          <div class="badge">💬</div>
+          <div class="name">WazeApp</div>
+        </div>
+
+        <!-- Scène 1 : la pluie de messages (texte réel, lisible) -->
+        <div id="panel-1" class="panel">
+          <div id="p1-title" class="p1-title">Des dizaines de <span class="accent">conversations</span>, chaque jour</div>
+          <div class="bubbles">
+            <div id="b1" class="bubble">Bonjour, c'est disponible ?<span class="time">09:12</span></div>
+            <div id="b2" class="bubble right">Vous livrez à Yaoundé ?<span class="time">09:15</span></div>
+            <div id="b3" class="bubble">Vous avez la taille 42 ?<span class="time">09:24</span></div>
+            <div id="b4" class="bubble right">On peut payer par MoMo ?<span class="time">09:31</span></div>
+            <div id="b5" class="bubble">Je peux passer ce soir ?<span class="time">09:40</span></div>
+          </div>
+        </div>
+
+        <!-- Scène 2 : le tableau CRM (texte réel, lisible) -->
+        <div id="panel-2" class="panel">
+          <div id="p2-title" class="p2-title">WazeApp les <span class="accent">classe</span> pour vous</div>
+          <div class="board">
+            <div class="col">
+              <div class="col-head">🟢 Nouveau</div>
+              <div id="c1" class="card">Marc<small>Livraison Yaoundé ?</small></div>
+              <div id="c2" class="card">Léa<small>Prix du modèle bleu</small></div>
+            </div>
+            <div class="col hot">
+              <div class="col-head">🔥 Chaud</div>
+              <div id="c3" class="card glow">Aïcha<small>Taille 42 — veut commander</small></div>
+              <div id="c4" class="card">Sonia<small>Passe ce soir</small></div>
+            </div>
+            <div class="col">
+              <div class="col-head">🕐 À relancer</div>
+              <div id="c5" class="card">Jean<small>Sans réponse depuis 3 j</small></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scène 3 : légende sur la vidéo -->
+        <div id="shade" class="shade"></div>
+        <div id="cap-3" class="caption">
+          <div class="kicker">Résultat</div>
+          <div class="line">Plus aucun lead <span class="accent">perdu</span></div>
+        </div>
+
+        <!-- Carton final -->
+        <div id="endcard" class="endcard">
+          <div class="brand">
+            <div class="badge">💬</div>
+            <div class="name">WazeApp</div>
+          </div>
+          <div id="end-claim" class="claim">Chaque conversation devient un <span class="accent">lead qualifié</span></div>
+          <div id="end-cta" class="cta">Essai gratuit — wazeapp.ai</div>
+        </div>
+
+        <!-- Bande-son : musique + voix Rémy en 4 segments synchronisés -->
+        <audio id="music" src="assets/bgm.wav" data-start="0" data-duration="26" data-volume="0.2"></audio>
+        <audio id="vo-1" src="assets/vo-1.wav" data-start="0.6" data-volume="1"></audio>
+        <audio id="vo-2" src="assets/vo-2.wav" data-start="7.6" data-volume="1"></audio>
+        <audio id="vo-3" src="assets/vo-3.wav" data-start="17.0" data-volume="1"></audio>
+        <audio id="vo-4" src="assets/vo-4.wav" data-start="22.0" data-volume="1"></audio>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+
+      var tl = gsap.timeline({ paused: true });
+
+      tl.from("#watermark", { y: -50, opacity: 0, duration: 0.5, ease: "power2.out" }, 0.2);
+
+      /* Scène 1 : 0 → 7.2s — les messages pleuvent */
+      tl.set("#panel-1", { opacity: 1 }, 0);
+      tl.from("#p1-title", { y: 70, opacity: 0, duration: 0.6, ease: "power3.out" }, 0.3);
+      tl.from("#b1", { y: 90, opacity: 0, duration: 0.45, ease: "power3.out" }, 1.2);
+      tl.from("#b2", { y: 90, opacity: 0, duration: 0.45, ease: "power3.out" }, 2.0);
+      tl.from("#b3", { y: 90, opacity: 0, duration: 0.45, ease: "power3.out" }, 2.8);
+      tl.from("#b4", { y: 90, opacity: 0, duration: 0.45, ease: "power3.out" }, 3.6);
+      tl.from("#b5", { y: 90, opacity: 0, duration: 0.45, ease: "power3.out" }, 4.4);
+      tl.to("#panel-1", { opacity: 0, y: -50, duration: 0.5, ease: "power2.in" }, 6.8);
+
+      /* Scène 2 : 7.2 → 16.5s — le tableau se remplit */
+      tl.to("#panel-2", { opacity: 1, duration: 0.45, ease: "power2.out" }, 7.2);
+      tl.from("#p2-title", { y: 60, opacity: 0, duration: 0.55, ease: "power3.out" }, 7.4);
+      tl.from("#c1", { y: 80, opacity: 0, duration: 0.4, ease: "back.out(1.4)" }, 8.6);
+      tl.from("#c3", { y: 80, opacity: 0, duration: 0.4, ease: "back.out(1.4)" }, 9.3);
+      tl.from("#c2", { y: 80, opacity: 0, duration: 0.4, ease: "back.out(1.4)" }, 10.0);
+      tl.from("#c4", { y: 80, opacity: 0, duration: 0.4, ease: "back.out(1.4)" }, 10.7);
+      tl.from("#c5", { y: 80, opacity: 0, duration: 0.4, ease: "back.out(1.4)" }, 11.4);
+      tl.to("#c3", { scale: 1.06, duration: 0.5, ease: "sine.inOut" }, 13.0);
+      tl.to("#c3", { scale: 1.0, duration: 0.5, ease: "sine.inOut" }, 13.6);
+      tl.to("#panel-2", { opacity: 0, y: -50, duration: 0.5, ease: "power2.in" }, 16.0);
+      tl.set("#panel-2", { opacity: 0 }, 16.5);
+
+      /* Scène 3 : 16.5 → 21.4s — la patronne sereine (vidéo dessous) */
+      tl.to("#shade", { opacity: 1, duration: 0.5, ease: "power2.out" }, 16.6);
+      tl.to("#cap-3", { opacity: 1, duration: 0.45, ease: "power2.out" }, 16.9);
+      tl.from("#cap-3 .line", { y: 60, duration: 0.55, ease: "power3.out" }, 17.0);
+      tl.to("#cap-3", { opacity: 0, duration: 0.4, ease: "power2.in" }, 20.9);
+      tl.to("#shade", { opacity: 0, duration: 0.4, ease: "power2.in" }, 21.0);
+
+      /* Carton final : 21.4 → 26s */
+      tl.to("#endcard", { opacity: 1, duration: 0.55, ease: "power2.out" }, 21.4);
+      tl.from("#end-claim", { y: 70, opacity: 0, duration: 0.6, ease: "power3.out" }, 21.7);
+      tl.from("#end-cta", { scale: 0.7, opacity: 0, duration: 0.55, ease: "back.out(1.8)" }, 22.4);
+      tl.to("#end-cta", { scale: 1.05, duration: 0.7, ease: "sine.inOut" }, 23.8);
+      tl.to("#end-cta", { scale: 1.0, duration: 0.7, ease: "sine.inOut" }, 24.5);
+      tl.to("#watermark", { opacity: 0, duration: 0.35, ease: "power2.in" }, 21.4);
+
+      window.__timelines["wazeapp-leads-spot"] = tl;
+    </script>
+  </body>
+</html>

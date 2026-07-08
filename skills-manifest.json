@@ -1,6 +1,10 @@
 {
   "source": "heygen-com/hyperframes",
   "skills": {
+    "ad-spot": {
+      "hash": "18b836ce356dd350",
+      "files": 2
+    },
     "embedded-captions": {
       "hash": "62aec45830eda54b",
       "files": 144
@@ -36,10 +40,6 @@
     "hyperframes-keyframes": {
       "hash": "47f20312033792c3",
       "files": 3
-    },
-    "hyperframes-media": {
-      "hash": "79264f181df4e138",
-      "files": 45
     },
     "hyperframes-registry": {
       "hash": "e3b389526834109d",
