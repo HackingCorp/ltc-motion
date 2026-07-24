@@ -576,8 +576,8 @@ jobs:
           test -s /tmp/hf-cli-input.mp4
 
       - name: Smoke-test CLI from monorepo source
-        # init's --skip-skills flag is neutered (see init.ts); opt out of the
-        # GitHub skills check via this env so the smoke test stays offline/fast.
+        # Opt out of the GitHub skills check so the smoke test stays offline/fast.
+        # Both --skip-skills flag and HYPERFRAMES_SKIP_SKILLS env var work.
         env:
           HYPERFRAMES_SKIP_SKILLS: "1"
         run: |
@@ -633,8 +633,8 @@ jobs:
           npm install -g --prefix /tmp/hf-cli-global "$HF_CLI_TARBALL"
 
       - name: Smoke-test packed CLI outside monorepo
-        # init's --skip-skills flag is neutered (see init.ts); opt out of the
-        # GitHub skills check via this env so the smoke test stays offline/fast.
+        # Opt out of the GitHub skills check so the smoke test stays offline/fast.
+        # Both --skip-skills flag and HYPERFRAMES_SKIP_SKILLS env var work.
         env:
           HYPERFRAMES_SKIP_SKILLS: "1"
         run: |

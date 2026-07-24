@@ -49,7 +49,7 @@ export default defineCommand({
   meta: {
     name: "music",
     description:
-      "Generate an original background-music bed from a mood prompt (Google Lyria or local MusicGen)",
+      "Generate an original background-music bed from a mood prompt (Google Lyria 3, commercial-safe, or local MusicGen for non-commercial use)",
   },
   args: {
     prompt: {

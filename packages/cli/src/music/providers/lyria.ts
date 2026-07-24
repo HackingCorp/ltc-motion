@@ -1,8 +1,11 @@
 /**
- * Google Lyria RealTime provider — production-grade original music from a
+ * Google Lyria 3 RealTime provider — production-grade original music from a
  * mood prompt, streamed in ~real time. Keyed by $GEMINI_API_KEY (or
  * $GOOGLE_API_KEY); runs through Python's `google-genai` package, installed
  * on demand. Native knobs: bpm, brightness, density, scale, negative prompt.
+ *
+ * **Commercial-safe:** Google provides copyright indemnification for Lyria 3
+ * output. This is the recommended provider for any production use.
  */
 
 import { execFileSync } from "node:child_process";
@@ -127,9 +130,10 @@ async function generate(
 
 export const lyriaProvider: MusicProvider = {
   id: "lyria",
-  label: "Google Lyria RealTime (production quality)",
+  label: "Google Lyria 3 RealTime (production quality, commercial-safe)",
   local: false,
-  setupHint: "Set GEMINI_API_KEY (free at aistudio.google.com/apikey); google-genai auto-installs",
+  setupHint:
+    "Set GEMINI_API_KEY (free at aistudio.google.com/apikey); google-genai auto-installs. Commercial-safe with copyright indemnification.",
   availability() {
     if (!lyriaKey()) {
       return Promise.resolve({ ok: false, reason: "GEMINI_API_KEY / GOOGLE_API_KEY is not set" });

@@ -2,7 +2,7 @@
 
 Open-source video rendering framework: write HTML, render video.
 
-> **Fork note (ltc-motion).** You are in [HackingCorp/ltc-motion](https://github.com/HackingCorp/ltc-motion), a synced fork of heygen-com/hyperframes maintained by HackingCorp / LTC Group. Install skills **from this repo** (commands below use it). Fork additions — `hyperframes tts` (7 providers: free neural voices via `--provider edgetts`, voice cloning via `--provider fishspeech`), `hyperframes music` (original music: lyria/musicgen), `@hyperframes/browser-export`, French Studio locale (`?lang=fr`), GCP Cloud Run parity tooling, 9:16 e-commerce blocks — are indexed in [`ROADMAP-LTC.md`](ROADMAP-LTC.md). Generic improvements are contributed upstream (no CLA); LTC/WazeApp-specific work stays here. Conventional commits + lefthook gates (fallow/oxfmt/commitlint) apply as described below.
+> **Fork note (ltc-motion).** You are in [HackingCorp/ltc-motion](https://github.com/HackingCorp/ltc-motion), a synced fork of heygen-com/hyperframes maintained by HackingCorp / LTC Group. Install skills **from this repo** (commands below use it). Fork additions — `hyperframes tts` (7 providers: free neural voices via `--provider edgetts`, voice cloning via `--provider fishspeech`), `hyperframes music` (original music: Lyria 3 commercial-safe default, MusicGen non-commercial fallback CC-BY-NC), `@hyperframes/browser-export`, French Studio locale (`?lang=fr`), GCP Cloud Run parity tooling, 9:16 e-commerce blocks — are indexed in [`ROADMAP-LTC.md`](ROADMAP-LTC.md). Generic improvements are contributed upstream (no CLA); LTC/WazeApp-specific work stays here. Conventional commits + lefthook gates (fallow/oxfmt/commitlint) apply as described below.
 
 ## Skills
 
@@ -29,6 +29,7 @@ npx skills add HackingCorp/ltc-motion --skill <name>         # just one (bare na
 - `/slideshow` — a **presentation / pitch deck / interactive deck** — discrete slides, fragment reveals, branching, hotspot navigation, presenter mode. Output is a navigable deck, not a rendered video.
 - `/general-video` — fallback for any other video creation (title card, longer brand / sizzle reel, multi-scene montage, static loop, custom composition); the original hyperframes flow — design → plan → layout → build → validate, any length.
 - `/remotion-to-hyperframes` — port an existing Remotion (React) composition to HyperFrames HTML. One-way migration, not creation.
+- `/ad-spot` — produce a ready-to-run 26 s vertical (9:16) advertising spot — AI footage for humans/ambiance, HTML panels for on-screen text, segmented neural voice-over, original music, animated captions and a brand end card. Use when the user asks for a video ad, promo spot, or Meta/TikTok ad.
 
 ### Domain skills (loaded on demand)
 
@@ -58,9 +59,26 @@ The skill's own `SKILL.md` frontmatter `description:` is the source of truth for
 
 ```bash
 bun install     # Install dependencies (NOT pnpm — do not create pnpm-lock.yaml)
-bun run build   # Build all packages
+bun run build   # Build all packages (dependency-ordered: parsers/lint → core → engine/producer/player/studio → cli)
 bun run test    # Run all tests
+bun run dev     # Run Studio (composition editor, vite dev server)
 ```
+
+Run the CLI from source without building: `bun run --filter @hyperframes/cli dev -- <args>`.
+
+### Testing
+
+```bash
+bun run --filter @hyperframes/core test              # One package (most use vitest)
+cd packages/core && bunx vitest run src/safePath.test.ts   # Single test file
+cd packages/core && bunx vitest run -t "test name"   # Single test by name
+bun run --filter '*' typecheck                       # Type-check all packages
+bun run test:skills                                  # Skill fixture tests (node --test)
+bun run test:scripts                                 # Release/tooling script tests
+```
+
+- **Exception — producer has no vitest suite**: its `test` script is a visual regression harness (`src/regression-harness.ts`) that renders fixture compositions and diffs output. `test:update` regenerates baselines; `docker:test` runs it in the CI container (build with `docker:build:test`). Baseline diffs are expected to be run in Docker for pixel-exact results.
+- **Runtime contract tests**: `bun run --filter @hyperframes/core test:hyperframe-runtime-ci` — builds the runtime artifact then runs contract / behavior / seek / duration-guard / parity / security suites. Run when touching `packages/core/src/runtime` or the runtime build scripts.
 
 ### Linting & Formatting
 
@@ -74,6 +92,8 @@ bunx oxfmt --check <files> # Check formatting (CI / pre-commit)
 
 Always lint and format changed files before committing. Lefthook pre-commit hooks enforce this automatically.
 
+Pre-commit gates beyond lint/format (see `lefthook.yml`): tsc for core + studio; `fallow audit --base origin/main` (fails only on issues _introduced by the branch_, but audits the **working tree** — stash unstaged WIP under `packages/**` if a commit fails on code you didn't stage); skills-manifest regeneration when `skills/**` changes; large-binary rejection (use LFS); a 600-line max per file in `packages/studio` (non-test, non-generated). `commit-msg` runs commitlint (conventional commits).
+
 ### Composition Validation
 
 After creating or editing any `.html` composition:
@@ -85,30 +105,47 @@ npx hyperframes validate   # Runtime check (headless Chrome — catches JS error
 
 Both must pass before previewing or considering work complete.
 
+## Architecture
+
+A composition is a plain HTML file. The pipeline that turns it into video:
+
+1. **core** parses the `data-*` timing attributes into a typed composition model (parsers, linter, generators) and ships the **hyperframes runtime** — a browser-side artifact (built by `build:hyperframes-runtime`, injected into the page) that owns the master timeline, seeks deterministically to any frame, and drives animation runtimes through the frame-adapter pattern (GSAP primary; Lottie / Three.js / Anime.js / CSS / WAAPI plug in via seek-by-frame).
+2. **engine** loads the page in headless Chrome (Puppeteer/CDP), seeks frame-by-frame via the runtime, and captures each frame.
+3. **producer** is the full render pipeline on top of engine: capture + FFmpeg encode + audio mix. `aws-lambda` and `gcp-cloud-run` wrap producer for cloud rendering.
+4. **player** (`<hyperframes-player>` web component) and **studio** (editor UI, served by `studio-server`) play the same composition live in the browser — no render step.
+
+Preview and producer output must be pixel-identical; parity is enforced by harnesses in producer (`parity:check`, regression tests). This is why the determinism rules below are hard requirements, not style preferences.
+
+Workspace packages export TS sources to bun and `dist/` to node (see `exports` maps). `bun run build` at the root builds in dependency order — after touching core, rebuild the tree rather than a single package.
+
 ## Project Structure
 
 ```
 packages/
-  cli/                  → hyperframes CLI (create, preview, lint, render)
+  cli/                  → hyperframes CLI (init, preview, lint, render, publish, tts, music, transcribe…)
   core/                 → Types, parsers, generators, linter, runtime, frame adapters
-  engine/               → Seekable page-to-video capture engine (Puppeteer + FFmpeg)
+  parsers/, lint/       → Standalone parser + lint entry points (built before core)
+  engine/               → Seekable page-to-video capture engine (Puppeteer + CDP)
+  producer/             → Full rendering pipeline (capture + FFmpeg encode + audio mix)
+  aws-lambda/, gcp-cloud-run/ → Cloud rendering wrappers around producer
   player/               → Embeddable <hyperframes-player> web component
-  producer/             → Full rendering pipeline (capture + encode + audio mix)
+  browser-export/       → In-browser export (fork addition)
   shader-transitions/   → WebGL shader transitions for compositions
-  studio/               → Browser-based composition editor UI
+  studio/, studio-server/ → Browser-based composition editor UI + server
+  sdk/, sdk-playground/ → Programmatic SDK + playground
 registry/
   blocks/               → Installable sub-composition scenes (50+)
   components/           → Installable effects and snippets
   examples/             → Starter project templates
 docs/                   → Mintlify documentation site (hyperframes.heygen.com)
-skills/                 → AI agent skill definitions
+skills/                 → AI agent skill definitions (mirrored by skills-manifest.json)
 ```
 
 ## Key Conventions
 
 - **Package manager**: bun (not pnpm, not npm for workspace operations)
 - **Commit format**: Conventional commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`)
-- **TypeScript**: Avoid `any` and `as T` assertions. Prefer type guards and narrowing.
+- **TypeScript**: Avoid `any`, `as T` assertions, and `!` non-null assertions. Prefer type guards and narrowing. Acceptable: `as const`, and `as unknown as T` at hard type-system boundaries (untrusted JSON, postMessage) with a one-line comment justifying it.
 - **Compositions**: HTML files with `data-*` attributes. Clips need `class="clip"`. GSAP timelines must be paused and registered on `window.__timelines`.
 - **Frame Adapters**: Animation runtimes plug in via the seek-by-frame adapter pattern. GSAP is the primary adapter.
 - **Deterministic rendering**: No `Date.now()`, no unseeded `Math.random()`, no render-time network fetches.

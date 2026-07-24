@@ -1,7 +1,13 @@
 /**
  * ElevenLabs TTS provider — pure-Node REST (no Python SDK required).
- * Keyed by $ELEVENLABS_API_KEY. Model defaults to eleven_multilingual_v2,
- * which covers French and most other languages without extra flags.
+ * Keyed by $ELEVENLABS_API_KEY. Uses eleven_turbo_v2_5 (latest turbo
+ * model, 32+ languages including French) with ultra-low latency. Supports
+ * paralinguistic audio tags (e.g. [laugh], [chuckle], [gasp]) inline in
+ * the input text — pass them through verbatim, the model renders them
+ * natively.
+ *
+ * Override the model via $ELEVENLABS_MODEL env var.
+ * Voice cloning: pass a voice ID via --voice (any voice from your library).
  */
 
 import { writeAudio, durationSeconds, envKey, fetchAudioBytes } from "./audio-util.js";
@@ -10,7 +16,8 @@ import type { TtsProvider, TtsProviderOptions, TtsProviderResult } from "./types
 const BASE = "https://api.elevenlabs.io/v1";
 /** "Rachel" — ElevenLabs' canonical default voice. */
 const DEFAULT_VOICE = "21m00Tcm4TlvDq8ikWAM";
-const DEFAULT_MODEL = "eleven_multilingual_v2";
+/** Latest turbo model (GA 2025): 32+ languages, ~300ms latency, audio tags. */
+const DEFAULT_MODEL = "eleven_turbo_v2_5";
 
 async function synthesize(
   text: string,
@@ -23,7 +30,7 @@ async function synthesize(
   const voice = options.voice ?? DEFAULT_VOICE;
   const model = process.env["ELEVENLABS_MODEL"] ?? DEFAULT_MODEL;
 
-  options.onProgress?.(`Requesting ElevenLabs speech (voice ${voice})...`);
+  options.onProgress?.(`Requesting ElevenLabs speech (voice ${voice}, model ${model})...`);
 
   const body: Record<string, unknown> = { text, model_id: model };
   const speed = options.speed ?? 1.0;
@@ -47,9 +54,10 @@ async function synthesize(
 
 export const elevenlabsProvider: TtsProvider = {
   id: "elevenlabs",
-  label: "ElevenLabs",
+  label: "ElevenLabs (turbo v2.5, 32+ languages, audio tags)",
   local: false,
-  setupHint: "Set ELEVENLABS_API_KEY (https://elevenlabs.io → profile → API key)",
+  setupHint:
+    "Set ELEVENLABS_API_KEY (https://elevenlabs.io → profile → API key). Use [laugh], [chuckle], [gasp] tags inline in text for expressive speech.",
   availability() {
     return Promise.resolve(
       envKey("ELEVENLABS_API_KEY")

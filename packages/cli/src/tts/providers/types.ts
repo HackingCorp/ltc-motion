@@ -13,6 +13,8 @@ export type TtsProviderId =
   | "openai"
   | "edgetts"
   | "fishspeech"
+  | "chatterbox"
+  | "qwen3tts"
   | "piper"
   | "kokoro";
 

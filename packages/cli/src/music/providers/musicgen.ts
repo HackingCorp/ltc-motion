@@ -4,6 +4,10 @@
  * Apple MPS or CUDA when available, CPU otherwise. Generates ONE seed clip
  * (≤30 s, the decoder's positional limit) then crossfade-loops it up to the
  * target duration — the same strategy as the hyperframes-media audio engine.
+ *
+ * **License:** CC-BY-NC 4.0 — non-commercial use only. For commercial
+ * productions, use the Lyria provider (`--provider lyria`) which includes
+ * Google's copyright indemnification.
  */
 
 import { mkdirSync } from "node:fs";
@@ -115,9 +119,9 @@ async function generate(
 
 export const musicgenProvider: MusicProvider = {
   id: "musicgen",
-  label: "MusicGen (local, offline)",
+  label: "MusicGen (local, offline, CC-BY-NC — non-commercial only)",
   local: true,
-  setupHint: `${PIP_HINT} (no account; ~300 MB model cached on first use)`,
+  setupHint: `${PIP_HINT} (no account; ~300 MB model cached on first use). ⚠️ CC-BY-NC license — not for commercial use. Use --provider lyria for commercial productions.`,
   availability() {
     if (!findPython()) {
       return Promise.resolve({ ok: false, reason: "Python 3 not found on PATH" });

@@ -686,7 +686,7 @@ export default defineCommand({
     "skip-skills": {
       type: "boolean",
       description:
-        "[temporarily ignored] init always checks AI skills against GitHub while the skills.sh registry catches up; set HYPERFRAMES_SKIP_SKILLS=1 to opt out (CI/tests)",
+        "Skip the AI skills freshness check against GitHub. Use in CI or when you know your installed skills are current.",
     },
     tailwind: {
       type: "boolean",
@@ -721,30 +721,16 @@ export default defineCommand({
     const videoFlag = args.video;
     const audioFlag = args.audio;
     const skipTranscribe = args["skip-transcribe"] === true;
-    // Temporary measure while the skills.sh registry sync lags GitHub main: the
-    // `--skip-skills` FLAG is neutered so an agent (or user) that passes it can
-    // NOT dodge the GitHub skills freshness check. The "don't pass --skip-skills"
-    // guidance lives in SKILL.md, which ships through the same laggy skills.sh
-    // channel and can't be relied on to reach the agent — so the guarantee has to
-    // live in the CLI, the one channel that updates promptly (`npx
-    // hyperframes@latest`). CI and unit tests still opt out via the
-    // HYPERFRAMES_SKIP_SKILLS=1 env var, which the agent/user CLI path never sets.
-    // Revert to `args["skip-skills"] === true` once skills.sh catches up.
-    const skipSkills = process.env.HYPERFRAMES_SKIP_SKILLS === "1";
-    const skipSkillsFlagIgnored = args["skip-skills"] === true && !skipSkills;
+    const skipSkills = args["skip-skills"] === true || process.env.HYPERFRAMES_SKIP_SKILLS === "1";
     const tailwind = args.tailwind === true;
     const nonInteractive = args["non-interactive"] === true;
     const modelFlag = args.model;
     const languageFlag = args.language;
     const interactive = !nonInteractive && process.stdout.isTTY === true;
 
-    if (skipSkillsFlagIgnored) {
-      console.log(
-        c.dim(
-          "Note: --skip-skills is temporarily ignored — init always checks AI skills " +
-            "against GitHub while the skills.sh registry catches up.",
-        ),
-      );
+    if (interactive && args["skip-skills"]) {
+      // Keep a heads-up for interactive users so they know what they're skipping.
+      console.log(c.dim("Note: Skipping AI skills check (--skip-skills was passed)."));
     }
 
     let resolutionPreset: CanvasResolution | undefined;
@@ -1088,8 +1074,8 @@ export default defineCommand({
     clack.note(files.map((f) => c.accent(f)).join("\n"), c.success(`Created ${name}/`));
 
     // Check skills against GitHub and (re)install only if outdated or missing —
-    // init is the one place the full set is pulled. The --skip-skills flag is
-    // temporarily neutered (see above); CI/tests opt out via HYPERFRAMES_SKIP_SKILLS=1.
+    // init is the one place the full set is pulled. CI/tests opt out via
+    // --skip-skills flag or HYPERFRAMES_SKIP_SKILLS=1 env var.
     if (!skipSkills) {
       await ensureSkillsCurrent(destDir);
     }

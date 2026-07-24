@@ -12,7 +12,7 @@ GSAP usage scoped to HyperFrames' seek-driven render model. This skill is the GS
 HyperFrames controls GSAP through its `gsap` runtime adapter. Create a paused timeline synchronously, register it on `window.__timelines` with the exact `data-composition-id`, and let HyperFrames seek it.
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
 <script>
   window.__timelines = window.__timelines || {};
   const tl = gsap.timeline({ paused: true });
@@ -30,6 +30,35 @@ HyperFrames controls GSAP through its `gsap` runtime adapter. Create a paused ti
 - Do not build timelines inside async code, timers, or event handlers.
 - Keep loops finite. HyperFrames renders finite video durations.
 - **Render duration comes from `data-duration` on the composition root, not from GSAP timeline length.** Do not pad the timeline with empty tweens like `tl.set({}, {}, 283)` to "extend" it. (Some external docs show this trick; in HyperFrames it conflicts with the seek-driven duration model — set `data-duration` instead.)
+
+## GSAP Version & Plugins
+
+**Pin GSAP ≥ 3.15.** Since 3.13 (April 2025), ALL plugins are 100% free — including the former Club-only plugins. 3.15 added `easeReverse`. Always use the latest 3.15.x.
+
+### Now-free plugins (prescribe by default)
+
+These were formerly Club-only (paid). Since 3.13 they ship in the main bundle and should be prescribed as first-choice solutions:
+
+| Plugin             | Use for                                                                                                                                    |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **SplitText**      | Kinetic type — split headings into lines/words/chars for staggered reveals, weight pulses, text trails. GSAP 3.13 rewrote it at ~50% size. |
+| **MorphSVG**       | Logo stings, shape-to-shape transitions, icon morphs. 3.14 added `smooth` mode.                                                            |
+| **DrawSVG**        | Stroke animation — diagram builds, signature reveals, line-art entrances.                                                                  |
+| **ScrollSmoother** | Smooth scrolling (not relevant in render, but useful in Studio preview).                                                                   |
+| **ScrambleText**   | Text scrambling effects for data reveals, stat counters, code-like animations.                                                             |
+
+Load them from the CDN alongside the core:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/SplitText.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/MorphSVG.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/DrawSVGPlugin.min.js"></script>
+```
+
+For SVG stroke growth prefer `DrawSVGPlugin`, then fall back to manual `stroke-dasharray`/`stroke-dashoffset`.
+For shape interpolation prefer `MorphSVGPlugin`; convert primitives to paths when needed.
+For kinetic typography prefer `SplitText` (line/word/char subdivision) over manual span wrapping.
 
 ## Core Tween Methods
 

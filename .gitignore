@@ -78,6 +78,7 @@ packages/producer/src/services/fontData.generated.ts
 docs/plans/
 
 # Local proof / test artifacts
+work/
 qa-artifacts/
 my-video/
 .hyperframes/backup/

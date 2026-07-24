@@ -51,7 +51,7 @@ export default defineCommand({
   meta: {
     name: "tts",
     description:
-      "Generate speech audio from text (HeyGen, ElevenLabs, OpenAI, Piper, or local Kokoro-82M)",
+      "Generate speech audio from text (9 providers: cloud + local neural TTS — --list to see availability)",
   },
   args: {
     input: {

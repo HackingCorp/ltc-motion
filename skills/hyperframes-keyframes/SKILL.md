@@ -165,8 +165,23 @@ Preserve line boxes, word spacing, readability, and final fit. If text moves int
 
 ## SVG
 
-For stroke growth prefer `DrawSVGPlugin`, then `stroke-dasharray`/`stroke-dashoffset`.
-For shape interpolation prefer `MorphSVGPlugin`; convert primitives to paths when needed and split complex silhouettes into simpler parts.
+For stroke growth prefer **`DrawSVGPlugin`** (free since GSAP 3.13), then `stroke-dasharray`/`stroke-dashoffset`.
+For shape interpolation prefer **`MorphSVGPlugin`** (free since GSAP 3.13, `smooth` mode since 3.14); convert primitives to paths when needed and split complex silhouettes into simpler parts.
+
+## Text
+
+For kinetic typography prefer **`SplitText`** (free since GSAP 3.13, rewritten at ~50% size) — line/word/char subdivision for staggered reveals, weight pulses, text trails. SplitText handles the DOM splitting; animate the resulting elements with GSAP timelines as usual.
+
+## GSAP Version
+
+**Pin GSAP ≥ 3.15.** All plugins are free since 3.13. 3.15 adds `easeReverse`.
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/SplitText.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/MorphSVG.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/DrawSVGPlugin.min.js"></script>
+```
 
 ## 3D
 
